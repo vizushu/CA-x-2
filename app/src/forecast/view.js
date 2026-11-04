@@ -143,7 +143,7 @@ export default function viewModel(st, props, ctx) {
   const dk = { strip: glove ? 58 : 52, viz: glove ? 92 : 80, pills: glove ? 56 : 48, modes: glove ? 64 : 56, val: glove ? 17 : 15, modeFs: glove ? 15 : 14, glove };
   // Bottom tab bar (docked edge-to-edge) + a pull-up panel above it with three detents:
   // 0 = collapsed handle row, 1 = time strip + scrubber + spot pills, 2 = loadout drawer.
-  dk.tab = 56; // same height in every mode; glove mode only enlarges the timeline controls dk.safe = 34; dk.grab = 48; dk.ctrl = dk.strip + dk.viz + 12 + dk.pills + 12;
+  dk.tab = 56; /* same height in every mode; glove mode only enlarges the timeline controls */ dk.safe = 34; dk.grab = 48; dk.ctrl = dk.strip + dk.viz + 12 + dk.pills + 12;
   dk.exp = Math.max(160, (props.appH || 932) - 126 - dk.tab - dk.safe - dk.grab - dk.ctrl - 8); dk.padB = dk.tab + dk.safe + dk.grab + 20;
   const dNow = E.drive(bi, mi, t, st.order === 'surf');
   const cells = mode === 'surf' ? [['Surf', rg.str + ' ft', col(pkS)], ['Energy', Math.round(r.kj) + ' kJ'], ['Tide', r.tide.h.toFixed(1) + ' ft'], ['Wind', Math.round(r.wind.k) + ' kt ' + E.catShort(r.wind.cat), col(wK)]]
