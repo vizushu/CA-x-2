@@ -265,7 +265,7 @@ export default class App extends React.Component {
     E.allowFetch = !st.dragging;
     const v = viewModel(st, Object.assign({}, this.props, { appH: lay.ah }), this);
     this._exp = v.exp; this._ctrl = v.ctrl; this._theme = v.theme; this._nowT = v.nowT;
-    const vk = st.mode === 'surf' ? 'beach' : st.mode === 'snow' ? 'mountain' : st.camView;
+    const vk = st.mode === 'surf' ? 'beach' : st.mode === 'snow' ? 'mountain' : 'split';
     const off = !!this.props.offline || st.offline, liveCam = !off && E.camLive(vk, bi, mi) === 'Live';
     Object.assign(v, { srcSummary: Live.summary(), dayWord: E.dayWord(), sheetLevel: st.sheetLevel, t: st.t });
     const ic = v.ic, common = { v, ic, openDrawer: this.openDrawer };
