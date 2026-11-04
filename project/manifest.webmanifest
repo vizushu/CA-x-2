@@ -1,0 +1,16 @@
+{
+  "name": "Lineup — Surf + Snow",
+  "short_name": "Lineup",
+  "description": "Live surf, snow and California Double planner for Southern California.",
+  "start_url": "./Lineup%20Live.dc.html?app=1",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#080D14",
+  "theme_color": "#080D14",
+  "icons": [
+    { "src": "./icons/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "./icons/icon-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "./icons/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

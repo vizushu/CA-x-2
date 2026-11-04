@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#09141A">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500;600&display=swap">
+<script src="./image-slot.js"></script>
+<script src="./lineup-engine.js"></script>
+<script src="./lineup-view.js"></script>
+<style>
+html,body{margin:0;padding:0;background:#05080B;color:#EEF3F6;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
+a{color:#EEF3F6;text-decoration-color:rgba(238,243,246,.35)}a:hover{color:#FFFFFF;text-decoration-color:#FFFFFF}
+@keyframes livepulse{0%{box-shadow:0 0 0 0 rgba(238,243,246,.55)}70%{box-shadow:0 0 0 7px rgba(238,243,246,0)}100%{box-shadow:0 0 0 0 rgba(238,243,246,0)}}
+@keyframes detent{0%{transform:scale(.8);opacity:.9}100%{transform:scale(2.4);opacity:0}}
+@keyframes sweep{0%{transform:translateX(-100%)}100%{transform:translateX(340%)}}
+</style>
+</helmet>
+<div style="min-height:100vh; box-sizing:border-box; padding:40px 32px 72px; background:#05080B; color:#EEF3F6; font-family:-apple-system, BlinkMacSystemFont, 'SF Pro Text', Geist, system-ui, sans-serif; display:flex; flex-wrap:wrap; justify-content:center; align-items:flex-start; gap:56px">
+
+<sc-if value="{{ showBp }}" hint-placeholder-val="{{ true }}">
+<aside data-screen-label="Part 1 · Blueprint" style="order:{{ lay.o1 }}; flex:1 1 340px; min-width:290px; max-width:400px; display:flex; flex-direction:column; gap:30px">
+  <header style="display:flex; flex-direction:column; gap:12px">
+    <div style="font-family:ui-monospace, 'SF Mono', 'Geist Mono', Menlo, monospace; font-size:11px; letter-spacing:.08em; text-transform:uppercase; color:#778692">Lineup · surf + snow PWA · concept v2</div>
+    <h1 style="margin:0; font-size:32px; line-height:36px; font-weight:650; letter-spacing:-0.025em">Part 1 — Director’s blueprint</h1>
+    <p style="margin:0; font-size:15px; line-height:22px; color:#A5B3BD; text-wrap:pretty">Three jobs, one thumb. Is the surf on? Is the mountain open? Can I do both before the lifts close?</p>
+  </header>
+  <div style="display:flex; flex-direction:column; gap:8px; font-size:13px; line-height:18px">
+    <div style="display:grid; grid-template-columns:30px minmax(0,1fr); gap:10px; align-items:baseline"><span style="font-family:ui-monospace, 'SF Mono', 'Geist Mono', Menlo, monospace; font-size:10px; font-weight:600; text-align:center; padding:2px 0; border-radius:5px; background:rgba(238,244,246,0.08)">LW</span><span>Luke Wroblewski<span style="color:#778692"> — wet-thumb and glove ergonomics</span></span></div>
+    <div style="display:grid; grid-template-columns:30px minmax(0,1fr); gap:10px; align-items:baseline"><span style="font-family:ui-monospace, 'SF Mono', 'Geist Mono', Menlo, monospace; font-size:10px; font-weight:600; text-align:center; padding:2px 0; border-radius:5px; background:rgba(238,244,246,0.08)">DN</span><span>Don Norman<span style="color:#778692"> — natural mapping across two domains</span></span></div>
+    <div style="display:grid; grid-template-columns:30px minmax(0,1fr); gap:10px; align-items:baseline"><span style="font-family:ui-monospace, 'SF Mono', 'Geist Mono', Menlo, monospace; font-size:10px; font-weight:600; text-align:center; padding:2px 0; border-radius:5px; background:rgba(238,244,246,0.08)">OT</span><span>Olivia Truong<span style="color:#778692"> — multi-system timelines</span></span></div>
+    <div style="display:grid; grid-template-columns:30px minmax(0,1fr); gap:10px; align-items:baseline"><span style="font-family:ui-monospace, 'SF Mono', 'Geist Mono', Menlo, monospace; font-size:10px; font-weight:600; text-align:center; padding:2px 0; border-radius:5px; background:rgba(238,244,246,0.08)">JS</span><span>Jesse Showalter<span style="color:#778692"> — adaptive atmospheric tokens</span></span></div>
+    <div style="display:grid; grid-template-columns:30px minmax(0,1fr); gap:10px; align-items:baseline"><span style="font-family:ui-monospace, 'SF Mono', 'Geist Mono', Menlo, monospace; font-size:10px; font-weight:600; text-align:center; padding:2px 0; border-radius:5px; background:rgba(238,244,246,0.08)">EC</span><span>Ed Chao<span style="color:#778692"> — glass, springs, dual-feed HUD</span></span></div>
+  </div>
+  <section style="display:flex; flex-direction:column; gap:14px">
+    <div style="display:flex; align-items:baseline; gap:10px"><span style="font-family:ui-monospace, 'SF Mono', 'Geist Mono', Menlo, monospace; font-size:11px; color:#778692">01</span><h2 style="margin:0; font-size:18px; line-height:24px; font-weight:600">The tri-state information architecture</h2></div>
+    <div style="display:grid; grid-template-columns:minmax(0,1fr) auto; gap:12px"><p style="margin:0; font-size:14px; line-height:21px; color:#A5B3BD; text-wrap:pretty"><strong style="color:#EEF4F6; font-weight:600">One skeleton, three states.</strong> Cam on top, verdict and why below, one glass deck in the thumb arc. Surf, CA Double and Snow are states of one screen, not three apps. The dock morphs; nothing reloads.</p><span style="font-family:ui-monospace, 'SF Mono', 'Geist Mono', Menlo, monospace; font-size:10px; color:#778692; padding-top:4px">LW·EC</span></div>
+    <div style="display:grid; grid-template-columns:minmax(0,1fr) auto; gap:12px"><p style="margin:0; font-size:14px; line-height:21px; color:#A5B3BD; text-wrap:pretty"><strong style="color:#EEF4F6; font-weight:600">Context survives every switch.</strong> The playhead time, your break and your mountain carry across modes. Pick Swami’s in Surf and Bear Mountain in Snow, and CA Double already knows the trip.</p><span style="font-family:ui-monospace, 'SF Mono', 'Geist Mono', Menlo, monospace; font-size:10px; color:#778692; padding-top:4px">DN</span></div>
+    <div style="display:grid; grid-template-columns:minmax(0,1fr) auto; gap:12px"><p style="margin:0; font-size:14px; line-height:21px; color:#A5B3BD; text-wrap:pretty"><strong style="color:#EEF4F6; font-weight:600">Same grammar in every mode:</strong> readout strip, scrubber, location pills and mode switch always sit in the same place. Only the lanes, the pills and the tokens change.</p><span style="font-family:ui-monospace, 'SF Mono', 'Geist Mono', Menlo, monospace; font-size:10px; color:#778692; padding-top:4px">LW·JS</span></div>
+    <div style="display:grid; grid-template-columns:minmax(0,1fr) auto; gap:12px"><p style="margin:0; font-size:14px; line-height:21px; color:#A5B3BD; text-wrap:pretty"><strong style="color:#EEF4F6; font-weight:600">Depth by gesture.</strong> Scroll, or pull up the gear drawer, and the cam docks into a mini-bar. In CA Double the cam splits beach | mountain, or toggles to either feed.</p><span style="font-family:ui-monospace, 'SF Mono', 'Geist Mono', Menlo, monospace; font-size:10px; color:#778692; padding-top:4px">EC</span></div>
+  </section>
+  <section style="display:flex; flex-direction:column; gap:14px">
+    <div style="display:flex; align-items:baseline; gap:10px"><span style="font-family:ui-monospace, 'SF Mono', 'Geist Mono', Menlo, monospace; font-size:11px; color:#778692">02</span><h2 style="margin:0; font-size:18px; line-height:24px; font-weight:600">The California Double sync engine</h2></div>
+    <div style="display:grid; grid-template-columns:minmax(0,1fr) auto; gap:12px"><p style="margin:0; font-size:14px; line-height:21px; color:#A5B3BD; text-wrap:pretty"><strong style="color:#EEF4F6; font-weight:600">One day, one track.</strong> Coastal window → transit bridge → alpine window. Each is a stage with its own window on the same 5 AM–5 PM axis the scrubber uses.</p><span style="font-family:ui-monospace, 'SF Mono', 'Geist Mono', Menlo, monospace; font-size:10px; color:#778692; padding-top:4px">OT</span></div>
+    <div style="display:grid; grid-template-columns:minmax(0,1fr) auto; gap:12px"><p style="margin:0; font-size:14px; line-height:21px; color:#A5B3BD; text-wrap:pretty"><strong style="color:#EEF4F6; font-weight:600">The elevation lane is the map.</strong> In CA Double the scrubber’s line is you: at sea level while you surf, climbing as you drive, flat at the base lodge.</p><span style="font-family:ui-monospace, 'SF Mono', 'Geist Mono', Menlo, monospace; font-size:10px; color:#778692; padding-top:4px">DN</span></div>
+    <div style="display:grid; grid-template-columns:minmax(0,1fr) auto; gap:12px"><p style="margin:0; font-size:14px; line-height:21px; color:#A5B3BD; text-wrap:pretty"><strong style="color:#EEF4F6; font-weight:600">Chains are checked for when you reach the grade,</strong> not for now. R1 on SR-38 at 7 AM can be R0 by an 11 AM arrival. Drive time includes rush hour, chain-up stops and an EV buffer.</p><span style="font-family:ui-monospace, 'SF Mono', 'Geist Mono', Menlo, monospace; font-size:10px; color:#778692; padding-top:4px">OT·DN</span></div>
+    <div style="display:grid; grid-template-columns:minmax(0,1fr) auto; gap:12px"><p style="margin:0; font-size:14px; line-height:21px; color:#A5B3BD; text-wrap:pretty"><strong style="color:#EEF4F6; font-weight:600">Feasibility = 30% surf + 35% snow + 20% transit + 15% daylight fit.</strong> Flip the order and every stage, the score and the reason recompute.</p><span style="font-family:ui-monospace, 'SF Mono', 'Geist Mono', Menlo, monospace; font-size:10px; color:#778692; padding-top:4px">DN</span></div>
+    <div style="display:flex; flex-wrap:wrap; gap:8px 16px; font-size:13px">
+      <span style="display:inline-flex; align-items:center; gap:6px"><span style="width:8px; height:8px; border-radius:4px; background:oklch(0.8 0.15 160)"></span>Good · R0</span>
+      <span style="display:inline-flex; align-items:center; gap:6px"><span style="width:8px; height:8px; border-radius:4px; background:oklch(0.84 0.14 80)"></span>Fair · R1</span>
+      <span style="display:inline-flex; align-items:center; gap:6px"><span style="width:8px; height:8px; border-radius:4px; background:oklch(0.74 0.15 30)"></span>Poor · R2 · wind hold</span>
+    </div>
+  </section>
+  <section style="display:flex; flex-direction:column; gap:14px">
+    <div style="display:flex; align-items:baseline; gap:10px"><span style="font-family:ui-monospace, 'SF Mono', 'Geist Mono', Menlo, monospace; font-size:11px; color:#778692">03</span><h2 style="margin:0; font-size:18px; line-height:24px; font-weight:600">PWA field resilience</h2></div>
+    <div style="display:grid; grid-template-columns:minmax(0,1fr) auto; gap:12px"><p style="margin:0; font-size:14px; line-height:21px; color:#A5B3BD; text-wrap:pretty"><strong style="color:#EEF4F6; font-weight:600">Dead zones are the default.</strong> The shell, today’s forecasts and the last chain and lift status live in IndexedDB. Every cached value carries its timestamp, so “R1 · 6:31 AM” never pretends to be live.</p><span style="font-family:ui-monospace, 'SF Mono', 'Geist Mono', Menlo, monospace; font-size:10px; color:#778692; padding-top:4px">LW</span></div>
+    <div style="display:grid; grid-template-columns:minmax(0,1fr) auto; gap:12px"><p style="margin:0; font-size:14px; line-height:21px; color:#A5B3BD; text-wrap:pretty"><strong style="color:#EEF4F6; font-weight:600">Glove mode.</strong> In Snow, targets grow from 48 to 56–64 pt, the scrubber snaps to 15-minute detents, and whole cells are tappable. No precision gestures, no long-press.</p><span style="font-family:ui-monospace, 'SF Mono', 'Geist Mono', Menlo, monospace; font-size:10px; color:#778692; padding-top:4px">LW</span></div>
+    <div style="display:grid; grid-template-columns:minmax(0,1fr) auto; gap:12px"><p style="margin:0; font-size:14px; line-height:21px; color:#A5B3BD; text-wrap:pretty"><strong style="color:#EEF4F6; font-weight:600">Adaptive contrast tokens.</strong> OLED ocean slate for a 6 AM check, glare-resistant ice for 8,000 ft sun, a teal-to-frost horizon for CA Double. Quality colors are re-tuned per surface to hold 4.5:1.</p><span style="font-family:ui-monospace, 'SF Mono', 'Geist Mono', Menlo, monospace; font-size:10px; color:#778692; padding-top:4px">JS</span></div>
+    <div style="display:grid; grid-template-columns:minmax(0,1fr) auto; gap:12px"><p style="margin:0; font-size:14px; line-height:21px; color:#A5B3BD; text-wrap:pretty"><strong style="color:#EEF4F6; font-weight:600">Springs, not easing curves.</strong> The drawer tracks your finger and releases with your velocity. prefers-reduced-motion snaps instead.</p><span style="font-family:ui-monospace, 'SF Mono', 'Geist Mono', Menlo, monospace; font-size:10px; color:#778692; padding-top:4px">EC</span></div>
+  </section>
+</aside>
+</sc-if>
+
+<div style="order:{{ lay.o2 }}; flex:none; position:{{ lay.pos }}; top:24px; width:{{ lay.pw }}px; height:{{ lay.ph }}px">
+  <div style="width:448px; height:950px; box-sizing:border-box; padding:9px; border-radius:57px; background:#13181F; box-shadow:inset 0 0 0 1px rgba(238,243,246,0.09), 0 0 0 1px #000000, 0 50px 120px -30px rgba(0,0,0,0.95); transform:scale({{ lay.s }}); transform-origin:0 0">
+    <x-import component-from-global-scope="IOSDevice" from="./ios-frame.jsx" dark="{{ true }}" width="{{ 430 }}" height="{{ 932 }}" time="{{ statusTime }}" hint-size="430px,932px">
+      <div ref="{{ appRef }}" style="position:relative; width:430px; height:932px; overflow:hidden; background:var(--bg, #09141A); color:var(--t1, #EEF4F6); z-index:0; isolation:isolate; font-family:-apple-system, BlinkMacSystemFont, 'SF Pro Text', Geist, system-ui, sans-serif; -webkit-user-select:none; user-select:none; transition:background-color .5s, color .5s">
+        <sc-if value="{{ ready }}" hint-placeholder-val="{{ true }}">
+        <div style="position:absolute; inset:0; pointer-events:none; opacity:{{ glowOp }}; transition:opacity .6s; background:radial-gradient(90% 34% at 50% 31%, rgba(96,205,200,0.14), rgba(96,205,200,0) 70%), linear-gradient(180deg, rgba(220,232,245,0.07) 0%, rgba(9,20,26,0) 42%, rgba(40,150,150,0.09) 100%)"></div>
+
+        <div data-screen-label="Surf" ref="{{ surfRef }}" onScroll="{{ onScroll }}" style="position:absolute; inset:0; overflow-y:auto; overscroll-behavior:contain; scrollbar-width:none; box-sizing:border-box; padding:258px 20px {{ dk.padB }}px; opacity:{{ tv.surf.op }}; visibility:{{ tv.surf.vis }}; transition:opacity .3s ease, visibility .3s">
+          <sc-if value="{{ offline }}" hint-placeholder-val="{{ false }}">
+            <div style="display:flex; align-items:center; gap:10px; min-height:40px; padding:0 14px; margin-bottom:18px; border-radius:20px; background:var(--fill, rgba(238,243,246,0.05)); font-size:13px; line-height:18px"><span style="flex:none; width:16px; height:16px; background:currentColor; -webkit-mask:url({{ ic.cloudOff }}) center / contain no-repeat; mask:url({{ ic.cloudOff }}) center / contain no-repeat"></span><span>{{ offlineTxt }}</span></div>
+          </sc-if>
+          <div style="display:flex; align-items:flex-start; justify-content:space-between; gap:12px">
+            <div style="min-width:0">
+              <div style="font-family:ui-monospace, 'SF Mono', 'Geist Mono', Menlo, monospace; font-size:11px; line-height:14px; letter-spacing:.06em; text-transform:uppercase; color:var(--t2, #A2ADBA); white-space:nowrap; overflow:hidden; text-overflow:ellipsis">{{ S.eyebrow }}</div>
+              <div style="font-size:28px; line-height:34px; font-weight:650; letter-spacing:-0.02em; margin-top:4px">{{ S.name }}</div>
+              <div style="font-size:13px; line-height:18px; color:var(--t3, #74808E)">{{ S.area }}</div>
+            </div>
+            <div style="flex:none; margin-top:20px; height:32px; padding:0 13px 0 11px; border-radius:16px; display:flex; align-items:center; gap:7px; background:{{ S.pillBg }}; color:{{ S.pillFg }}; font-size:13px; font-weight:700; letter-spacing:.07em; text-transform:uppercase; transition:background .25s, color .25s"><span style="width:8px; height:8px; border-radius:4px; background:{{ S.pillFg }}"></span>{{ S.pill }}</div>
+          </div>
+          <div style="display:flex; align-items:flex-end; justify-content:space-between; margin-top:10px">
+            <div style="display:flex; align-items:baseline; gap:6px"><span style="font-size:72px; line-height:76px; font-weight:600; letter-spacing:-0.045em; font-variant-numeric:tabular-nums">{{ S.range }}</span><span style="font-size:24px; font-weight:500; color:var(--t2, #A2ADBA)">ft</span></div>
+            <div style="text-align:right; padding-bottom:10px">
+              <div style="font-size:22px; line-height:26px; font-weight:600; font-variant-numeric:tabular-nums">{{ S.kj }}<span style="font-size:13px; font-weight:500; color:var(--t2, #A2ADBA); margin-left:3px">kJ</span></div>
+              <div style="font-family:ui-monospace, 'SF Mono', 'Geist Mono', Menlo, monospace; font-size:10px; letter-spacing:.06em; text-transform:uppercase; color:var(--t3, #74808E); margin-top:2px">Swell energy</div>
+            </div>
+          </div>
+          <div style="font-size:15px; line-height:20px; color:var(--t2, #A2ADBA)">{{ S.words }}</div>
+          <div style="display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:12px; margin-top:20px">
+            <div style="display:flex; gap:12px; align-items:center; min-width:0">
+              <div style="position:relative; flex:none; width:44px; height:44px; border-radius:14px; background:var(--fill, rgba(238,243,246,0.05)); overflow:hidden">
+                <div style="position:absolute; left:0; right:0; bottom:0; height:11px; background:var(--fill, rgba(238,243,246,0.05)); border-top:1px dashed var(--t3, #74808E)"></div>
+                <svg width="24" height="24" style="position:absolute; left:10px; top:7px; transform:rotate({{ S.windRot }}deg); color:{{ S.windColor }}; transition:transform .35s cubic-bezier(.2,.8,.2,1)"><path d="M12 20V5M6.5 10.5L12 5l5.5 5.5" style="fill:none; stroke:currentColor; stroke-width:2.2; stroke-linecap:round; stroke-linejoin:round"></path></svg>
+              </div>
+              <div style="min-width:0"><div style="font-size:16px; line-height:21px; font-weight:600; color:{{ S.windColor }}; white-space:nowrap; overflow:hidden; text-overflow:ellipsis">{{ S.windCat }}</div><div style="font-size:12px; line-height:16px; color:var(--t2, #A2ADBA); white-space:nowrap; overflow:hidden; text-overflow:ellipsis">{{ S.windDetail }}</div></div>
+            </div>
+            <div style="display:flex; gap:10px; align-items:center; min-width:0">
+              <div style="flex:none; width:56px; height:44px; border-radius:14px; background:var(--fill, rgba(238,243,246,0.05))"><svg width="56" height="44" style="display:block"><path d="{{ S.sArea }}" style="fill:var(--fill, rgba(238,243,246,0.05))"></path><path d="{{ S.sLine }}" style="fill:none; stroke:var(--t2, #A2ADBA); stroke-width:1.25"></path><circle cx="{{ S.sdx }}" cy="{{ S.sdy }}" r="3" style="fill:var(--t1, #EEF3F6)"></circle></svg></div>
+              <div style="min-width:0"><div style="font-size:16px; line-height:21px; font-weight:600; white-space:nowrap">{{ S.tideH }} <span style="color:{{ S.tideCol }}">{{ S.tideTrend }}</span></div><div style="font-size:12px; line-height:16px; color:var(--t2, #A2ADBA); white-space:nowrap; overflow:hidden; text-overflow:ellipsis">{{ S.tideDetail }}</div></div>
+            </div>
+          </div>
+          <button onClick="{{ S.win.onClick }}" style="appearance:none; -webkit-appearance:none; border:0; color:inherit; font:inherit; margin:20px 0 0; cursor:pointer; -webkit-tap-highlight-color:transparent; width:100%; display:flex; align-items:center; gap:12px; text-align:left; padding:14px 14px 14px 16px; border-radius:18px; background:{{ S.win.bg }}">
+            <div style="flex:1; min-width:0">
+              <div style="font-family:ui-monospace, 'SF Mono', 'Geist Mono', Menlo, monospace; font-size:11px; line-height:14px; letter-spacing:.06em; text-transform:uppercase; color:{{ S.win.fg }}">{{ S.win.caption }}</div>
+              <div style="font-size:20px; line-height:26px; font-weight:650; margin-top:3px; font-variant-numeric:tabular-nums">{{ S.win.range }}</div>
+              <div style="font-size:13px; line-height:18px; color:var(--t2, #A2ADBA); margin-top:2px; text-wrap:pretty">{{ S.win.detail }}</div>
+            </div>
+            <div style="flex:none; display:flex; flex-direction:column; align-items:flex-end; gap:8px">
+              <span style="font-size:12px; line-height:16px; font-weight:600; color:{{ S.win.fg }}; white-space:nowrap">{{ S.win.status }}</span>
+              <sc-if value="{{ S.win.showCta }}" hint-placeholder-val="{{ true }}"><span style="height:36px; padding:0 8px 0 14px; border-radius:18px; background:var(--chip, rgba(238,243,246,0.12)); display:flex; align-items:center; gap:2px; font-size:13px; font-weight:600">{{ S.win.cta }}<span style="width:16px; height:16px; background:currentColor; -webkit-mask:url({{ ic.chevRight }}) center / contain no-repeat; mask:url({{ ic.chevRight }}) center / contain no-repeat"></span></span></sc-if>
+            </div>
+          </button>
+          <button onClick="{{ openDrawer }}" style="appearance:none; -webkit-appearance:none; border:0; color:inherit; font:inherit; margin:10px 0 0; cursor:pointer; -webkit-tap-highlight-color:transparent; width:100%; min-height:56px; display:flex; align-items:center; gap:12px; text-align:left; padding:10px 14px; border-radius:16px; background:var(--fill, rgba(238,243,246,0.05))">
+            <span style="flex:none; width:20px; height:20px; background:var(--t2, #A2ADBA); -webkit-mask:url({{ ic.backpack }}) center / contain no-repeat; mask:url({{ ic.backpack }}) center / contain no-repeat"></span>
+            <div style="flex:1; min-width:0"><div style="font-family:ui-monospace, 'SF Mono', 'Geist Mono', Menlo, monospace; font-size:10px; letter-spacing:.06em; text-transform:uppercase; color:var(--t3, #74808E)">Loadout</div><div style="font-size:14px; line-height:19px; font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis">{{ S.teaser }}</div></div>
+            <span style="flex:none; width:18px; height:18px; background:var(--t3, #74808E); -webkit-mask:url({{ ic.chevUp }}) center / contain no-repeat; mask:url({{ ic.chevUp }}) center / contain no-repeat"></span>
+          </button>
+          <div style="margin-top:34px">
+            <div style="display:flex; align-items:baseline; justify-content:space-between; gap:12px"><div style="font-size:20px; line-height:26px; font-weight:650">{{ S.why.lead }} <span style="color:{{ S.why.color }}">{{ S.why.word }}</span></div><div style="font-size:12px; color:var(--t3, #74808E); white-space:nowrap">{{ S.why.at }}</div></div>
+            <div style="display:flex; flex-direction:column; gap:16px; margin-top:14px">
+              <sc-for list="{{ S.why.rows }}" as="w" hint-placeholder-count="3">
+                <div style="display:grid; grid-template-columns:64px minmax(0,1fr); gap:12px; align-items:start">
+                  <div style="display:flex; align-items:center; gap:8px; padding-top:4px"><span style="flex:none; width:8px; height:8px; border-radius:4px; background:{{ w.dot }}"></span><span style="font-family:ui-monospace, 'SF Mono', 'Geist Mono', Menlo, monospace; font-size:11px; letter-spacing:.06em; text-transform:uppercase; color:var(--t3, #74808E)">{{ w.label }}</span></div>
+                  <div style="min-width:0"><div style="font-size:15px; line-height:20px; font-weight:600">{{ w.head }}</div><div style="font-size:13px; line-height:18px; color:var(--t2, #A2ADBA); margin-top:2px; text-wrap:pretty">{{ w.detail }}</div></div>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+          <div style="margin-top:34px">
+            <div style="display:flex; align-items:baseline; justify-content:space-between; gap:12px"><div style="font-size:20px; line-height:26px; font-weight:650">Tide</div><div style="font-size:12px; color:var(--t2, #A2ADBA); white-space:nowrap">{{ S.tide.readout }}</div></div>
+            <div style="position:relative; height:132px; margin-top:12px">
+              <div style="position:absolute; left:0; top:0; height:104px; width:{{ S.tide.darkW }}px; background:repeating-linear-gradient(135deg, var(--hair, rgba(238,243,246,0.1)) 0 1px, transparent 1px 6px)"></div>
+              <svg width="390" height="104" style="position:absolute; left:0; top:0; overflow:visible"><path d="{{ S.tide.area }}" style="fill:var(--fill, rgba(238,243,246,0.05))"></path><path d="{{ S.tide.line }}" style="fill:none; stroke:var(--t2, #A2ADBA); stroke-width:1.5"></path></svg>
+              <div style="position:absolute; top:0; height:104px; width:0; left:{{ S.tide.nowX }}px; border-left:1px dashed var(--t3, #74808E)"></div>
+              <div style="position:absolute; top:0; height:104px; width:1.5px; left:{{ S.tide.selX }}px; background:var(--t1, #EEF3F6); transition:left .3s cubic-bezier(.2,.8,.2,1)"></div>
+              <div style="position:absolute; width:10px; height:10px; margin:-5px 0 0 -5px; border-radius:5px; background:var(--t1, #EEF3F6); box-shadow:0 0 0 3px var(--bg, #080D14); left:{{ S.tide.sx }}px; top:{{ S.tide.sy }}px; transition:left .3s cubic-bezier(.2,.8,.2,1), top .3s cubic-bezier(.2,.8,.2,1)"></div>
+              <sc-for list="{{ S.tide.ex }}" as="e" hint-placeholder-count="3">
+                <div style="position:absolute; width:64px; text-align:center; line-height:12px; left:{{ e.x }}px; top:{{ e.y }}px"><div style="font-size:11px; font-weight:600">{{ e.kind }} {{ e.h }}</div><div style="font-family:ui-monospace, 'SF Mono', 'Geist Mono', Menlo, monospace; font-size:10px; color:var(--t3, #74808E); margin-top:1px">{{ e.time }}</div></div>
+              </sc-for>
+              <sc-for list="{{ S.tide.hours }}" as="h" hint-placeholder-count="5">
+                <div style="position:absolute; top:116px; width:32px; text-align:center; font-family:ui-monospace, 'SF Mono', 'Geist Mono', Menlo, monospace; font-size:10px; color:var(--t3, #74808E); left:{{ h.x }}px">{{ h.label }}</div>
+              </sc-for>
+            </div>
+          </div>
+          <div style="display:flex; align-items:center; gap:8px; margin-top:24px; font-size:12px; line-height:16px; color:var(--t3, #74808E)"><span style="flex:none; width:14px; height:14px; background:currentColor; -webkit-mask:url({{ ic.db }}) center / contain no-repeat; mask:url({{ ic.db }}) center / contain no-repeat"></span><span>{{ S.footnote }}</span></div>
+        </div>
+        <div data-screen-label="CA Double" ref="{{ dblRef }}" onScroll="{{ onScroll }}" style="position:absolute; inset:0; overflow-y:auto; overscroll-behavior:contain; scrollbar-width:none; box-sizing:border-box; padding:258px 20px {{ dk.padB }}px; opacity:{{ tv.double.op }}; visibility:{{ tv.double.vis }}; transition:opacity .3s ease, visibility .3s">
+          <sc-if value="{{ offline }}" hint-placeholder-val="{{ false }}">
+            <div style="display:flex; align-items:center; gap:10px; min-height:40px; padding:0 14px; margin-bottom:18px; border-radius:20px; background:var(--fill, rgba(238,244,246,0.05)); font-size:13px; line-height:18px"><span style="flex:none; width:16px; height:16px; background:currentColor; -webkit-mask:url({{ ic.cloudOff }}) center / contain no-repeat; mask:url({{ ic.cloudOff }}) center / contain no-repeat"></span><span>{{ offlineTxt }}</span></div>
+          </sc-if>
+          <div style="font-family:ui-monospace, 'SF Mono', 'Geist Mono', Menlo, monospace; font-size:11px; line-height:14px; letter-spacing:.06em; text-transform:uppercase; color:var(--t2, #A5B3BD)">California Double · today</div>
+          <div style="font-size:24px; line-height:30px; font-weight:650; letter-spacing:-0.02em; margin-top:4px; text-wrap:pretty">{{ dbl.route }}</div>
+          <div style="display:flex; align-items:center; gap:16px; margin-top:14px">
+            <div style="position:relative; flex:none; width:96px; height:96px">
+              <svg width="96" height="96" style="position:absolute; left:0; top:0; transform:rotate(-90deg)">
+                <defs><linearGradient id="lnHorizon" x1="0" y1="0" x2="1" y2="1"><stop offset="0" style="stop-color:oklch(0.8 0.1 190)"></stop><stop offset="1" style="stop-color:oklch(0.93 0.03 240)"></stop></linearGradient></defs>
+                <circle cx="48" cy="48" r="42" style="fill:none; stroke:var(--hair, rgba(238,244,246,0.1)); stroke-width:6"></circle>
+                <circle cx="48" cy="48" r="42" style="fill:none; stroke:url(#lnHorizon); stroke-width:6; stroke-linecap:round; stroke-dasharray:263.9; stroke-dashoffset:{{ dbl.dash }}; transition:stroke-dashoffset .6s cubic-bezier(.2,.8,.2,1)"></circle>
+              </svg>
+              <div style="position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center"><div style="font-size:34px; line-height:36px; font-weight:650; letter-spacing:-0.03em; font-variant-numeric:tabular-nums">{{ dbl.score }}</div><div style="font-size:10px; line-height:12px; color:var(--t3, #778692)">/ 100</div></div>
+            </div>
+            <div style="min-width:0">
+              <span style="display:inline-flex; align-items:center; gap:6px; height:26px; padding:0 10px; border-radius:13px; background:{{ dbl.labelBg }}; color:{{ dbl.labelFg }}; font-size:12px; font-weight:700; letter-spacing:.07em; text-transform:uppercase"><span style="width:6px; height:6px; border-radius:3px; background:{{ dbl.labelFg }}"></span>{{ dbl.label }}</span>
+              <div style="font-size:16px; line-height:22px; font-weight:600; margin-top:8px; text-wrap:pretty">{{ dbl.verdict }}</div>
+            </div>
+          </div>
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:4px; padding:4px; margin-top:18px; border-radius:18px; background:var(--fill, rgba(238,244,246,0.05))">
+            <button onClick="{{ setOrderSurf }}" style="appearance:none; -webkit-appearance:none; border:0; font:inherit; margin:0; padding:0; cursor:pointer; -webkit-tap-highlight-color:transparent; height:48px; border-radius:14px; display:flex; align-items:center; justify-content:center; gap:8px; background:{{ dbl.oSurfBg }}; color:{{ dbl.oSurfFg }}; font-size:14px; font-weight:650; transition:background .2s, color .2s"><span style="width:16px; height:16px; background:currentColor; -webkit-mask:url({{ ic.waves }}) center / contain no-repeat; mask:url({{ ic.waves }}) center / contain no-repeat"></span>Surf first<span style="font-variant-numeric:tabular-nums; opacity:.7">{{ dbl.surfScore }}</span></button>
+            <button onClick="{{ setOrderSnow }}" style="appearance:none; -webkit-appearance:none; border:0; font:inherit; margin:0; padding:0; cursor:pointer; -webkit-tap-highlight-color:transparent; height:48px; border-radius:14px; display:flex; align-items:center; justify-content:center; gap:8px; background:{{ dbl.oSnowBg }}; color:{{ dbl.oSnowFg }}; font-size:14px; font-weight:650; transition:background .2s, color .2s"><span style="width:16px; height:16px; background:currentColor; -webkit-mask:url({{ ic.snow }}) center / contain no-repeat; mask:url({{ ic.snow }}) center / contain no-repeat"></span>Snow first<span style="font-variant-numeric:tabular-nums; opacity:.7">{{ dbl.snowScore }}</span></button>
+          </div>
+
+          <div style="position:relative; margin-top:20px; display:flex; flex-direction:column; gap:4px">
+            <div style="position:absolute; left:79px; top:28px; bottom:28px; width:2px; border-radius:1px; background:{{ dbl.spine }}; opacity:.6"></div>
+            <sc-for list="{{ dbl.stages }}" as="sg" hint-placeholder-count="3">
+              <div style="position:relative; display:grid; grid-template-columns:56px 28px minmax(0,1fr); gap:0 10px; padding:12px 10px 12px 8px; margin:0 -8px; border-radius:18px; background:{{ sg.bg }}; opacity:{{ sg.op }}; transition:background .25s, opacity .25s">
+                <div style="text-align:right; padding-top:2px"><div style="font-size:14px; line-height:18px; font-weight:650; font-variant-numeric:tabular-nums">{{ sg.t0 }}</div><div style="font-size:11px; line-height:14px; color:var(--t3, #778692); font-variant-numeric:tabular-nums">{{ sg.t1 }}</div></div>
+                <div style="display:flex; justify-content:center"><span style="width:28px; height:28px; border-radius:14px; display:flex; align-items:center; justify-content:center; background:{{ sg.nodeBg }}; color:{{ sg.nodeFg }}; box-shadow:0 0 0 4px var(--bg, #09141A)"><span style="width:15px; height:15px; background:currentColor; -webkit-mask:url({{ sg.icon }}) center / contain no-repeat; mask:url({{ sg.icon }}) center / contain no-repeat"></span></span></div>
+                <div style="min-width:0">
+                  <div style="display:flex; align-items:center; gap:8px"><span style="font-family:ui-monospace, 'SF Mono', 'Geist Mono', Menlo, monospace; font-size:10px; letter-spacing:.06em; text-transform:uppercase; color:var(--t3, #778692)">{{ sg.kind }}</span><sc-if value="{{ sg.showTag }}" hint-placeholder-val="{{ false }}"><span style="height:18px; padding:0 7px; border-radius:9px; display:inline-flex; align-items:center; font-size:10px; font-weight:700; letter-spacing:.05em; text-transform:uppercase; background:var(--t1, #EEF4F6); color:var(--bg, #09141A)">{{ sg.tag }}</span></sc-if></div>
+                  <div style="font-size:16px; line-height:21px; font-weight:600; margin-top:2px">{{ sg.title }}</div>
+                  <div style="font-size:12px; line-height:16px; color:var(--t2, #A5B3BD); margin-top:1px">{{ sg.sub }}</div>
+                  <div style="display:flex; flex-wrap:wrap; gap:6px; margin-top:8px">
+                    <sc-for list="{{ sg.chips }}" as="ch" hint-placeholder-count="4"><span style="height:24px; padding:0 9px; border-radius:12px; display:inline-flex; align-items:center; font-size:12px; font-weight:600; white-space:nowrap; background:{{ ch.bg }}; color:{{ ch.fg }}">{{ ch.text }}</span></sc-for>
+                  </div>
+                </div>
+              </div>
+            </sc-for>
+          </div>
+
+          <div style="display:grid; grid-template-columns:repeat(4, minmax(0,1fr)); gap:12px; margin-top:22px">
+            <sc-for list="{{ dbl.parts }}" as="pt" hint-placeholder-count="4">
+              <div style="min-width:0">
+                <div style="display:flex; align-items:baseline; justify-content:space-between; gap:4px"><span style="font-family:ui-monospace, 'SF Mono', 'Geist Mono', Menlo, monospace; font-size:10px; letter-spacing:.05em; text-transform:uppercase; color:var(--t3, #778692)">{{ pt.label }}</span><span style="font-size:15px; font-weight:650; font-variant-numeric:tabular-nums">{{ pt.score }}</span></div>
+                <div style="height:4px; border-radius:2px; margin-top:6px; overflow:hidden; background:var(--hair, rgba(238,244,246,0.1))"><div style="height:100%; border-radius:2px; width:{{ pt.pct }}%; background:{{ pt.color }}; transition:width .5s"></div></div>
+                <div style="font-size:10px; line-height:14px; color:var(--t3, #778692); margin-top:4px">weight {{ pt.weight }}</div>
+              </div>
+            </sc-for>
+          </div>
+          <div style="font-size:13px; line-height:19px; color:var(--t2, #A5B3BD); margin-top:16px; text-wrap:pretty">{{ dbl.insight }}</div>
+          <button onClick="{{ openDrawer }}" style="appearance:none; -webkit-appearance:none; border:0; color:inherit; font:inherit; margin:16px 0 0; cursor:pointer; -webkit-tap-highlight-color:transparent; width:100%; min-height:56px; display:flex; align-items:center; gap:12px; text-align:left; padding:10px 14px; border-radius:16px; background:var(--fill, rgba(238,244,246,0.05))">
+            <span style="flex:none; width:20px; height:20px; background:var(--t2, #A5B3BD); -webkit-mask:url({{ ic.backpack }}) center / contain no-repeat; mask:url({{ ic.backpack }}) center / contain no-repeat"></span>
+            <div style="flex:1; min-width:0"><div style="font-family:ui-monospace, 'SF Mono', 'Geist Mono', Menlo, monospace; font-size:10px; letter-spacing:.06em; text-transform:uppercase; color:var(--t3, #778692)">Loadout for both</div><div style="font-size:14px; line-height:19px; font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis">{{ dbl.teaser }}</div></div>
+            <span style="flex:none; width:18px; height:18px; background:var(--t3, #778692); -webkit-mask:url({{ ic.chevUp }}) center / contain no-repeat; mask:url({{ ic.chevUp }}) center / contain no-repeat"></span>
+          </button>
+          <div style="display:flex; align-items:center; gap:8px; margin-top:24px; font-size:12px; line-height:16px; color:var(--t3, #778692)"><span style="flex:none; width:14px; height:14px; background:currentColor; -webkit-mask:url({{ ic.db }}) center / contain no-repeat; mask:url({{ ic.db }}) center / contain no-repeat"></span><span>{{ dbl.footnote }}</span></div>
+        </div>
+        <div data-screen-label="Snow" ref="{{ snowRef }}" onScroll="{{ onScroll }}" style="position:absolute; inset:0; overflow-y:auto; overscroll-behavior:contain; scrollbar-width:none; box-sizing:border-box; padding:258px 20px {{ dk.padB }}px; opacity:{{ tv.snow.op }}; visibility:{{ tv.snow.vis }}; transition:opacity .3s ease, visibility .3s">
+          <sc-if value="{{ offline }}" hint-placeholder-val="{{ false }}">
+            <div style="display:flex; align-items:center; gap:10px; min-height:40px; padding:0 14px; margin-bottom:18px; border-radius:20px; background:var(--fill, rgba(12,22,33,0.05)); font-size:13px; line-height:18px"><span style="flex:none; width:16px; height:16px; background:currentColor; -webkit-mask:url({{ ic.cloudOff }}) center / contain no-repeat; mask:url({{ ic.cloudOff }}) center / contain no-repeat"></span><span>{{ offlineTxt }}</span></div>
+          </sc-if>
+          <div style="display:flex; align-items:flex-start; justify-content:space-between; gap:12px">
+            <div style="min-width:0">
+              <div style="font-family:ui-monospace, 'SF Mono', 'Geist Mono', Menlo, monospace; font-size:11px; line-height:14px; letter-spacing:.06em; text-transform:uppercase; color:var(--t2, #3B4856); white-space:nowrap; overflow:hidden; text-overflow:ellipsis">{{ sn.eyebrow }}</div>
+              <div style="font-size:28px; line-height:34px; font-weight:650; letter-spacing:-0.02em; margin-top:4px">{{ sn.name }}</div>
+              <div style="font-size:13px; line-height:18px; color:var(--t3, #566371)">{{ sn.area }}</div>
+            </div>
+            <div style="flex:none; margin-top:20px; height:32px; padding:0 13px 0 11px; border-radius:16px; display:flex; align-items:center; gap:7px; background:{{ sn.pillBg }}; color:{{ sn.pillFg }}; font-size:13px; font-weight:700; letter-spacing:.07em; text-transform:uppercase; transition:background .25s, color .25s"><span style="width:8px; height:8px; border-radius:4px; background:{{ sn.pillFg }}"></span>{{ sn.pill }}</div>
+          </div>
+          <div style="display:flex; align-items:flex-end; justify-content:space-between; margin-top:10px">
+            <div style="display:flex; align-items:baseline; gap:8px"><span style="font-size:72px; line-height:76px; font-weight:600; letter-spacing:-0.045em; font-variant-numeric:tabular-nums">{{ sn.fresh }}″</span><span style="font-size:15px; font-weight:600; color:var(--t2, #3B4856)">fresh · 24 h</span></div>
+            <div style="display:flex; gap:16px; padding-bottom:10px; text-align:right">
+              <div><div style="font-size:20px; line-height:24px; font-weight:600; font-variant-numeric:tabular-nums">{{ sn.fresh48 }}</div><div style="font-family:ui-monospace, 'SF Mono', 'Geist Mono', Menlo, monospace; font-size:10px; letter-spacing:.06em; text-transform:uppercase; color:var(--t3, #566371)">48 h</div></div>
+              <div><div style="font-size:20px; line-height:24px; font-weight:600; font-variant-numeric:tabular-nums">{{ sn.depth }}</div><div style="font-family:ui-monospace, 'SF Mono', 'Geist Mono', Menlo, monospace; font-size:10px; letter-spacing:.06em; text-transform:uppercase; color:var(--t3, #566371)">Base</div></div>
+            </div>
+          </div>
+          <div style="font-size:15px; line-height:20px; color:var(--t2, #3B4856); text-wrap:pretty">{{ sn.words }}</div>
+
+          <div style="margin-top:22px">
+            <div style="display:flex; align-items:baseline; justify-content:space-between"><div style="font-size:17px; line-height:22px; font-weight:650">By elevation</div><div style="font-size:12px; color:var(--t3, #566371)">{{ sn.at }}</div></div>
+            <div style="display:flex; flex-direction:column; margin-top:6px">
+              <sc-for list="{{ sn.ladder }}" as="lv" hint-placeholder-count="3">
+                <div style="display:grid; grid-template-columns:84px 44px minmax(0,1fr) auto; gap:10px; align-items:center; min-height:58px; box-shadow:inset 0 0.5px 0 var(--hair, rgba(12,22,33,0.12))">
+                  <div><div style="font-family:ui-monospace, 'SF Mono', 'Geist Mono', Menlo, monospace; font-size:10px; letter-spacing:.06em; text-transform:uppercase; color:var(--t3, #566371)">{{ lv.label }}</div><div style="font-size:14px; line-height:19px; font-weight:600; font-variant-numeric:tabular-nums">{{ lv.elev }}</div></div>
+                  <div style="font-size:20px; line-height:24px; font-weight:600; font-variant-numeric:tabular-nums">{{ lv.temp }}</div>
+                  <div style="display:flex; align-items:center; gap:8px; min-width:0">
+                    <div style="position:relative; flex:none; width:30px; height:30px; border-radius:15px; background:var(--fill, rgba(12,22,33,0.05))"><div style="position:absolute; left:14px; top:2px; width:2px; height:3px; border-radius:1px; background:var(--t3, #566371)"></div><svg width="18" height="18" style="position:absolute; left:6px; top:6px; transform:rotate({{ lv.rot }}deg); color:{{ lv.wcol }}"><path d="M9 15V4M5 8l4-4 4 4" style="fill:none; stroke:currentColor; stroke-width:2; stroke-linecap:round; stroke-linejoin:round"></path></svg></div>
+                    <div style="min-width:0"><div style="font-size:15px; line-height:19px; font-weight:600; color:{{ lv.wcol }}">{{ lv.wind }}</div><div style="font-size:11px; line-height:14px; color:var(--t3, #566371); white-space:nowrap">{{ lv.gust }}</div></div>
+                  </div>
+                  <span style="height:26px; padding:0 10px; border-radius:13px; display:inline-flex; align-items:center; font-size:12px; font-weight:650; background:{{ lv.chipBg }}; color:{{ lv.chipFg }}; white-space:nowrap">{{ lv.chip }}</span>
+                </div>
+              </sc-for>
+            </div>
+            <div style="font-size:13px; line-height:18px; color:var(--t2, #3B4856); margin-top:8px; text-wrap:pretty">{{ sn.lifts }}</div>
+          </div>
+
+          <div style="margin-top:22px">
+            <div style="font-size:17px; line-height:22px; font-weight:650">Surface through the day</div>
+            <div style="display:grid; grid-template-columns:repeat(3, minmax(0,1fr)); gap:6px; margin-top:10px">
+              <sc-for list="{{ sn.steps }}" as="ss" hint-placeholder-count="3">
+                <div style="min-width:0; padding:10px; border-radius:14px; background:{{ ss.bg }}; box-shadow:inset 0 0 0 0.5px var(--hair, rgba(12,22,33,0.12)); transition:background .25s"><div style="font-size:13px; line-height:17px; font-weight:650; color:{{ ss.fg }}">{{ ss.label }}</div><div style="font-size:11px; line-height:15px; color:var(--t3, #566371); font-variant-numeric:tabular-nums">{{ ss.range }}</div></div>
+              </sc-for>
+            </div>
+          </div>
+
+          <button onClick="{{ sn.win.onClick }}" style="appearance:none; -webkit-appearance:none; border:0; color:inherit; font:inherit; margin:20px 0 0; cursor:pointer; -webkit-tap-highlight-color:transparent; width:100%; display:flex; align-items:center; gap:12px; text-align:left; padding:14px 14px 14px 16px; border-radius:18px; background:{{ sn.win.bg }}">
+            <div style="flex:1; min-width:0">
+              <div style="font-family:ui-monospace, 'SF Mono', 'Geist Mono', Menlo, monospace; font-size:11px; line-height:14px; letter-spacing:.06em; text-transform:uppercase; color:{{ sn.win.fg }}">{{ sn.win.caption }}</div>
+              <div style="font-size:20px; line-height:26px; font-weight:650; margin-top:3px; font-variant-numeric:tabular-nums">{{ sn.win.range }}</div>
+              <div style="font-size:13px; line-height:18px; color:var(--t2, #3B4856); margin-top:2px; text-wrap:pretty">{{ sn.win.detail }}</div>
+            </div>
+            <div style="flex:none; display:flex; flex-direction:column; align-items:flex-end; gap:8px">
+              <span style="font-size:12px; line-height:16px; font-weight:600; color:{{ sn.win.fg }}; white-space:nowrap">{{ sn.win.status }}</span>
+              <sc-if value="{{ sn.win.showCta }}" hint-placeholder-val="{{ true }}"><span style="height:36px; padding:0 8px 0 14px; border-radius:18px; background:var(--chip, rgba(12,22,33,0.08)); display:flex; align-items:center; gap:2px; font-size:13px; font-weight:600">{{ sn.win.cta }}<span style="width:16px; height:16px; background:currentColor; -webkit-mask:url({{ ic.chevRight }}) center / contain no-repeat; mask:url({{ ic.chevRight }}) center / contain no-repeat"></span></span></sc-if>
+            </div>
+          </button>
+          <button onClick="{{ openDrawer }}" style="appearance:none; -webkit-appearance:none; border:0; color:inherit; font:inherit; margin:10px 0 0; cursor:pointer; -webkit-tap-highlight-color:transparent; width:100%; min-height:56px; display:flex; align-items:center; gap:12px; text-align:left; padding:10px 14px; border-radius:16px; background:var(--fill, rgba(12,22,33,0.05))">
+            <span style="flex:none; width:20px; height:20px; background:var(--t2, #3B4856); -webkit-mask:url({{ ic.backpack }}) center / contain no-repeat; mask:url({{ ic.backpack }}) center / contain no-repeat"></span>
+            <div style="flex:1; min-width:0"><div style="font-family:ui-monospace, 'SF Mono', 'Geist Mono', Menlo, monospace; font-size:10px; letter-spacing:.06em; text-transform:uppercase; color:var(--t3, #566371)">Loadout</div><div style="font-size:14px; line-height:19px; font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis">{{ sn.teaser }}</div></div>
+            <span style="flex:none; width:18px; height:18px; background:var(--t3, #566371); -webkit-mask:url({{ ic.chevUp }}) center / contain no-repeat; mask:url({{ ic.chevUp }}) center / contain no-repeat"></span>
+          </button>
+          <div style="display:flex; align-items:center; gap:8px; margin-top:24px; font-size:12px; line-height:16px; color:var(--t3, #566371)"><span style="flex:none; width:14px; height:14px; background:currentColor; -webkit-mask:url({{ ic.db }}) center / contain no-repeat; mask:url({{ ic.db }}) center / contain no-repeat"></span><span>{{ sn.footnote }}</span></div>
+        </div>
+
+        <div style="position:absolute; left:0; top:0; right:0; height:calc(242px - 124px * var(--cam, 0)); z-index:5; overflow:hidden">
+          <div style="position:absolute; inset:0; background:rgba(10,15,21,0.84); backdrop-filter:blur(24px) saturate(160%); -webkit-backdrop-filter:blur(24px) saturate(160%); box-shadow:inset 0 -0.5px 0 rgba(238,243,246,0.08); opacity:var(--cam, 0)"></div>
+          <div style="position:absolute; left:calc(16px * var(--cam, 0)); top:calc(61px * var(--cam, 0)); width:calc(430px - 338px * var(--cam, 0)); height:calc(242px - 190px * var(--cam, 0)); border-radius:calc(12px * var(--cam, 0)); overflow:hidden; background:#070B10; color:rgba(238,243,246,0.6); filter:{{ hud.filter }}">
+            <div style="position:absolute; top:0; bottom:0; left:0; width:{{ cam.bw }}%; overflow:hidden; background:#0D141C; transition:width .45s cubic-bezier(.2,.8,.2,1)">
+              <div style="position:absolute; inset:0; background:repeating-linear-gradient(115deg, rgba(238,243,246,0.03) 0 10px, transparent 10px 20px)"></div>
+              <sc-for list="{{ cam.beach }}" as="c" hint-placeholder-count="3">
+                <div style="position:absolute; inset:0; display:{{ c.disp }}"><image-slot id="{{ c.id }}" shape="rect" placeholder="{{ c.ph }}"></image-slot></div>
+              </sc-for>
+              <div style="position:absolute; left:12px; right:12px; bottom:12px; display:{{ cam.halfDisp }}; opacity:calc(1 - var(--cam, 0) * 2.2); pointer-events:none; text-shadow:0 1px 8px rgba(0,0,0,0.7)">
+                <div style="font-size:13px; line-height:17px; font-weight:650; color:#EEF3F6; white-space:nowrap; overflow:hidden; text-overflow:ellipsis">{{ hud.bTitle }}</div>
+                <div style="font-size:11px; line-height:15px; font-weight:600; color:{{ hud.bSubFg }}; white-space:nowrap; overflow:hidden; text-overflow:ellipsis">{{ hud.bSub }}</div>
+              </div>
+            </div>
+            <div style="position:absolute; top:0; bottom:0; left:{{ cam.ml }}%; width:{{ cam.mw }}%; overflow:hidden; background:#121A23; transition:left .45s cubic-bezier(.2,.8,.2,1), width .45s cubic-bezier(.2,.8,.2,1)">
+              <div style="position:absolute; inset:0; background:repeating-linear-gradient(65deg, rgba(238,243,246,0.035) 0 10px, transparent 10px 20px)"></div>
+              <sc-for list="{{ cam.mtn }}" as="c" hint-placeholder-count="3">
+                <div style="position:absolute; inset:0; display:{{ c.disp }}"><image-slot id="{{ c.id }}" shape="rect" placeholder="{{ c.ph }}"></image-slot></div>
+              </sc-for>
+              <div style="position:absolute; left:12px; right:60px; bottom:12px; display:{{ cam.halfDisp }}; opacity:calc(1 - var(--cam, 0) * 2.2); pointer-events:none; text-shadow:0 1px 8px rgba(0,0,0,0.7)">
+                <div style="font-size:13px; line-height:17px; font-weight:650; color:#EEF3F6; white-space:nowrap; overflow:hidden; text-overflow:ellipsis">{{ hud.mTitle }}</div>
+                <div style="font-size:11px; line-height:15px; font-weight:600; color:{{ hud.mSubFg }}; white-space:nowrap; overflow:hidden; text-overflow:ellipsis">{{ hud.mSub }}</div>
+              </div>
+            </div>
+            <div style="position:absolute; inset:0; pointer-events:none; background:#05080B; opacity:{{ hud.dim }}; transition:opacity .4s"></div>
+            <div style="position:absolute; left:0; right:0; bottom:0; height:2px; overflow:hidden; pointer-events:none">{{ sweep }}</div>
+            <div onClick="{{ miniTap }}" style="position:absolute; inset:0; cursor:pointer; pointer-events:{{ hud.catcherPE }}"></div>
+          </div>
+
+          <div style="position:absolute; left:0; top:0; width:430px; height:242px; opacity:calc(1 - var(--cam, 0) * 2.2); pointer-events:none">
+            <div style="position:absolute; left:0; right:0; top:0; height:96px; background:linear-gradient(180deg, rgba(5,8,11,0.72), rgba(5,8,11,0))"></div>
+            <div style="position:absolute; left:0; right:0; bottom:0; height:96px; background:linear-gradient(0deg, rgba(5,8,11,0.72), rgba(5,8,11,0))"></div>
+            <div style="position:absolute; left:16px; top:58px; height:28px; padding:0 11px 0 10px; border-radius:14px; display:flex; align-items:center; gap:8px; background:rgba(8,12,18,0.5); backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px); box-shadow:inset 0 0 0 0.5px rgba(238,243,246,0.16); font-size:12px; line-height:16px; color:#EEF3F6">
+              {{ liveDot }}
+              <span style="font-weight:700; letter-spacing:.08em; text-transform:uppercase">{{ hud.live }}</span>
+              <span style="font-family:ui-monospace, 'SF Mono', 'Geist Mono', Menlo, monospace; font-size:11px; color:#A3AEBA; font-variant-numeric:tabular-nums">{{ hud.stamp }}</span>
+            </div>
+            <sc-if value="{{ hud.showTimer }}" hint-placeholder-val="{{ false }}">
+              <div style="position:absolute; right:16px; top:58px; padding:6px 12px; border-radius:14px; text-align:right; background:{{ hud.setBg }}; color:{{ hud.setFg }}; backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px); box-shadow:inset 0 0 0 0.5px rgba(238,243,246,0.16); transition:background .3s, color .3s">
+                <div style="font-size:13px; line-height:16px; font-weight:650; font-variant-numeric:tabular-nums">{{ hud.setTxt }}</div>
+                <div style="font-size:10px; line-height:13px; color:{{ hud.setSubFg }}">{{ hud.setSub }}</div>
+              </div>
+            </sc-if>
+            <sc-if value="{{ hud.showVis }}" hint-placeholder-val="{{ false }}">
+              <div style="position:absolute; right:16px; top:58px; padding:6px 12px; border-radius:14px; text-align:right; background:rgba(8,12,18,0.5); color:#EEF3F6; backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px); box-shadow:inset 0 0 0 0.5px rgba(238,243,246,0.16)">
+                <div style="font-size:13px; line-height:16px; font-weight:650">{{ hud.visTxt }}</div>
+                <div style="font-size:10px; line-height:13px; color:#A3AEBA">{{ hud.visSub }}</div>
+              </div>
+            </sc-if>
+            <sc-if value="{{ hud.showToggle }}" hint-placeholder-val="{{ true }}">
+              <div style="position:absolute; right:14px; top:52px; display:flex; gap:2px; padding:3px; border-radius:17px; background:rgba(8,12,18,0.55); backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px); box-shadow:inset 0 0 0 0.5px rgba(238,243,246,0.16); pointer-events:{{ hud.pipPE }}">
+                <sc-for list="{{ hud.views }}" as="v" hint-placeholder-count="3">
+                  <button onClick="{{ v.onClick }}" title="{{ v.title }}" style="appearance:none; -webkit-appearance:none; border:0; font:inherit; margin:0; padding:0; cursor:pointer; -webkit-tap-highlight-color:transparent; width:48px; height:40px; border-radius:14px; display:flex; align-items:center; justify-content:center; background:{{ v.bg }}; color:{{ v.fg }}; transition:background .2s, color .2s">
+                    <span style="width:18px; height:18px; background:currentColor; -webkit-mask:url({{ v.icon }}) center / contain no-repeat; mask:url({{ v.icon }}) center / contain no-repeat"></span>
+                  </button>
+                </sc-for>
+              </div>
+            </sc-if>
+            <sc-if value="{{ hud.showOverlay }}" hint-placeholder-val="{{ false }}">
+              <div style="position:absolute; left:50%; top:121px; transform:translate(-50%,-50%); padding:8px 14px; border-radius:16px; white-space:nowrap; background:rgba(8,12,18,0.62); backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px); font-size:13px; line-height:16px; font-weight:500; color:#EEF3F6">{{ hud.overlay }}</div>
+            </sc-if>
+            <sc-if value="{{ hud.showSurfDials }}" hint-placeholder-val="{{ false }}">
+              <div style="position:absolute; left:16px; bottom:14px; display:flex; gap:18px; color:#EEF3F6">
+                <div style="display:flex; align-items:center; gap:8px">
+                  <div style="position:relative; width:40px; height:40px; border-radius:20px; overflow:hidden; background:rgba(8,12,18,0.45); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); box-shadow:inset 0 0 0 0.5px rgba(238,243,246,0.2)">
+                    <div style="position:absolute; left:7px; right:7px; bottom:8px; border-top:1px dashed rgba(238,243,246,0.45)"></div>
+                    <svg width="24" height="24" style="position:absolute; left:8px; top:7px; transform:rotate({{ hud.windRot }}deg); color:{{ hud.windCol }}"><path d="M12 20V5M6.5 10.5L12 5l5.5 5.5" style="fill:none; stroke:currentColor; stroke-width:2.2; stroke-linecap:round; stroke-linejoin:round"></path></svg>
+                  </div>
+                  <div style="text-shadow:0 1px 8px rgba(0,0,0,0.6)"><div style="font-family:ui-monospace, 'SF Mono', 'Geist Mono', Menlo, monospace; font-size:10px; letter-spacing:.06em; text-transform:uppercase; color:rgba(238,243,246,0.75)">Wind</div><div style="font-size:13px; line-height:17px; font-weight:600">{{ hud.windTxt }}</div></div>
+                </div>
+                <div style="display:flex; align-items:center; gap:8px">
+                  <div style="position:relative; width:40px; height:40px; border-radius:20px; overflow:hidden; background:rgba(8,12,18,0.45); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); box-shadow:inset 0 0 0 0.5px rgba(238,243,246,0.2)">
+                    <div style="position:absolute; left:7px; right:7px; bottom:8px; border-top:1px dashed rgba(238,243,246,0.45)"></div>
+                    <svg width="24" height="24" style="position:absolute; left:8px; top:7px; transform:rotate({{ hud.swellRot }}deg); color:#EEF3F6"><path d="M12 20V5M6.5 10.5L12 5l5.5 5.5" style="fill:none; stroke:currentColor; stroke-width:2.2; stroke-linecap:round; stroke-linejoin:round"></path></svg>
+                  </div>
+                  <div style="text-shadow:0 1px 8px rgba(0,0,0,0.6)"><div style="font-family:ui-monospace, 'SF Mono', 'Geist Mono', Menlo, monospace; font-size:10px; letter-spacing:.06em; text-transform:uppercase; color:rgba(238,243,246,0.75)">Swell</div><div style="font-size:13px; line-height:17px; font-weight:600">{{ hud.swellTxt }}</div></div>
+                </div>
+              </div>
+            </sc-if>
+            <sc-if value="{{ hud.showSnowDials }}" hint-placeholder-val="{{ false }}">
+              <div style="position:absolute; left:16px; bottom:14px; display:flex; gap:18px; color:#EEF3F6">
+                <div style="display:flex; align-items:center; gap:8px">
+                  <div style="position:relative; width:40px; height:40px; border-radius:20px; overflow:hidden; background:rgba(8,12,18,0.45); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); box-shadow:inset 0 0 0 0.5px rgba(238,243,246,0.2)">
+                    <div style="position:absolute; left:19px; top:3px; width:2px; height:4px; border-radius:1px; background:rgba(238,243,246,0.6)"></div>
+                    <svg width="24" height="24" style="position:absolute; left:8px; top:8px; transform:rotate({{ hud.sRot }}deg); color:{{ hud.sCol }}"><path d="M12 20V5M6.5 10.5L12 5l5.5 5.5" style="fill:none; stroke:currentColor; stroke-width:2.2; stroke-linecap:round; stroke-linejoin:round"></path></svg>
+                  </div>
+                  <div style="text-shadow:0 1px 8px rgba(0,0,0,0.6)"><div style="font-size:13px; line-height:17px; font-weight:600">{{ hud.sWind }}</div><div style="font-size:11px; line-height:15px; color:{{ hud.sCol }}">{{ hud.sSub }}</div></div>
+                </div>
+                <div style="text-shadow:0 1px 8px rgba(0,0,0,0.6)"><div style="font-size:13px; line-height:17px; font-weight:600">{{ hud.liftTxt }}</div><div style="font-size:11px; line-height:15px; color:#A3AEBA">{{ hud.liftSub }}</div></div>
+              </div>
+            </sc-if>
+            <button onClick="{{ togglePin }}" title="Dock cam" style="appearance:none; -webkit-appearance:none; border:0; color:#EEF3F6; font:inherit; margin:0; padding:0; cursor:pointer; -webkit-tap-highlight-color:transparent; position:absolute; right:12px; bottom:10px; width:48px; height:48px; border-radius:24px; display:flex; align-items:center; justify-content:center; background:rgba(8,12,18,0.45); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); box-shadow:inset 0 0 0 0.5px rgba(238,243,246,0.2); pointer-events:{{ hud.pipPE }}">
+              <span style="width:20px; height:20px; background:currentColor; -webkit-mask:url({{ ic.pip }}) center / contain no-repeat; mask:url({{ ic.pip }}) center / contain no-repeat"></span>
+            </button>
+          </div>
+
+          <div onClick="{{ miniTap }}" style="position:absolute; left:120px; right:8px; top:54px; height:64px; display:flex; align-items:center; gap:10px; cursor:pointer; color:#EEF3F6; opacity:calc((var(--cam, 0) - 0.55) * 2.2); pointer-events:{{ hud.catcherPE }}">
+            <div style="flex:1; min-width:0">
+              <div style="display:flex; align-items:center; gap:7px; font-size:16px; line-height:20px; font-weight:600; white-space:nowrap">{{ mini.name }}<span style="font-size:10px; font-weight:700; letter-spacing:.08em; color:#A3AEBA; text-transform:uppercase">{{ hud.live }}</span></div>
+              <div style="font-size:13px; line-height:18px; color:#A3AEBA; white-space:nowrap; overflow:hidden; text-overflow:ellipsis">{{ mini.summary }}</div>
+            </div>
+            <div style="flex:none; height:26px; padding:0 10px; border-radius:13px; display:flex; align-items:center; gap:6px; background:{{ mini.pillBg }}; color:{{ mini.pillFg }}; font-size:11px; font-weight:700; letter-spacing:.07em; text-transform:uppercase"><span style="width:6px; height:6px; border-radius:3px; background:{{ mini.pillFg }}"></span>{{ mini.pill }}</div>
+            <span style="flex:none; width:40px; height:48px; display:flex; align-items:center; justify-content:center; color:#A3AEBA"><span style="width:20px; height:20px; background:currentColor; -webkit-mask:url({{ ic.chevDown }}) center / contain no-repeat; mask:url({{ ic.chevDown }}) center / contain no-repeat"></span></span>
+          </div>
+        </div>
+
+        <div style="position:absolute; left:8px; right:8px; bottom:8px; height:calc({{ dk.base }}px + {{ dk.exp }}px * var(--sheet, 0)); z-index:20; box-sizing:border-box; padding:0 12px 12px; display:flex; flex-direction:column; overflow:hidden; border-radius:30px 30px 40px 40px; background:var(--glass, rgba(12,24,30,0.78)); backdrop-filter:blur(30px) saturate(170%); -webkit-backdrop-filter:blur(30px) saturate(170%); box-shadow:inset 0 0.5px 0 rgba(255,255,255,0.18), inset 0 0 0 0.5px var(--hair, rgba(238,244,246,0.1)), 0 -12px 40px rgba(0,0,0,0.3); color:var(--t1, #EEF4F6); transition:background-color .45s, color .45s">
+          <div onPointerDown="{{ sheetDown }}" onPointerMove="{{ sheetMove }}" onPointerUp="{{ sheetUp }}" onPointerCancel="{{ sheetUp }}" style="flex:none; position:relative; height:24px; margin:0 -12px; display:flex; align-items:center; justify-content:center; touch-action:none; cursor:grab">
+            <sc-if value="{{ dk.glove }}" hint-placeholder-val="{{ false }}">
+              <div style="position:absolute; left:18px; top:0; height:24px; display:flex; align-items:center; gap:5px; font-size:11px; font-weight:600; color:var(--t2, #A5B3BD)"><span style="width:14px; height:14px; background:currentColor; -webkit-mask:url({{ ic.hand }}) center / contain no-repeat; mask:url({{ ic.hand }}) center / contain no-repeat"></span>Glove mode</div>
+            </sc-if>
+            <div style="width:36px; height:5px; border-radius:3px; background:var(--grab, rgba(238,244,246,0.3))"></div>
+            <div style="position:absolute; right:18px; top:0; height:24px; display:flex; align-items:center; gap:4px; font-size:12px; font-weight:600; color:var(--t2, #A5B3BD)">Loadout<span style="width:15px; height:15px; background:currentColor; transform:rotate(calc(180deg * var(--sheet, 0))); -webkit-mask:url({{ ic.chevUp }}) center / contain no-repeat; mask:url({{ ic.chevUp }}) center / contain no-repeat"></span></div>
+          </div>
+
+          <div style="flex:1; min-height:0; overflow-y:auto; scrollbar-width:none; padding:4px 4px 8px; opacity:calc(var(--sheet, 0) * 1.4 - 0.25)">
+            <div style="display:flex; align-items:baseline; justify-content:space-between; gap:12px">
+              <div style="font-size:22px; line-height:28px; font-weight:650; letter-spacing:-0.01em">Gear &amp; quiver</div>
+              <div style="font-family:ui-monospace, 'SF Mono', 'Geist Mono', Menlo, monospace; font-size:11px; letter-spacing:.06em; text-transform:uppercase; color:var(--t2, #A5B3BD)">{{ drawer.when }}</div>
+            </div>
+            <div style="font-size:12px; line-height:16px; color:var(--t3, #778692); margin-top:2px">{{ drawer.sub }}</div>
+            <sc-for list="{{ drawer.groups }}" as="gp" hint-placeholder-count="3">
+              <div style="margin-top:18px">
+                <div style="display:flex; align-items:center; gap:8px; font-family:ui-monospace, 'SF Mono', 'Geist Mono', Menlo, monospace; font-size:11px; letter-spacing:.06em; text-transform:uppercase; color:var(--t2, #A5B3BD)"><span style="width:14px; height:14px; background:currentColor; -webkit-mask:url({{ gp.icon }}) center / contain no-repeat; mask:url({{ gp.icon }}) center / contain no-repeat"></span>{{ gp.title }}</div>
+                <div style="display:flex; flex-direction:column; margin-top:6px">
+                  <sc-for list="{{ gp.rows }}" as="lr" hint-placeholder-count="3">
+                    <div style="display:grid; grid-template-columns:64px minmax(0,1fr); gap:12px; padding:9px 0; box-shadow:inset 0 0.5px 0 var(--hair, rgba(238,244,246,0.1))">
+                      <div style="font-family:ui-monospace, 'SF Mono', 'Geist Mono', Menlo, monospace; font-size:10px; letter-spacing:.06em; text-transform:uppercase; color:var(--t3, #778692); padding-top:4px">{{ lr.k }}</div>
+                      <div style="min-width:0"><div style="font-size:16px; line-height:21px; font-weight:600">{{ lr.v }}</div><div style="font-size:12px; line-height:16px; color:var(--t2, #A5B3BD)">{{ lr.why }}</div></div>
+                    </div>
+                  </sc-for>
+                </div>
+              </div>
+            </sc-for>
+          </div>
+
+          <div style="flex:none; height:{{ dk.strip }}px; display:grid; grid-template-columns:{{ strip.cols }}; gap:2px; align-items:stretch">
+            <button onClick="{{ resetNow }}" style="appearance:none; -webkit-appearance:none; border:0; color:inherit; font:inherit; margin:0; padding:0 8px; cursor:pointer; -webkit-tap-highlight-color:transparent; display:flex; flex-direction:column; justify-content:center; align-items:flex-start; border-radius:14px; background:{{ strip.timeBg }}; text-align:left; transition:background .2s">
+              <span style="font-size:{{ dk.val }}px; line-height:20px; font-weight:700; font-variant-numeric:tabular-nums; white-space:nowrap">{{ strip.time }}</span>
+              <span style="font-family:ui-monospace, 'SF Mono', 'Geist Mono', Menlo, monospace; font-size:10px; letter-spacing:.06em; text-transform:uppercase; color:{{ strip.subFg }}">{{ strip.sub }}</span>
+            </button>
+            <sc-for list="{{ strip.cells }}" as="cl" hint-placeholder-count="4">
+              <div style="display:flex; flex-direction:column; justify-content:center; padding:{{ strip.pad }}; min-width:0">
+                <span style="font-family:ui-monospace, 'SF Mono', 'Geist Mono', Menlo, monospace; font-size:9.5px; letter-spacing:.06em; text-transform:uppercase; color:var(--t3, #778692); white-space:nowrap">{{ cl.label }}</span>
+                <span style="font-size:{{ strip.val }}px; letter-spacing:-0.01em; line-height:20px; font-weight:650; color:{{ cl.color }}; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; font-variant-numeric:tabular-nums; transition:color .2s">{{ cl.value }}</span>
+              </div>
+            </sc-for>
+          </div>
+
+          <div onPointerDown="{{ scrubDown }}" onPointerMove="{{ scrubMove }}" onPointerUp="{{ scrubUp }}" onPointerCancel="{{ scrubUp }}" style="flex:none; position:relative; height:{{ dk.viz }}px; touch-action:none; cursor:ew-resize">
+            <div style="position:absolute; left:0; top:0; height:{{ sc.shH }}px; width:{{ sc.shL }}px; border-radius:8px 0 0 8px; background:repeating-linear-gradient(135deg, var(--hair, rgba(238,244,246,0.1)) 0 1px, transparent 1px 5px)"></div>
+            <div style="position:absolute; top:0; height:{{ sc.shH }}px; left:{{ sc.shRx }}px; width:{{ sc.shRw }}px; border-radius:0 8px 8px 0; background:repeating-linear-gradient(135deg, var(--hair, rgba(238,244,246,0.1)) 0 1px, transparent 1px 5px)"></div>
+            <div style="position:absolute; box-sizing:border-box; top:{{ sc.bandTop }}px; height:{{ sc.bandH }}px; left:{{ sc.bandX }}px; width:{{ sc.bandW }}px; display:{{ sc.bandDisp }}; border-radius:6px; background:{{ sc.bandBg }}; border-bottom:2px solid {{ sc.bandFg }}; transition:left .3s, width .3s"></div>
+            <sc-for list="{{ sc.track }}" as="tk" hint-placeholder-count="3">
+              <div style="position:absolute; top:3px; height:10px; border-radius:5px; left:{{ tk.x }}px; width:{{ tk.w }}px; background:{{ tk.bg }}; transition:left .4s, width .4s"></div>
+            </sc-for>
+            <div style="position:absolute; top:16px; width:0; height:{{ sc.nowH }}px; left:{{ sc.nowX }}px; border-left:1px dashed var(--t3, #778692)"></div>
+            <sc-for list="{{ sc.cols }}" as="c" hint-placeholder-count="13">
+              <div style="position:absolute; top:0; bottom:0; width:0; left:{{ c.x }}px">
+                <svg width="12" height="12" style="position:absolute; left:-6px; top:2px; transform:rotate({{ c.rot }}deg); color:{{ c.wcol }}; opacity:{{ c.aop }}"><path d="M6 10.5V2M2.5 5.5L6 2l3.5 3.5" style="fill:none; stroke:currentColor; stroke-width:1.6; stroke-linecap:round; stroke-linejoin:round"></path></svg>
+                <div style="position:absolute; left:-7px; width:14px; bottom:26px; height:{{ c.h }}px; overflow:hidden; border-radius:3px 3px 1px 1px; background:{{ c.col }}; transition:height .3s, background .3s">
+                  <div style="position:absolute; left:0; right:0; top:0; height:{{ c.secH }}px; background:rgba(8,13,20,0.4)"></div>
+                </div>
+                <div style="position:absolute; left:-14px; width:28px; bottom:0; text-align:center; font-family:ui-monospace, 'SF Mono', 'Geist Mono', Menlo, monospace; font-size:10px; line-height:12px; color:{{ c.lcol }}; transition:color .15s">{{ c.label }}</div>
+              </div>
+            </sc-for>
+            <svg width="390" height="{{ sc.vh }}" style="position:absolute; left:0; top:0; pointer-events:none"><path d="{{ sc.area }}" style="fill:var(--fill, rgba(238,244,246,0.05))"></path><path d="{{ sc.line }}" style="fill:none; stroke:var(--t2, #A5B3BD); stroke-width:1.25"></path></svg>
+            <div style="position:absolute; top:0; bottom:0; width:0; pointer-events:none; left:{{ sc.phX }}px; transition:{{ sc.phTrans }}">
+              <div style="position:absolute; left:-1px; top:0; width:2px; height:{{ sc.phH }}px; border-radius:1px; background:var(--t1, #EEF4F6); box-shadow:0 0 10px var(--hair, rgba(238,244,246,0.3))"></div>
+              <div style="position:absolute; left:-8px; top:{{ sc.knobTop }}px; width:16px; height:16px; border-radius:8px; background:var(--t1, #EEF4F6); box-shadow:0 2px 8px rgba(0,0,0,0.4); transform:scale({{ sc.knob }}); transition:transform .18s cubic-bezier(.2,.8,.2,1)">{{ knobPulse }}</div>
+            </div>
+          </div>
+
+          <div style="flex:none; height:0.5px; margin:6px 4px 5.5px; background:var(--hair, rgba(238,244,246,0.1))"></div>
+
+          <div style="flex:none; height:{{ dk.pills }}px; display:grid; grid-template-columns:{{ pills.cols }}; gap:4px">
+            <sc-for list="{{ pills.items }}" as="pl" hint-placeholder-count="3">
+              <button onClick="{{ pl.onClick }}" style="appearance:none; -webkit-appearance:none; border:0; font:inherit; margin:0; padding:0 8px; cursor:pointer; -webkit-tap-highlight-color:transparent; min-width:0; height:100%; border-radius:16px; display:flex; flex-direction:{{ pl.dir }}; align-items:center; justify-content:center; gap:{{ pl.gap }}px; background:{{ pl.bg }}; color:{{ pl.fg }}; font-size:{{ pl.fs }}px; line-height:17px; font-weight:{{ pl.fw }}; transition:background .2s, color .2s">
+                <sc-if value="{{ pl.hasIcon }}" hint-placeholder-val="{{ false }}"><span style="flex:none; width:14px; height:14px; background:currentColor; -webkit-mask:url({{ pl.icon }}) center / contain no-repeat; mask:url({{ pl.icon }}) center / contain no-repeat"></span></sc-if>
+                <sc-if value="{{ pl.hasDot }}" hint-placeholder-val="{{ true }}"><span style="flex:none; width:8px; height:8px; border-radius:4px; background:{{ pl.dot }}; transition:background .3s"></span></sc-if>
+                <span style="white-space:nowrap; overflow:hidden; text-overflow:ellipsis">{{ pl.label }}</span>
+                <sc-if value="{{ pl.hasScore }}" hint-placeholder-val="{{ false }}"><span style="flex:none; font-size:13px; font-weight:700; font-variant-numeric:tabular-nums; color:{{ pl.scoreFg }}">{{ pl.score }}</span></sc-if>
+              </button>
+            </sc-for>
+          </div>
+
+          <div style="flex:none; position:relative; height:{{ dk.modes }}px; margin-top:6px; display:grid; grid-template-columns:repeat(3, minmax(0,1fr)); border-radius:{{ dk.modesR }}px; background:var(--fill, rgba(238,244,246,0.05))">
+            <div style="position:absolute; top:4px; bottom:4px; left:calc({{ modes.idx }} * 33.333% + 4px); width:calc(33.333% - 8px); border-radius:{{ dk.modesR2 }}px; background:var(--accbg, oklch(0.8 0.1 190)); box-shadow:0 4px 14px rgba(0,0,0,0.22); transition:left .38s cubic-bezier(.3,1.3,.4,1)"></div>
+            <sc-for list="{{ modes.items }}" as="md" hint-placeholder-count="3">
+              <button onClick="{{ md.onClick }}" style="appearance:none; -webkit-appearance:none; border:0; background:transparent; font:inherit; margin:0; padding:0; cursor:pointer; -webkit-tap-highlight-color:transparent; position:relative; z-index:1; display:flex; align-items:center; justify-content:center; gap:7px; color:{{ md.fg }}; font-size:{{ dk.modeFs }}px; font-weight:650; transition:color .25s">
+                <span style="flex:none; width:19px; height:19px; background:currentColor; -webkit-mask:url({{ md.icon }}) center / contain no-repeat; mask:url({{ md.icon }}) center / contain no-repeat"></span>{{ md.label }}
+              </button>
+            </sc-for>
+          </div>
+        </div>
+        </sc-if>
+      </div>
+    </x-import>
+  </div>
+</div>
+
+<sc-if value="{{ showBp }}" hint-placeholder-val="{{ true }}">
+<aside data-screen-label="Part 2 · Test script" style="order:3; flex:1 1 280px; min-width:260px; max-width:320px; display:flex; flex-direction:column; gap:26px">
+  <header style="display:flex; flex-direction:column; gap:12px">
+    <div style="font-family:ui-monospace, 'SF Mono', 'Geist Mono', Menlo, monospace; font-size:11px; letter-spacing:.08em; text-transform:uppercase; color:#778692">Part 2 · live prototype</div>
+    <h2 style="margin:0; font-size:24px; line-height:30px; font-weight:650; letter-spacing:-0.02em">Test script</h2>
+    <p style="margin:0; font-size:14px; line-height:21px; color:#A5B3BD; text-wrap:pretty">Monday, Jan 11. Sunday’s cold front left 9″ at Big Bear and a 15 s WNW groundswell at the coast.</p>
+  </header>
+  <ol style="margin:0; padding:0; list-style:none; display:flex; flex-direction:column; gap:14px">
+    <li style="display:grid; grid-template-columns:22px minmax(0,1fr); gap:10px; font-size:14px; line-height:21px; color:#A5B3BD"><span style="font-family:ui-monospace, 'SF Mono', 'Geist Mono', Menlo, monospace; font-size:11px; color:#778692; padding-top:2px">01</span><span><strong style="color:#EEF4F6; font-weight:600">Switch modes</strong> in the dock: Surf · CA Double · Snow. Tokens, cam, lanes and pills morph. The playhead and your spots stay put.</span></li>
+    <li style="display:grid; grid-template-columns:22px minmax(0,1fr); gap:10px; font-size:14px; line-height:21px; color:#A5B3BD"><span style="font-family:ui-monospace, 'SF Mono', 'Geist Mono', Menlo, monospace; font-size:11px; color:#778692; padding-top:2px">02</span><span><strong style="color:#EEF4F6; font-weight:600">Flip Surf first ↔ Snow first.</strong> The score drops because the sea breeze blows out the afternoon surf.</span></li>
+    <li style="display:grid; grid-template-columns:22px minmax(0,1fr); gap:10px; font-size:14px; line-height:21px; color:#A5B3BD"><span style="font-family:ui-monospace, 'SF Mono', 'Geist Mono', Menlo, monospace; font-size:11px; color:#778692; padding-top:2px">03</span><span><strong style="color:#EEF4F6; font-weight:600">Tap Mammoth.</strong> Six hours on US-395 means “Not today”. Tap the break chip to change the origin.</span></li>
+    <li style="display:grid; grid-template-columns:22px minmax(0,1fr); gap:10px; font-size:14px; line-height:21px; color:#A5B3BD"><span style="font-family:ui-monospace, 'SF Mono', 'Geist Mono', Menlo, monospace; font-size:11px; color:#778692; padding-top:2px">04</span><span><strong style="color:#EEF4F6; font-weight:600">Scrub 5 AM → 5 PM.</strong> Energy, tide, drive time if you left then, summit wind and snow surface update together.</span></li>
+    <li style="display:grid; grid-template-columns:22px minmax(0,1fr); gap:10px; font-size:14px; line-height:21px; color:#A5B3BD"><span style="font-family:ui-monospace, 'SF Mono', 'Geist Mono', Menlo, monospace; font-size:11px; color:#778692; padding-top:2px">05</span><span><strong style="color:#EEF4F6; font-weight:600">Toggle the cam:</strong> split, beach or mountain. Scroll, or pull up the gear drawer, to dock it.</span></li>
+    <li style="display:grid; grid-template-columns:22px minmax(0,1fr); gap:10px; font-size:14px; line-height:21px; color:#A5B3BD"><span style="font-family:ui-monospace, 'SF Mono', 'Geist Mono', Menlo, monospace; font-size:11px; color:#778692; padding-top:2px">06</span><span><strong style="color:#EEF4F6; font-weight:600">Snow mode</strong> switches on glove-size targets automatically. Tweaks: clock (dawn or midday), offline, glove.</span></li>
+  </ol>
+  <p style="margin:0; font-size:13px; line-height:19px; color:#778692; text-wrap:pretty">The cams are placeholders. Drop a still onto each feed; every spot keeps its own.</p>
+  <section style="display:flex; flex-direction:column; gap:10px">
+    <div style="font-family:ui-monospace, 'SF Mono', 'Geist Mono', Menlo, monospace; font-size:11px; letter-spacing:.08em; text-transform:uppercase; color:#778692">Tokens</div>
+    <div style="display:grid; grid-template-columns:72px minmax(0,1fr); gap:6px 12px; font-size:13px; line-height:18px">
+      <span style="color:#778692">Surf</span><span>#080D14 slate · cyan accent</span>
+      <span style="color:#778692">Snow</span><span>#E6ECF1 ice · alpine blue</span>
+      <span style="color:#778692">CA Double</span><span>Teal → frost horizon</span>
+      <span style="color:#778692">Targets</span><span>48 pt · 56–64 pt in glove mode</span>
+      <span style="color:#778692">Grid</span><span>4 / 8 pt</span>
+    </div>
+  </section>
+</aside>
+</sc-if>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;clock&quot;: {&quot;editor&quot;: &quot;enum&quot;, &quot;options&quot;: [&quot;dawn&quot;, &quot;midday&quot;], &quot;default&quot;: &quot;dawn&quot;, &quot;tsType&quot;: &quot;'dawn' | 'midday'&quot;, &quot;section&quot;: &quot;Scenario&quot;}, &quot;offline&quot;: {&quot;editor&quot;: &quot;boolean&quot;, &quot;default&quot;: false, &quot;tsType&quot;: &quot;boolean&quot;, &quot;section&quot;: &quot;Scenario&quot;}, &quot;glove&quot;: {&quot;editor&quot;: &quot;enum&quot;, &quot;options&quot;: [&quot;auto&quot;, &quot;on&quot;, &quot;off&quot;], &quot;default&quot;: &quot;auto&quot;, &quot;tsType&quot;: &quot;'auto' | 'on' | 'off'&quot;, &quot;section&quot;: &quot;Ergonomics&quot;}, &quot;showBlueprint&quot;: {&quot;editor&quot;: &quot;boolean&quot;, &quot;default&quot;: true, &quot;tsType&quot;: &quot;boolean&quot;, &quot;section&quot;: &quot;Presentation&quot;}}">
+class Component extends DCLogic {
+  state = { mode: 'double', breakId: 'swamis', mtnId: 'bear', order: 'surf', camView: 'split', t: 6.6667, dragging: false, bump: 0, connecting: '', docked: false, sheetOpen: false, pinned: false, sec: 0, vw: 1440, vh: 900, libs: false };
+  appRef = React.createRef();
+  surfRef = React.createRef();
+  dblRef = React.createRef();
+  snowRef = React.createRef();
+  anim = { sheet: { v: 0, vel: 0, to: 0 }, pin: { v: 0, vel: 0, to: 0 } };
+  scrollP = 0;
+  _exp = 508;
+
+  clamp(x, a, b) { return Math.max(a, Math.min(b, x)); }
+
+  renderVals() {
+    const st = this.state, showBp = this.props.showBlueprint !== false;
+    const wide = showBp && st.vw >= 1280, side = st.vw >= 900;
+    const s = this.clamp(side ? (st.vh - 48) / 950 : (st.vw - 24) / 448, 0.5, 1);
+    this._scale = s;
+    const base = {
+      showBp, lay: { o1: wide ? 1 : 2, o2: wide ? 2 : 1, pos: wide ? 'sticky' : 'relative', s: s.toFixed(4), pw: Math.round(448 * s), ph: Math.round(950 * s) },
+      appRef: this.appRef, surfRef: this.surfRef, dblRef: this.dblRef, snowRef: this.snowRef, onScroll: this.onScroll,
+      scrubDown: this.scrubDown, scrubMove: this.scrubMove, scrubUp: this.scrubUp, sheetDown: this.sheetDown, sheetMove: this.sheetMove, sheetUp: this.sheetUp,
+      resetNow: this.resetNow, miniTap: this.miniTap, togglePin: this.togglePin, openDrawer: this.openDrawer,
+      setOrderSurf: () => this.setState({ order: 'surf' }), setOrderSnow: () => this.setState({ order: 'snow' }),
+      statusTime: this.props.clock === 'midday' ? '1:15' : '6:40',
+    };
+    if (!window.LineupView || !window.LineupEngine) return Object.assign(base, { ready: false });
+    const v = window.LineupView(st, this.props, this);
+    this._exp = v.exp; this._theme = v.theme; this._nowT = v.nowT;
+    const off = !!this.props.offline;
+    return Object.assign(base, v, {
+      ready: true,
+      knobPulse: st.bump > 0 ? React.createElement('span', { key: 'k' + st.bump, style: { position: 'absolute', inset: 0, borderRadius: '50%', border: '2px solid currentColor', color: 'var(--t1, #EEF4F6)', animation: 'detent 340ms ease-out forwards', pointerEvents: 'none' } }) : null,
+      liveDot: React.createElement('span', { style: { display: 'block', width: 7, height: 7, borderRadius: 4, background: off ? '#778692' : '#EEF3F6', animation: off ? 'none' : 'livepulse 2s ease-out infinite' } }),
+      sweep: st.connecting ? React.createElement('div', { key: 'sw', style: { position: 'absolute', top: 0, bottom: 0, left: 0, width: '30%', background: 'linear-gradient(90deg, rgba(238,243,246,0), #EEF3F6, rgba(238,243,246,0))', animation: 'sweep 0.9s ease-in-out infinite' } }) : null,
+    });
+  }
+
+  activeRef() { const m = this.state.mode; return m === 'surf' ? this.surfRef : m === 'snow' ? this.snowRef : this.dblRef; }
+  onScroll = e => { const el = e.currentTarget; if (el !== this.activeRef().current) return; this.scrollP = this.clamp(el.scrollTop / 124, 0, 1); this.apply(); };
+  scrubDown = e => { const el = e.currentTarget; try { el.setPointerCapture(e.pointerId); } catch (_) {} this._scrubEl = el; this._scrubbing = true; this._lastT = this.state.t; this.setState({ dragging: true }); this.scrubTo(e.clientX); };
+  scrubMove = e => { if (this._scrubbing) this.scrubTo(e.clientX); };
+  scrubUp = () => { if (!this._scrubbing) return; this._scrubbing = false; this.setState({ dragging: false }); };
+  scrubTo(x) {
+    const r = this._scrubEl.getBoundingClientRect(), k = r.width / 390;
+    const f = this.clamp((x - r.left - 10 * k) / (370 * k), 0, 1), t = 5 + Math.round(f * 48) / 4, cur = this._lastT;
+    if (Math.abs(t - cur) < 0.001) return;
+    const cross = Math.floor(t + 1e-6) !== Math.floor(cur + 1e-6);
+    this._lastT = t;
+    this.setState(s => ({ t, bump: cross ? s.bump + 1 : s.bump }));
+    if (cross && navigator.vibrate) { try { navigator.vibrate(6); } catch (_) {} }
+  }
+  sheetDown = e => { const el = e.currentTarget; try { el.setPointerCapture(e.pointerId); } catch (_) {} const a = this.anim.sheet; a.drag = true; a.vel = 0; this._sd = { y: e.clientY, v: a.v, lastY: e.clientY, lastT: performance.now(), vel: 0, moved: false }; };
+  sheetMove = e => {
+    const d = this._sd; if (!d) return;
+    const now = performance.now(), dy = e.clientY - d.y, s = this._scale || 1;
+    if (Math.abs(dy) > 4) d.moved = true;
+    let v = d.v - dy / s / this._exp;
+    if (v < 0) v *= 0.3; if (v > 1) v = 1 + (v - 1) * 0.3;
+    this.anim.sheet.v = v;
+    const dt = now - d.lastT; if (dt > 0) d.vel = 0.75 * ((e.clientY - d.lastY) / dt) + 0.25 * d.vel;
+    d.lastY = e.clientY; d.lastT = now;
+    this.apply();
+  };
+  sheetUp = () => {
+    const d = this._sd; if (!d) return;
+    this._sd = null;
+    const a = this.anim.sheet, s = this._scale || 1;
+    a.drag = false;
+    if (!d.moved) a.to = a.to > 0.5 ? 0 : 1;
+    else { const vp = -(d.vel / s) / this._exp * 1000; a.to = a.v + vp * 0.16 > 0.5 ? 1 : 0; a.vel = this.clamp(vp, -8, 8); }
+    this.setState({ sheetOpen: a.to === 1 });
+    this.kick();
+  };
+  openDrawer = () => { this.anim.sheet.to = 1; this.setState({ sheetOpen: true }); this.kick(); };
+  kick() { if (this._raf) return; this._last = performance.now(); this._raf = requestAnimationFrame(this.step); }
+  step = now => {
+    const dt = Math.min(0.032, Math.max(0.001, (now - this._last) / 1000));
+    this._last = now;
+    let active = false;
+    for (const key in this.anim) {
+      const a = this.anim[key];
+      if (a.drag) continue;
+      if (this.reduced) { a.v = a.to; a.vel = 0; continue; }
+      a.vel += (-320 * (a.v - a.to) - 30 * a.vel) * dt;
+      a.v += a.vel * dt;
+      if (Math.abs(a.v - a.to) > 0.0008 || Math.abs(a.vel) > 0.004) active = true; else { a.v = a.to; a.vel = 0; }
+    }
+    this.apply();
+    this._raf = active ? requestAnimationFrame(this.step) : null;
+  };
+  apply() {
+    const el = this.appRef.current; if (!el) return;
+    const a = this.anim, sheet = a.sheet.v, cam = this.clamp(Math.max(this.scrollP, sheet, a.pin.v), 0, 1);
+    el.style.setProperty('--cam', cam.toFixed(4));
+    el.style.setProperty('--sheet', this.clamp(sheet, -0.06, 1.06).toFixed(4));
+    const th = this._theme;
+    if (th && (this._thMode !== this.state.mode || !el.style.getPropertyValue('--bg'))) { this._thMode = this.state.mode; for (const k in th) el.style.setProperty('--' + k, th[k]); }
+    const docked = cam > 0.5;
+    if (docked !== this.state.docked) this.setState({ docked });
+  }
+  connect(label) {
+    const conn = this.props.offline ? '' : label;
+    this.setState({ connecting: conn });
+    clearTimeout(this._ct);
+    if (conn) this._ct = setTimeout(() => this.setState({ connecting: '' }), 800);
+  }
+  setMode(m) { if (m !== this.state.mode) this.setState({ mode: m }); }
+  selectBreak(id) { if (id === this.state.breakId) return; this.setState({ breakId: id }); this.connect(window.LineupEngine.D.breaks.find(b => b.id === id).cam); }
+  selectMtn(id) { if (id === this.state.mtnId) return; this.setState({ mtnId: id }); this.connect(window.LineupEngine.D.mtns.find(m => m.id === id).cam); }
+  cycleBreak() { const B = window.LineupEngine.D.breaks, i = B.findIndex(b => b.id === this.state.breakId); this.selectBreak(B[(i + 1) % B.length].id); }
+  setCamView(v) { this.setState({ camView: v }); }
+  jump(t) { this._lastT = t; this.setState({ t }); }
+  resetNow = () => { this.jump(this._nowT != null ? this._nowT : 6.6667); };
+  miniTap = () => {
+    if (!this.state.docked) return;
+    const a = this.anim; a.pin.to = 0; a.sheet.to = 0;
+    this.setState({ pinned: false, sheetOpen: false });
+    const el = this.activeRef().current; if (el) el.scrollTo({ top: 0, behavior: 'smooth' });
+    this.kick();
+  };
+  togglePin = e => { if (e && e.stopPropagation) e.stopPropagation(); const p = !this.state.pinned; this.anim.pin.to = p ? 1 : 0; this.setState({ pinned: p }); this.kick(); };
+
+  componentDidMount() {
+    this.onResize = () => this.setState({ vw: window.innerWidth, vh: window.innerHeight });
+    this.onResize();
+    window.addEventListener('resize', this.onResize);
+    this.timer = setInterval(() => this.setState(s => ({ sec: s.sec + 1 })), 1000);
+    this.reduced = !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+    this._mt = setInterval(() => {
+      if (window.LineupView && !this.state.libs) { this.setState({ libs: true }); this.jump(this.props.clock === 'midday' ? 13.25 : 6.6667); }
+      if (this.appRef.current && this._theme) { clearInterval(this._mt); this.apply(); }
+    }, 100);
+  }
+  componentDidUpdate(pp) {
+    if (pp.clock !== this.props.clock) this.jump(this.props.clock === 'midday' ? 13.25 : 6.6667);
+    if (this._lastMode !== this.state.mode) { this._lastMode = this.state.mode; const el = this.activeRef().current; this.scrollP = el ? this.clamp(el.scrollTop / 124, 0, 1) : 0; }
+    this.apply();
+  }
+  componentWillUnmount() { window.removeEventListener('resize', this.onResize); clearInterval(this.timer); clearInterval(this._mt); clearTimeout(this._ct); if (this._raf) cancelAnimationFrame(this._raf); }
+}
+</script>
+</body>
+</html>

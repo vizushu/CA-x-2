@@ -1,0 +1,949 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0A0E14">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,300..600,0..1,0&display=block">
+<script src="./image-slot.js"></script>
+<style>
+html,body{margin:0;padding:0;background:#05070A;color:#F2F4F7;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
+a{color:#F2F4F7;text-decoration-color:rgba(242,244,247,.35)}a:hover{color:#FFFFFF;text-decoration-color:#FFFFFF}
+@keyframes livepulse{0%{box-shadow:0 0 0 0 rgba(242,244,247,.55)}70%{box-shadow:0 0 0 7px rgba(242,244,247,0)}100%{box-shadow:0 0 0 0 rgba(242,244,247,0)}}
+@keyframes detent{0%{transform:scale(.8);opacity:.9}100%{transform:scale(2.4);opacity:0}}
+@keyframes sweep{0%{transform:translateX(-100%)}100%{transform:translateX(340%)}}
+</style>
+</helmet>
+<div style="min-height:100vh; box-sizing:border-box; padding:40px 32px 72px; background:#05070A; color:#F2F4F7; font-family:-apple-system, BlinkMacSystemFont, 'SF Pro Text', Geist, system-ui, sans-serif; display:flex; flex-wrap:wrap; justify-content:center; align-items:flex-start; gap:56px">
+
+<sc-if value="{{ showBp }}" hint-placeholder-val="{{ true }}">
+<aside data-screen-label="Part 1 · Blueprint" style="order:{{ lay.o1 }}; flex:1 1 340px; min-width:290px; max-width:400px; display:flex; flex-direction:column; gap:32px">
+  <header style="display:flex; flex-direction:column; gap:12px">
+    <div style="font-family:'SF Mono', ui-monospace, 'Geist Mono', Menlo, monospace; font-size:11px; letter-spacing:.08em; text-transform:uppercase; color:#76808D">Lineup · surf forecast PWA · concept</div>
+    <h1 style="margin:0; font-size:32px; line-height:36px; font-weight:650; letter-spacing:-0.025em">Part 1 — Director’s blueprint</h1>
+    <p style="margin:0; font-size:15px; line-height:22px; color:#A3ACB9; text-wrap:pretty">Worth paddling out? When’s the window? Show me, and tell me why — in three seconds, with one cold thumb.</p>
+  </header>
+
+  <div style="display:flex; flex-direction:column; gap:8px; font-size:13px; line-height:18px">
+    <div style="display:grid; grid-template-columns:30px minmax(0,1fr); gap:10px; align-items:baseline"><span style="font-family:'SF Mono', ui-monospace, 'Geist Mono', Menlo, monospace; font-size:10px; font-weight:600; text-align:center; padding:2px 0; border-radius:5px; background:rgba(242,244,247,0.08)">LW</span><span><span style="color:#F2F4F7">Luke Wroblewski</span><span style="color:#76808D"> — thumb zone, progressive disclosure</span></span></div>
+    <div style="display:grid; grid-template-columns:30px minmax(0,1fr); gap:10px; align-items:baseline"><span style="font-family:'SF Mono', ui-monospace, 'Geist Mono', Menlo, monospace; font-size:10px; font-weight:600; text-align:center; padding:2px 0; border-radius:5px; background:rgba(242,244,247,0.08)">DN</span><span><span style="color:#F2F4F7">Don Norman</span><span style="color:#76808D"> — natural mapping, gulf of evaluation</span></span></div>
+    <div style="display:grid; grid-template-columns:30px minmax(0,1fr); gap:10px; align-items:baseline"><span style="font-family:'SF Mono', ui-monospace, 'Geist Mono', Menlo, monospace; font-size:10px; font-weight:600; text-align:center; padding:2px 0; border-radius:5px; background:rgba(242,244,247,0.08)">OT</span><span><span style="color:#F2F4F7">Olivia Truong</span><span style="color:#76808D"> — timeline synthesis, actionable states</span></span></div>
+    <div style="display:grid; grid-template-columns:30px minmax(0,1fr); gap:10px; align-items:baseline"><span style="font-family:'SF Mono', ui-monospace, 'Geist Mono', Menlo, monospace; font-size:10px; font-weight:600; text-align:center; padding:2px 0; border-radius:5px; background:rgba(242,244,247,0.08)">JS</span><span><span style="color:#F2F4F7">Jesse Showalter</span><span style="color:#76808D"> — atomic system, semantic color</span></span></div>
+    <div style="display:grid; grid-template-columns:30px minmax(0,1fr); gap:10px; align-items:baseline"><span style="font-family:'SF Mono', ui-monospace, 'Geist Mono', Menlo, monospace; font-size:10px; font-weight:600; text-align:center; padding:2px 0; border-radius:5px; background:rgba(242,244,247,0.08)">EC</span><span><span style="color:#F2F4F7">Ed Chao</span><span style="color:#76808D"> — HIG craft, glass, springs</span></span></div>
+  </div>
+
+  <section style="display:flex; flex-direction:column; gap:14px">
+    <div style="display:flex; align-items:baseline; gap:10px"><span style="font-family:'SF Mono', ui-monospace, 'Geist Mono', Menlo, monospace; font-size:11px; color:#76808D">01</span><h2 style="margin:0; font-size:18px; line-height:24px; font-weight:600; letter-spacing:-0.01em">Information architecture &amp; flow</h2></div>
+    <div style="display:grid; grid-template-columns:minmax(0,1fr) auto; gap:12px; align-items:start"><p style="margin:0; font-size:14px; line-height:21px; color:#A3ACB9; text-wrap:pretty"><strong style="color:#F2F4F7; font-weight:600">One screen, three lenses.</strong> The spot is global context, picked in the dock. Cams, Forecast and Map are lenses on that spot at the scrubbed moment. No hamburger, no nested menus, no settings in the path.</p><span style="font-family:'SF Mono', ui-monospace, 'Geist Mono', Menlo, monospace; font-size:10px; color:#76808D; padding-top:4px">LW</span></div>
+    <div style="display:grid; grid-template-columns:minmax(0,1fr) auto; gap:12px; align-items:start"><p style="margin:0; font-size:14px; line-height:21px; color:#A3ACB9; text-wrap:pretty"><strong style="color:#F2F4F7; font-weight:600">Content top, controls bottom.</strong> Cam → verdict → why → tide sit in the reading zone. Scrubber, spots and tabs share one glass deck inside the thumb arc. Every target is at least 44 pt.</p><span style="font-family:'SF Mono', ui-monospace, 'Geist Mono', Menlo, monospace; font-size:10px; color:#76808D; padding-top:4px">LW·JS</span></div>
+    <div style="display:grid; grid-template-columns:minmax(0,1fr) auto; gap:12px; align-items:start"><p style="margin:0; font-size:14px; line-height:21px; color:#A3ACB9; text-wrap:pretty"><strong style="color:#F2F4F7; font-weight:600">Zero-tap verdict.</strong> Launch lands on the last spot, live, already rated. Switch spot: 1 tap. Later today: 1 drag. Deep data: pull up. Best window: tap to jump.</p><span style="font-family:'SF Mono', ui-monospace, 'Geist Mono', Menlo, monospace; font-size:10px; color:#76808D; padding-top:4px">OT</span></div>
+    <div style="display:grid; grid-template-columns:minmax(0,1fr) auto; gap:12px; align-items:start"><p style="margin:0; font-size:14px; line-height:21px; color:#A3ACB9; text-wrap:pretty"><strong style="color:#F2F4F7; font-weight:600">Depth by gesture, not pages.</strong> Scrolling docks the cam into a mini-bar. Pulling the deck up reveals swell trains and buoy telemetry and docks it too, so the cam is never lost and never in the way.</p><span style="font-family:'SF Mono', ui-monospace, 'Geist Mono', Menlo, monospace; font-size:10px; color:#76808D; padding-top:4px">EC</span></div>
+  </section>
+
+  <section style="display:flex; flex-direction:column; gap:14px">
+    <div style="display:flex; align-items:baseline; gap:10px"><span style="font-family:'SF Mono', ui-monospace, 'Geist Mono', Menlo, monospace; font-size:11px; color:#76808D">02</span><h2 style="margin:0; font-size:18px; line-height:24px; font-weight:600; letter-spacing:-0.01em">The unified condition scrubber</h2></div>
+    <div style="display:grid; grid-template-columns:minmax(0,1fr) auto; gap:12px; align-items:start"><p style="margin:0; font-size:14px; line-height:21px; color:#A3ACB9; text-wrap:pretty"><strong style="color:#F2F4F7; font-weight:600">One time axis, four lanes,</strong> read straight down the playhead: wind arrows drawn in the break’s own frame (↑ blowing out to sea = offshore), surf bars (height = face height, solid part = primary-swell share of the kJ), the tide curve, and hatched darkness before first and after last light.</p><span style="font-family:'SF Mono', ui-monospace, 'Geist Mono', Menlo, monospace; font-size:10px; color:#76808D; padding-top:4px">OT·DN</span></div>
+    <div style="display:flex; flex-direction:column; gap:10px">
+      <p style="margin:0; font-size:14px; line-height:21px; color:#A3ACB9; text-wrap:pretty"><strong style="color:#F2F4F7; font-weight:600">Color means quality, nothing else.</strong> The tinted band behind the bars is the best window.</p>
+      <div style="display:flex; flex-wrap:wrap; gap:8px 16px; font-size:13px">
+        <span style="display:inline-flex; align-items:center; gap:6px"><span style="width:8px; height:8px; border-radius:4px; background:oklch(0.8 0.15 160)"></span>Good</span>
+        <span style="display:inline-flex; align-items:center; gap:6px"><span style="width:8px; height:8px; border-radius:4px; background:oklch(0.84 0.14 80)"></span>Fair</span>
+        <span style="display:inline-flex; align-items:center; gap:6px"><span style="width:8px; height:8px; border-radius:4px; background:oklch(0.74 0.15 30)"></span>Poor</span>
+        <span style="display:inline-flex; align-items:center; gap:6px"><span style="width:8px; height:8px; border-radius:4px; background:oklch(0.7 0.02 250)"></span>Flat / dark</span>
+      </div>
+    </div>
+    <div style="display:grid; grid-template-columns:minmax(0,1fr) auto; gap:12px; align-items:start"><p style="margin:0; font-size:14px; line-height:21px; color:#A3ACB9; text-wrap:pretty"><strong style="color:#F2F4F7; font-weight:600">Scrubbing is global time.</strong> The verdict, the why-rows, the tide marker, the swell trains, even the dots on every favorite in the dock re-rate for that 15-minute slot. Hours click like detents: a visual tick, plus vibration where the browser supports it.</p><span style="font-family:'SF Mono', ui-monospace, 'Geist Mono', Menlo, monospace; font-size:10px; color:#76808D; padding-top:4px">LW·EC</span></div>
+    <div style="display:grid; grid-template-columns:minmax(0,1fr) auto; gap:12px; align-items:start"><p style="margin:0; font-size:14px; line-height:21px; color:#A3ACB9; text-wrap:pretty"><strong style="color:#F2F4F7; font-weight:600">Ratings are computed, not editorial:</strong> face height × wind relative to that beach’s orientation × the spot’s tide preference. That’s why “Why” can always show its work.</p><span style="font-family:'SF Mono', ui-monospace, 'Geist Mono', Menlo, monospace; font-size:10px; color:#76808D; padding-top:4px">DN</span></div>
+  </section>
+
+  <section style="display:flex; flex-direction:column; gap:14px">
+    <div style="display:flex; align-items:baseline; gap:10px"><span style="font-family:'SF Mono', ui-monospace, 'Geist Mono', Menlo, monospace; font-size:11px; color:#76808D">03</span><h2 style="margin:0; font-size:18px; line-height:24px; font-weight:600; letter-spacing:-0.01em">PWA technical UX</h2></div>
+    <div style="display:grid; grid-template-columns:minmax(0,1fr) auto; gap:12px; align-items:start"><p style="margin:0; font-size:14px; line-height:21px; color:#A3ACB9; text-wrap:pretty"><strong style="color:#F2F4F7; font-weight:600">Shell first, network last.</strong> A service worker precaches the app shell. Forecast JSON is stale-while-revalidate, and 7 days × every favorite is mirrored to IndexedDB. One bar on a cliff still gets a full, scrubbable forecast. Only the cam needs the network.</p><span style="font-family:'SF Mono', ui-monospace, 'Geist Mono', Menlo, monospace; font-size:10px; color:#76808D; padding-top:4px">LW</span></div>
+    <div style="display:grid; grid-template-columns:minmax(0,1fr) auto; gap:12px; align-items:start"><p style="margin:0; font-size:14px; line-height:21px; color:#A3ACB9; text-wrap:pretty"><strong style="color:#F2F4F7; font-weight:600">Edge to edge, safely.</strong> Standalone display with viewport-fit=cover: the cam bleeds under the status bar behind a scrim, and the deck pads with env(safe-area-inset-bottom). theme-color #0A0E14 keeps OLED pixels dark.</p><span style="font-family:'SF Mono', ui-monospace, 'Geist Mono', Menlo, monospace; font-size:10px; color:#76808D; padding-top:4px">EC</span></div>
+    <div style="display:grid; grid-template-columns:minmax(0,1fr) auto; gap:12px; align-items:start"><p style="margin:0; font-size:14px; line-height:21px; color:#A3ACB9; text-wrap:pretty"><strong style="color:#F2F4F7; font-weight:600">One progress value docks the cam,</strong> driven by scroll, sheet drag, tab change or the dock button. Compositor-friendly properties only, no layout thrash. Leaving the app hands the stream to system PiP (requestPictureInPicture).</p><span style="font-family:'SF Mono', ui-monospace, 'Geist Mono', Menlo, monospace; font-size:10px; color:#76808D; padding-top:4px">EC</span></div>
+    <div style="display:grid; grid-template-columns:minmax(0,1fr) auto; gap:12px; align-items:start"><p style="margin:0; font-size:14px; line-height:21px; color:#A3ACB9; text-wrap:pretty"><strong style="color:#F2F4F7; font-weight:600">Springs, not easing curves.</strong> The deck tracks your finger and releases with your velocity. prefers-reduced-motion snaps instead.</p><span style="font-family:'SF Mono', ui-monospace, 'Geist Mono', Menlo, monospace; font-size:10px; color:#76808D; padding-top:4px">EC·JS</span></div>
+  </section>
+</aside>
+</sc-if>
+
+<div style="order:{{ lay.o2 }}; flex:none; position:{{ lay.pos }}; top:24px; width:{{ lay.pw }}px; height:{{ lay.ph }}px">
+  <div style="width:448px; height:950px; box-sizing:border-box; padding:9px; border-radius:57px; background:#13171E; box-shadow:inset 0 0 0 1px rgba(242,244,247,0.09), 0 0 0 1px #000000, 0 50px 120px -30px rgba(0,0,0,0.95); transform:scale({{ lay.s }}); transform-origin:0 0">
+    <x-import component-from-global-scope="IOSDevice" from="./ios-frame.jsx" dark="{{ true }}" width="{{ 430 }}" height="{{ 932 }}" time="{{ statusTime }}" hint-size="430px,932px">
+      <div ref="{{ appRef }}" style="position:relative; width:430px; height:932px; overflow:hidden; background:#0A0E14; color:#F2F4F7; z-index:0; isolation:isolate; font-family:-apple-system, BlinkMacSystemFont, 'SF Pro Text', Geist, system-ui, sans-serif; -webkit-user-select:none; user-select:none">
+
+        <div data-screen-label="Cams" ref="{{ camsRef }}" onScroll="{{ onCamsScroll }}" style="position:absolute; inset:0; overflow-y:auto; overscroll-behavior:contain; scrollbar-width:none; box-sizing:border-box; padding:258px 20px 304px; opacity:{{ tv.cams.op }}; visibility:{{ tv.cams.vis }}; transition:opacity .25s ease, visibility .25s">
+          <sc-if value="{{ offline }}" hint-placeholder-val="{{ false }}">
+            <div style="display:flex; align-items:center; gap:10px; min-height:40px; padding:0 14px; margin-bottom:18px; border-radius:20px; background:rgba(242,244,247,0.07); font-size:13px; line-height:18px">
+              <span style="font-family:'Material Symbols Rounded'; font-size:18px; line-height:1; font-feature-settings:'liga'; color:#A3ACB9">cloud_off</span>
+              <span>Offline · forecast from {{ updatedAt }}. Scrubbing still works.</span>
+            </div>
+          </sc-if>
+
+          <div style="display:flex; align-items:flex-start; justify-content:space-between; gap:12px">
+            <div style="min-width:0">
+              <div style="font-family:'SF Mono', ui-monospace, 'Geist Mono', Menlo, monospace; font-size:11px; line-height:14px; letter-spacing:.06em; text-transform:uppercase; color:#A3ACB9; white-space:nowrap; overflow:hidden; text-overflow:ellipsis">{{ hero.eyebrow }}</div>
+              <div style="font-size:28px; line-height:34px; font-weight:650; letter-spacing:-0.02em; margin-top:4px">{{ spot.name }}</div>
+              <div style="font-size:13px; line-height:18px; color:#76808D">{{ spot.area }} · {{ spot.facing }}</div>
+            </div>
+            <div style="flex:none; margin-top:20px; height:32px; padding:0 13px 0 11px; border-radius:16px; display:flex; align-items:center; gap:7px; background:{{ hero.pillBg }}; color:{{ hero.pillFg }}; font-size:13px; font-weight:700; letter-spacing:.07em; text-transform:uppercase; transition:background .25s, color .25s">
+              <span style="width:8px; height:8px; border-radius:4px; background:{{ hero.pillFg }}; transition:background .25s"></span>{{ hero.pill }}
+            </div>
+          </div>
+
+          <div style="display:flex; align-items:flex-end; justify-content:space-between; margin-top:10px">
+            <div style="display:flex; align-items:baseline; gap:6px">
+              <span style="font-size:72px; line-height:76px; font-weight:600; letter-spacing:-0.045em; font-variant-numeric:tabular-nums">{{ hero.range }}</span>
+              <span style="font-size:24px; font-weight:500; color:#A3ACB9">ft</span>
+            </div>
+            <div style="text-align:right; padding-bottom:10px">
+              <div style="font-size:22px; line-height:26px; font-weight:600; font-variant-numeric:tabular-nums">{{ hero.kj }}<span style="font-size:13px; font-weight:500; color:#A3ACB9; margin-left:3px">kJ</span></div>
+              <div style="font-family:'SF Mono', ui-monospace, 'Geist Mono', Menlo, monospace; font-size:10px; letter-spacing:.06em; text-transform:uppercase; color:#76808D; margin-top:2px">Swell energy</div>
+            </div>
+          </div>
+          <div style="font-size:15px; line-height:20px; color:#A3ACB9">{{ hero.words }}</div>
+
+          <div style="display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:12px; margin-top:20px">
+            <div style="display:flex; gap:12px; align-items:center; min-width:0">
+              <div style="position:relative; flex:none; width:44px; height:44px; border-radius:14px; background:rgba(242,244,247,0.05); overflow:hidden">
+                <div style="position:absolute; left:0; right:0; bottom:0; height:11px; background:rgba(242,244,247,0.06); border-top:1px dashed rgba(242,244,247,0.28)"></div>
+                <svg width="24" height="24" style="position:absolute; left:10px; top:7px; transform:rotate({{ hero.windRot }}deg); color:{{ hero.windColor }}; transition:transform .35s cubic-bezier(.2,.8,.2,1), color .25s"><path d="M12 20V5M6.5 10.5L12 5l5.5 5.5" style="fill:none; stroke:currentColor; stroke-width:2.2; stroke-linecap:round; stroke-linejoin:round"></path></svg>
+              </div>
+              <div style="min-width:0">
+                <div style="font-size:16px; line-height:21px; font-weight:600; color:{{ hero.windColor }}; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; transition:color .25s">{{ hero.windCat }}</div>
+                <div style="font-size:12px; line-height:16px; color:#A3ACB9; white-space:nowrap; overflow:hidden; text-overflow:ellipsis">{{ hero.windDetail }}</div>
+              </div>
+            </div>
+            <div style="display:flex; gap:10px; align-items:center; min-width:0">
+              <div style="flex:none; width:56px; height:44px; border-radius:14px; background:rgba(242,244,247,0.05)">
+                <svg width="56" height="44" style="display:block"><path d="{{ hero.sArea }}" style="fill:rgba(242,244,247,0.08)"></path><path d="{{ hero.sLine }}" style="fill:none; stroke:rgba(242,244,247,0.55); stroke-width:1.25"></path><circle cx="{{ hero.sdx }}" cy="{{ hero.sdy }}" r="3" style="fill:#F2F4F7"></circle></svg>
+              </div>
+              <div style="min-width:0">
+                <div style="font-size:16px; line-height:21px; font-weight:600; white-space:nowrap">{{ hero.tideH }} <span style="color:{{ hero.tideCol }}; transition:color .25s">{{ hero.tideTrend }}</span></div>
+                <div style="font-size:12px; line-height:16px; color:#A3ACB9; white-space:nowrap; overflow:hidden; text-overflow:ellipsis">{{ hero.tideDetail }}</div>
+              </div>
+            </div>
+          </div>
+
+          <button onClick="{{ win.onClick }}" style="appearance:none; -webkit-appearance:none; border:0; color:inherit; font:inherit; margin:20px 0 0; cursor:pointer; -webkit-tap-highlight-color:transparent; width:100%; display:flex; align-items:center; gap:12px; text-align:left; padding:14px 14px 14px 16px; border-radius:18px; background:{{ win.bg }}; transition:background .3s">
+            <div style="flex:1; min-width:0">
+              <div style="font-family:'SF Mono', ui-monospace, 'Geist Mono', Menlo, monospace; font-size:11px; line-height:14px; letter-spacing:.06em; text-transform:uppercase; color:{{ win.fg }}">{{ win.caption }}</div>
+              <div style="font-size:20px; line-height:26px; font-weight:650; letter-spacing:-0.01em; margin-top:3px; font-variant-numeric:tabular-nums">{{ win.range }}</div>
+              <div style="font-size:13px; line-height:18px; color:#A3ACB9; margin-top:2px; text-wrap:pretty">{{ win.detail }}</div>
+            </div>
+            <div style="flex:none; display:flex; flex-direction:column; align-items:flex-end; gap:8px">
+              <span style="font-size:12px; line-height:16px; font-weight:600; color:{{ win.fg }}; white-space:nowrap">{{ win.status }}</span>
+              <sc-if value="{{ win.showCta }}" hint-placeholder-val="{{ true }}">
+                <span style="height:32px; padding:0 8px 0 14px; border-radius:16px; background:rgba(242,244,247,0.10); display:flex; align-items:center; gap:2px; font-size:13px; font-weight:600">{{ win.cta }}<span style="font-family:'Material Symbols Rounded'; font-size:18px; line-height:1; font-feature-settings:'liga'">chevron_right</span></span>
+              </sc-if>
+            </div>
+          </button>
+
+          <div style="margin-top:36px">
+            <div style="display:flex; align-items:baseline; justify-content:space-between; gap:12px">
+              <div style="font-size:20px; line-height:26px; font-weight:650; letter-spacing:-0.01em">{{ why.lead }} <span style="color:{{ why.color }}; transition:color .25s">{{ why.word }}</span></div>
+              <div style="font-size:12px; color:#76808D; white-space:nowrap">{{ why.at }}</div>
+            </div>
+            <div style="display:flex; flex-direction:column; gap:16px; margin-top:14px">
+              <sc-for list="{{ why.rows }}" as="w" hint-placeholder-count="3">
+                <div style="display:grid; grid-template-columns:64px minmax(0,1fr); gap:12px; align-items:start">
+                  <div style="display:flex; align-items:center; gap:8px; padding-top:4px">
+                    <span style="flex:none; width:8px; height:8px; border-radius:4px; background:{{ w.dot }}; transition:background .25s"></span>
+                    <span style="font-family:'SF Mono', ui-monospace, 'Geist Mono', Menlo, monospace; font-size:11px; letter-spacing:.06em; text-transform:uppercase; color:#76808D">{{ w.label }}</span>
+                  </div>
+                  <div style="min-width:0">
+                    <div style="font-size:15px; line-height:20px; font-weight:600">{{ w.head }}</div>
+                    <div style="font-size:13px; line-height:18px; color:#A3ACB9; margin-top:2px; text-wrap:pretty">{{ w.detail }}</div>
+                  </div>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+
+          <div style="margin-top:36px">
+            <div style="display:flex; align-items:baseline; justify-content:space-between; gap:12px">
+              <div style="font-size:20px; line-height:26px; font-weight:650; letter-spacing:-0.01em">Tide</div>
+              <div style="font-size:12px; color:#A3ACB9; white-space:nowrap">{{ tide.readout }}</div>
+            </div>
+            <div style="position:relative; height:132px; margin-top:12px">
+              <div style="position:absolute; left:0; top:0; height:104px; width:{{ tide.darkW }}px; background:repeating-linear-gradient(135deg, rgba(242,244,247,0.05) 0 1px, transparent 1px 6px)"></div>
+              <div style="position:absolute; top:0; height:104px; left:{{ tide.darkRX }}px; width:{{ tide.darkRW }}px; background:repeating-linear-gradient(135deg, rgba(242,244,247,0.05) 0 1px, transparent 1px 6px)"></div>
+              <svg width="390" height="104" style="position:absolute; left:0; top:0; overflow:visible"><path d="{{ tide.area }}" style="fill:rgba(242,244,247,0.06)"></path><path d="{{ tide.line }}" style="fill:none; stroke:rgba(242,244,247,0.6); stroke-width:1.5"></path></svg>
+              <div style="position:absolute; top:0; height:104px; left:{{ tide.nowX }}px; width:0; border-left:1px dashed rgba(242,244,247,0.35); display:{{ tide.nowDisp }}"></div>
+              <div style="position:absolute; top:0; height:104px; left:{{ tide.selX }}px; width:1.5px; background:#F2F4F7; transition:left .3s cubic-bezier(.2,.8,.2,1)"></div>
+              <div style="position:absolute; width:10px; height:10px; margin:-5px 0 0 -5px; border-radius:5px; background:#F2F4F7; box-shadow:0 0 0 3px #0A0E14; left:{{ tide.sx }}px; top:{{ tide.sy }}px; transition:left .3s cubic-bezier(.2,.8,.2,1), top .3s cubic-bezier(.2,.8,.2,1)"></div>
+              <sc-for list="{{ tide.ex }}" as="e" hint-placeholder-count="3">
+                <div style="position:absolute; width:64px; text-align:center; left:{{ e.x }}px; top:{{ e.y }}px; line-height:12px">
+                  <div style="font-size:11px; font-weight:600; color:#F2F4F7">{{ e.kind }} {{ e.h }}</div>
+                  <div style="font-family:'SF Mono', ui-monospace, 'Geist Mono', Menlo, monospace; font-size:10px; color:#76808D; margin-top:1px">{{ e.time }}</div>
+                </div>
+              </sc-for>
+              <sc-for list="{{ tide.hours }}" as="h" hint-placeholder-count="5">
+                <div style="position:absolute; top:116px; width:32px; text-align:center; left:{{ h.x }}px; font-family:'SF Mono', ui-monospace, 'Geist Mono', Menlo, monospace; font-size:10px; color:#76808D">{{ h.label }}</div>
+              </sc-for>
+            </div>
+          </div>
+
+          <div style="display:flex; align-items:center; gap:8px; margin-top:28px; font-size:12px; line-height:16px; color:#76808D">
+            <span style="font-family:'Material Symbols Rounded'; font-size:16px; line-height:1; font-feature-settings:'liga'">offline_pin</span>
+            <span>{{ footnote }}</span>
+          </div>
+        </div>
+
+        <div data-screen-label="Forecast" style="position:absolute; inset:0; overflow-y:auto; overscroll-behavior:contain; scrollbar-width:none; box-sizing:border-box; padding:138px 20px 304px; opacity:{{ tv.forecast.op }}; visibility:{{ tv.forecast.vis }}; transition:opacity .25s ease, visibility .25s">
+          <div style="font-family:'SF Mono', ui-monospace, 'Geist Mono', Menlo, monospace; font-size:11px; letter-spacing:.06em; text-transform:uppercase; color:#A3ACB9">7-day outlook</div>
+          <div style="font-size:28px; line-height:34px; font-weight:650; letter-spacing:-0.02em; margin-top:4px">{{ spot.name }}</div>
+          <div style="font-size:13px; line-height:18px; color:#76808D">{{ spot.area }} · tap a day to scrub it</div>
+
+          <button onClick="{{ week.onClick }}" style="appearance:none; -webkit-appearance:none; border:0; color:inherit; font:inherit; margin:18px 0 0; cursor:pointer; -webkit-tap-highlight-color:transparent; width:100%; display:flex; align-items:center; gap:12px; text-align:left; padding:14px 14px 14px 16px; border-radius:18px; background:{{ week.bg }}">
+            <div style="flex:1; min-width:0">
+              <div style="font-family:'SF Mono', ui-monospace, 'Geist Mono', Menlo, monospace; font-size:11px; letter-spacing:.06em; text-transform:uppercase; color:{{ week.fg }}">{{ week.caption }}</div>
+              <div style="font-size:20px; line-height:26px; font-weight:650; margin-top:3px">{{ week.title }}</div>
+              <div style="font-size:13px; line-height:18px; color:#A3ACB9; margin-top:2px; text-wrap:pretty">{{ week.detail }}</div>
+            </div>
+            <span style="flex:none; font-family:'Material Symbols Rounded'; font-size:22px; line-height:1; font-feature-settings:'liga'; color:#A3ACB9">chevron_right</span>
+          </button>
+
+          <div style="display:flex; flex-direction:column; gap:2px; margin-top:20px">
+            <sc-for list="{{ fdays }}" as="fd" hint-placeholder-count="7">
+              <button onClick="{{ fd.onClick }}" style="appearance:none; -webkit-appearance:none; border:0; color:inherit; font:inherit; cursor:pointer; -webkit-tap-highlight-color:transparent; display:grid; grid-template-columns:52px minmax(0,1fr) 64px; align-items:center; gap:12px; padding:10px 12px; margin:0 -12px; min-height:64px; border-radius:16px; background:{{ fd.bg }}; text-align:left; transition:background .2s">
+                <div>
+                  <div style="font-size:16px; line-height:20px; font-weight:600">{{ fd.dname }}</div>
+                  <div style="font-size:12px; line-height:16px; color:#76808D">{{ fd.dsub }}</div>
+                </div>
+                <div style="min-width:0">
+                  <div style="display:flex; gap:2px; height:10px">
+                    <sc-for list="{{ fd.cells }}" as="c" hint-placeholder-count="15">
+                      <span style="flex:1; border-radius:2px; background:{{ c.bg }}"></span>
+                    </sc-for>
+                  </div>
+                  <div style="font-size:12px; line-height:16px; color:#A3ACB9; margin-top:7px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis">{{ fd.detail }}</div>
+                </div>
+                <div style="text-align:right">
+                  <div style="font-size:17px; line-height:22px; font-weight:600; font-variant-numeric:tabular-nums">{{ fd.range }}<span style="font-size:12px; font-weight:500; color:#A3ACB9"> ft</span></div>
+                  <div style="font-size:11px; line-height:14px; font-weight:700; letter-spacing:.07em; text-transform:uppercase; color:{{ fd.color }}">{{ fd.rating }}</div>
+                </div>
+              </button>
+            </sc-for>
+          </div>
+        </div>
+
+        <div data-screen-label="Map" style="position:absolute; inset:0; overflow-y:auto; overscroll-behavior:contain; scrollbar-width:none; box-sizing:border-box; padding:138px 20px 304px; opacity:{{ tv.map.op }}; visibility:{{ tv.map.vis }}; transition:opacity .25s ease, visibility .25s">
+          <div style="font-family:'SF Mono', ui-monospace, 'Geist Mono', Menlo, monospace; font-size:11px; letter-spacing:.06em; text-transform:uppercase; color:#A3ACB9">Coast · north → south</div>
+          <div style="font-size:28px; line-height:34px; font-weight:650; letter-spacing:-0.02em; margin-top:4px">Map &amp; buoys</div>
+          <div style="font-size:13px; line-height:18px; color:#76808D">Spots rated for {{ mapAt }} · buoys {{ buoyAt }}</div>
+          <div style="position:relative; margin-top:20px">
+            <div style="position:absolute; left:15px; top:24px; bottom:24px; width:2px; border-radius:1px; background:rgba(242,244,247,0.12)"></div>
+            <sc-for list="{{ coast }}" as="n" hint-placeholder-count="8">
+              <sc-if value="{{ n.isSpot }}" hint-placeholder-val="{{ true }}">
+                <button onClick="{{ n.onClick }}" style="appearance:none; -webkit-appearance:none; border:0; background:transparent; color:inherit; font:inherit; margin:0; cursor:pointer; -webkit-tap-highlight-color:transparent; position:relative; width:100%; display:grid; grid-template-columns:32px minmax(0,1fr) 24px; gap:12px; align-items:center; min-height:68px; padding:8px 0; text-align:left">
+                  <span style="justify-self:center; width:14px; height:14px; border-radius:7px; background:{{ n.color }}; box-shadow:{{ n.ring }}; transition:background .3s"></span>
+                  <span style="min-width:0">
+                    <span style="display:flex; align-items:baseline; gap:8px"><span style="font-size:17px; line-height:22px; font-weight:600">{{ n.name }}</span><span style="font-size:11px; font-weight:700; letter-spacing:.07em; text-transform:uppercase; color:{{ n.color }}">{{ n.rating }}</span></span>
+                    <span style="display:block; font-size:13px; line-height:18px; color:#A3ACB9; white-space:nowrap; overflow:hidden; text-overflow:ellipsis">{{ n.detail }}</span>
+                  </span>
+                  <span style="font-family:'Material Symbols Rounded'; font-size:22px; line-height:1; font-feature-settings:'liga'; color:#76808D">chevron_right</span>
+                </button>
+              </sc-if>
+              <sc-if value="{{ n.isBuoy }}" hint-placeholder-val="{{ false }}">
+                <div style="position:relative; display:grid; grid-template-columns:32px minmax(0,1fr); gap:12px; align-items:center; min-height:56px; padding:6px 0">
+                  <span style="justify-self:center; width:9px; height:9px; transform:rotate(45deg); background:#0A0E14; box-shadow:0 0 0 1.5px rgba(242,244,247,0.7), 0 0 0 4px #0A0E14"></span>
+                  <span style="min-width:0">
+                    <span style="display:flex; align-items:baseline; gap:8px"><span style="font-size:14px; line-height:20px; font-weight:500">{{ n.name }}</span><span style="font-family:'SF Mono', ui-monospace, 'Geist Mono', Menlo, monospace; font-size:10px; color:#76808D">{{ n.id }}</span></span>
+                    <span style="display:block; font-family:'SF Mono', ui-monospace, 'Geist Mono', Menlo, monospace; font-size:12px; line-height:17px; color:#A3ACB9; white-space:nowrap; overflow:hidden; text-overflow:ellipsis">{{ n.read }}</span>
+                  </span>
+                </div>
+              </sc-if>
+              <sc-if value="{{ n.isGap }}" hint-placeholder-val="{{ false }}">
+                <div style="position:relative; display:grid; grid-template-columns:32px minmax(0,1fr); gap:12px; align-items:center; min-height:52px">
+                  <span style="justify-self:center; width:4px; height:40px; background:repeating-linear-gradient(180deg, #0A0E14 0 4px, rgba(242,244,247,0.3) 4px 7px)"></span>
+                  <span style="font-family:'SF Mono', ui-monospace, 'Geist Mono', Menlo, monospace; font-size:11px; letter-spacing:.04em; color:#76808D">{{ n.text }}</span>
+                </div>
+              </sc-if>
+            </sc-for>
+          </div>
+        </div>
+
+        <div style="position:absolute; left:0; top:0; right:0; height:calc(242px - 124px * var(--cam, 0)); z-index:5; overflow:hidden">
+          <div style="position:absolute; inset:0; background:rgba(12,16,22,0.8); backdrop-filter:blur(24px) saturate(160%); -webkit-backdrop-filter:blur(24px) saturate(160%); box-shadow:inset 0 -0.5px 0 rgba(242,244,247,0.08); opacity:var(--cam, 0)"></div>
+          <div style="position:absolute; left:calc(16px * var(--cam, 0)); top:calc(61px * var(--cam, 0)); width:calc(430px - 338px * var(--cam, 0)); height:calc(242px - 190px * var(--cam, 0)); border-radius:calc(12px * var(--cam, 0)); overflow:hidden; background:#0E141C; color:rgba(242,244,247,0.6); filter:{{ hud.filter }}">
+            <div style="position:absolute; inset:0; background:repeating-linear-gradient(115deg, rgba(242,244,247,0.025) 0 10px, transparent 10px 20px)"></div>
+            <sc-for list="{{ camSlots }}" as="c" hint-placeholder-count="4">
+              <div style="position:absolute; inset:0; display:{{ c.disp }}"><image-slot id="{{ c.id }}" shape="rect" placeholder="{{ c.ph }}"></image-slot></div>
+            </sc-for>
+            <div style="position:absolute; inset:0; pointer-events:none; background:#05070A; opacity:{{ hud.dim }}; transition:opacity .4s"></div>
+            <div style="position:absolute; left:0; right:0; bottom:0; height:2px; overflow:hidden; pointer-events:none">{{ hud.sweep }}</div>
+            <div onClick="{{ miniTap }}" style="position:absolute; inset:0; cursor:pointer; pointer-events:{{ hud.catcherPE }}"></div>
+          </div>
+
+          <div style="position:absolute; left:0; top:0; width:430px; height:242px; opacity:calc(1 - var(--cam, 0) * 2.2); pointer-events:none">
+            <div style="position:absolute; left:0; right:0; top:0; height:96px; background:linear-gradient(180deg, rgba(5,7,10,0.7), rgba(5,7,10,0))"></div>
+            <div style="position:absolute; left:0; right:0; bottom:0; height:96px; background:linear-gradient(0deg, rgba(5,7,10,0.72), rgba(5,7,10,0))"></div>
+            <div style="position:absolute; left:16px; top:58px; height:28px; padding:0 11px 0 10px; border-radius:14px; display:flex; align-items:center; gap:8px; background:rgba(10,14,20,0.5); backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px); box-shadow:inset 0 0 0 0.5px rgba(242,244,247,0.16); font-size:12px; line-height:16px">
+              {{ hud.liveDot }}
+              <span style="font-weight:700; letter-spacing:.08em; text-transform:uppercase">{{ hud.live }}</span>
+              <span style="font-family:'SF Mono', ui-monospace, 'Geist Mono', Menlo, monospace; font-size:11px; color:#A3ACB9; font-variant-numeric:tabular-nums">{{ hud.stamp }}</span>
+            </div>
+            <div style="position:absolute; right:16px; top:58px; padding:6px 12px; border-radius:14px; text-align:right; background:{{ hud.setBg }}; color:{{ hud.setFg }}; backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px); box-shadow:inset 0 0 0 0.5px rgba(242,244,247,0.16); transition:background .3s, color .3s">
+              <div style="font-size:13px; line-height:16px; font-weight:650; font-variant-numeric:tabular-nums">{{ hud.setTxt }}</div>
+              <div style="font-size:10px; line-height:13px; color:{{ hud.setSubFg }}">{{ hud.setSub }}</div>
+            </div>
+            <sc-if value="{{ hud.showOverlay }}" hint-placeholder-val="{{ false }}">
+              <div style="position:absolute; left:50%; top:121px; transform:translate(-50%,-50%); padding:8px 14px; border-radius:16px; white-space:nowrap; background:rgba(10,14,20,0.62); backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px); font-size:13px; line-height:16px; font-weight:500">{{ hud.overlay }}</div>
+            </sc-if>
+            <div style="position:absolute; left:16px; bottom:14px; display:flex; gap:18px">
+              <div style="display:flex; align-items:center; gap:8px">
+                <div style="position:relative; width:40px; height:40px; border-radius:20px; overflow:hidden; background:rgba(10,14,20,0.45); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); box-shadow:inset 0 0 0 0.5px rgba(242,244,247,0.2)">
+                  <div style="position:absolute; left:7px; right:7px; bottom:8px; border-top:1px dashed rgba(242,244,247,0.45)"></div>
+                  <svg width="24" height="24" style="position:absolute; left:8px; top:7px; transform:rotate({{ hud.windRot }}deg); color:{{ hud.windCol }}"><path d="M12 20V5M6.5 10.5L12 5l5.5 5.5" style="fill:none; stroke:currentColor; stroke-width:2.2; stroke-linecap:round; stroke-linejoin:round"></path></svg>
+                </div>
+                <div style="text-shadow:0 1px 8px rgba(0,0,0,0.6)">
+                  <div style="font-family:'SF Mono', ui-monospace, 'Geist Mono', Menlo, monospace; font-size:10px; letter-spacing:.06em; text-transform:uppercase; color:rgba(242,244,247,0.75)">Wind</div>
+                  <div style="font-size:13px; line-height:17px; font-weight:600">{{ hud.windTxt }}</div>
+                </div>
+              </div>
+              <div style="display:flex; align-items:center; gap:8px">
+                <div style="position:relative; width:40px; height:40px; border-radius:20px; overflow:hidden; background:rgba(10,14,20,0.45); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); box-shadow:inset 0 0 0 0.5px rgba(242,244,247,0.2)">
+                  <div style="position:absolute; left:7px; right:7px; bottom:8px; border-top:1px dashed rgba(242,244,247,0.45)"></div>
+                  <svg width="24" height="24" style="position:absolute; left:8px; top:7px; transform:rotate({{ hud.swellRot }}deg); color:#F2F4F7"><path d="M12 20V5M6.5 10.5L12 5l5.5 5.5" style="fill:none; stroke:currentColor; stroke-width:2.2; stroke-linecap:round; stroke-linejoin:round"></path></svg>
+                </div>
+                <div style="text-shadow:0 1px 8px rgba(0,0,0,0.6)">
+                  <div style="font-family:'SF Mono', ui-monospace, 'Geist Mono', Menlo, monospace; font-size:10px; letter-spacing:.06em; text-transform:uppercase; color:rgba(242,244,247,0.75)">Swell</div>
+                  <div style="font-size:13px; line-height:17px; font-weight:600">{{ hud.swellTxt }}</div>
+                </div>
+              </div>
+            </div>
+            <button onClick="{{ togglePin }}" title="Dock cam" style="appearance:none; -webkit-appearance:none; border:0; color:#F2F4F7; font:inherit; margin:0; padding:0; cursor:pointer; -webkit-tap-highlight-color:transparent; position:absolute; right:14px; bottom:12px; width:44px; height:44px; border-radius:22px; display:flex; align-items:center; justify-content:center; background:rgba(10,14,20,0.45); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); box-shadow:inset 0 0 0 0.5px rgba(242,244,247,0.2); pointer-events:{{ hud.pipPE }}">
+              <span style="font-family:'Material Symbols Rounded'; font-size:22px; line-height:1; font-feature-settings:'liga'">picture_in_picture_alt</span>
+            </button>
+          </div>
+
+          <div onClick="{{ miniTap }}" style="position:absolute; left:120px; right:8px; top:54px; height:64px; display:flex; align-items:center; gap:10px; cursor:pointer; opacity:calc((var(--cam, 0) - 0.55) * 2.2); pointer-events:{{ hud.catcherPE }}">
+            <div style="flex:1; min-width:0">
+              <div style="display:flex; align-items:center; gap:7px; font-size:16px; line-height:20px; font-weight:600">{{ mini.name }}<span style="font-size:10px; font-weight:700; letter-spacing:.08em; color:#A3ACB9">{{ hud.live }}</span></div>
+              <div style="font-size:13px; line-height:18px; color:#A3ACB9; white-space:nowrap; overflow:hidden; text-overflow:ellipsis">{{ mini.summary }}</div>
+            </div>
+            <div style="flex:none; height:26px; padding:0 10px; border-radius:13px; display:flex; align-items:center; gap:6px; background:{{ mini.pillBg }}; color:{{ mini.pillFg }}; font-size:11px; font-weight:700; letter-spacing:.07em; text-transform:uppercase"><span style="width:6px; height:6px; border-radius:3px; background:{{ mini.pillFg }}"></span>{{ mini.pill }}</div>
+            <span style="flex:none; width:36px; height:44px; display:flex; align-items:center; justify-content:center; font-family:'Material Symbols Rounded'; font-size:24px; line-height:1; font-feature-settings:'liga'; color:#A3ACB9">expand_more</span>
+          </div>
+        </div>
+
+        <div style="position:absolute; left:8px; right:8px; bottom:8px; height:calc(276px + 522px * var(--sheet, 0)); z-index:20; box-sizing:border-box; padding:0 12px 14px; display:flex; flex-direction:column; overflow:hidden; border-radius:30px 30px 40px 40px; background:rgba(17,22,30,0.76); backdrop-filter:blur(30px) saturate(170%); -webkit-backdrop-filter:blur(30px) saturate(170%); box-shadow:inset 0 0.5px 0 rgba(242,244,247,0.16), inset 0 0 0 0.5px rgba(242,244,247,0.06), 0 -12px 40px rgba(0,0,0,0.35)">
+          <div onPointerDown="{{ sheetDown }}" onPointerMove="{{ sheetMove }}" onPointerUp="{{ sheetUp }}" onPointerCancel="{{ sheetUp }}" style="flex:none; position:relative; height:30px; margin:0 -12px; display:flex; align-items:center; justify-content:center; touch-action:none; cursor:grab">
+            <div style="width:36px; height:5px; border-radius:3px; background:rgba(242,244,247,0.3)"></div>
+            <div style="position:absolute; right:16px; top:0; height:30px; display:flex; align-items:center; gap:2px; font-size:12px; font-weight:500; color:#A3ACB9">Swell &amp; buoy<span style="font-family:'Material Symbols Rounded'; font-size:18px; line-height:1; font-feature-settings:'liga'; transform:rotate(calc(180deg * var(--sheet, 0)))">expand_less</span></div>
+          </div>
+
+          <div style="flex:1; min-height:0; overflow:hidden; padding:2px 4px 0; opacity:calc(var(--sheet, 0) * 1.4 - 0.25)">
+            <div style="display:flex; align-items:baseline; justify-content:space-between; gap:12px">
+              <div style="font-size:20px; line-height:26px; font-weight:650; letter-spacing:-0.01em">Swell trains</div>
+              <div style="font-family:'SF Mono', ui-monospace, 'Geist Mono', Menlo, monospace; font-size:11px; letter-spacing:.06em; text-transform:uppercase; color:#A3ACB9">{{ sheetDay }}</div>
+            </div>
+            <div style="font-size:12px; line-height:16px; color:#76808D; margin-top:2px">Arrows in {{ spot.name }}’s frame: ↑ out to sea, ↓ onto the beach</div>
+            <div style="display:flex; flex-direction:column; gap:14px; margin-top:14px">
+              <sc-for list="{{ trains }}" as="tr" hint-placeholder-count="3">
+                <div style="display:grid; grid-template-columns:88px minmax(0,1fr) 40px; gap:12px; align-items:center">
+                  <div>
+                    <div style="font-size:13px; line-height:17px; font-weight:600">{{ tr.label }}</div>
+                    <div style="font-size:11px; line-height:14px; color:#76808D">{{ tr.kind }}</div>
+                  </div>
+                  <div style="min-width:0">
+                    <div style="display:flex; align-items:baseline; gap:10px; font-variant-numeric:tabular-nums; white-space:nowrap">
+                      <span style="font-size:20px; line-height:24px; font-weight:600">{{ tr.h }}<span style="font-size:12px; font-weight:500; color:#A3ACB9"> ft</span></span>
+                      <span style="font-size:20px; line-height:24px; font-weight:600">{{ tr.T }}<span style="font-size:12px; font-weight:500; color:#A3ACB9"> s</span></span>
+                      <span style="font-family:'SF Mono', ui-monospace, 'Geist Mono', Menlo, monospace; font-size:12px; color:#A3ACB9">{{ tr.dir }}</span>
+                    </div>
+                    <div style="display:flex; align-items:center; gap:8px; margin-top:6px">
+                      <div style="flex:1; height:4px; border-radius:2px; background:rgba(242,244,247,0.08); overflow:hidden"><div style="height:100%; border-radius:2px; background:rgba(242,244,247,0.7); width:{{ tr.pct }}%; transition:width .3s"></div></div>
+                      <span style="flex:none; min-width:54px; text-align:right; font-family:'SF Mono', ui-monospace, 'Geist Mono', Menlo, monospace; font-size:11px; color:#A3ACB9">{{ tr.kj }} kJ</span>
+                    </div>
+                  </div>
+                  <div style="position:relative; width:40px; height:40px; border-radius:20px; overflow:hidden; background:rgba(242,244,247,0.06)">
+                    <div style="position:absolute; left:7px; right:7px; bottom:8px; border-top:1px dashed rgba(242,244,247,0.35)"></div>
+                    <svg width="24" height="24" style="position:absolute; left:8px; top:7px; transform:rotate({{ tr.rot }}deg); color:#F2F4F7; transition:transform .35s cubic-bezier(.2,.8,.2,1)"><path d="M12 20V5M6.5 10.5L12 5l5.5 5.5" style="fill:none; stroke:currentColor; stroke-width:2; stroke-linecap:round; stroke-linejoin:round"></path></svg>
+                  </div>
+                </div>
+              </sc-for>
+            </div>
+
+            <div style="margin-top:22px">
+              <div style="display:flex; align-items:baseline; justify-content:space-between; gap:10px">
+                <div style="font-size:15px; line-height:20px; font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis">{{ buoy.name }} <span style="font-family:'SF Mono', ui-monospace, 'Geist Mono', Menlo, monospace; font-size:11px; font-weight:400; color:#76808D">{{ buoy.id }}</span></div>
+                <div style="flex:none; font-family:'SF Mono', ui-monospace, 'Geist Mono', Menlo, monospace; font-size:11px; color:#76808D">{{ buoy.when }}</div>
+              </div>
+              <div style="display:grid; grid-template-columns:repeat(4, minmax(0,1fr)); gap:8px; margin-top:10px">
+                <div><div style="font-family:'SF Mono', ui-monospace, 'Geist Mono', Menlo, monospace; font-size:10px; letter-spacing:.06em; text-transform:uppercase; color:#76808D">Wave</div><div style="font-size:17px; line-height:22px; font-weight:600; font-variant-numeric:tabular-nums">{{ buoy.hs }}<span style="font-size:12px; font-weight:500; color:#A3ACB9"> ft</span></div></div>
+                <div><div style="font-family:'SF Mono', ui-monospace, 'Geist Mono', Menlo, monospace; font-size:10px; letter-spacing:.06em; text-transform:uppercase; color:#76808D">Period</div><div style="font-size:17px; line-height:22px; font-weight:600; font-variant-numeric:tabular-nums">{{ buoy.tp }}<span style="font-size:12px; font-weight:500; color:#A3ACB9"> s</span></div></div>
+                <div><div style="font-family:'SF Mono', ui-monospace, 'Geist Mono', Menlo, monospace; font-size:10px; letter-spacing:.06em; text-transform:uppercase; color:#76808D">Dir</div><div style="font-size:17px; line-height:22px; font-weight:600; font-variant-numeric:tabular-nums">{{ buoy.dp }}°<span style="font-size:12px; font-weight:500; color:#A3ACB9"> {{ buoy.dc }}</span></div></div>
+                <div><div style="font-family:'SF Mono', ui-monospace, 'Geist Mono', Menlo, monospace; font-size:10px; letter-spacing:.06em; text-transform:uppercase; color:#76808D">Water</div><div style="font-size:17px; line-height:22px; font-weight:600; font-variant-numeric:tabular-nums">{{ buoy.sst }}<span style="font-size:12px; font-weight:500; color:#A3ACB9">°F</span></div></div>
+              </div>
+            </div>
+
+            <div style="display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:10px; margin-top:22px">
+              <div style="padding:12px 14px; border-radius:18px; background:rgba(242,244,247,0.05)">
+                <div style="font-family:'SF Mono', ui-monospace, 'Geist Mono', Menlo, monospace; font-size:10px; letter-spacing:.06em; text-transform:uppercase; color:#76808D">Wetsuit</div>
+                <div style="font-size:20px; line-height:26px; font-weight:650; margin-top:4px">{{ suit.rec }}</div>
+                <div style="font-size:12px; line-height:16px; color:#A3ACB9; margin-top:2px">Water {{ suit.water }}°F</div>
+                <div style="font-size:12px; line-height:16px; color:#76808D">{{ suit.note }}</div>
+              </div>
+              <div style="padding:12px 14px; border-radius:18px; background:rgba(242,244,247,0.05); display:flex; flex-direction:column; gap:3px">
+                <div style="font-family:'SF Mono', ui-monospace, 'Geist Mono', Menlo, monospace; font-size:10px; letter-spacing:.06em; text-transform:uppercase; color:#76808D; margin-bottom:3px">Light · {{ light.day }}</div>
+                <div style="display:flex; justify-content:space-between; font-size:12px; line-height:16px"><span style="color:#A3ACB9">First light</span><span style="font-variant-numeric:tabular-nums">{{ light.first }}</span></div>
+                <div style="display:flex; justify-content:space-between; font-size:12px; line-height:16px"><span style="color:#A3ACB9">Sunrise</span><span style="font-variant-numeric:tabular-nums">{{ light.rise }}</span></div>
+                <div style="display:flex; justify-content:space-between; font-size:12px; line-height:16px"><span style="color:#A3ACB9">Sunset</span><span style="font-variant-numeric:tabular-nums">{{ light.set }}</span></div>
+                <div style="display:flex; justify-content:space-between; font-size:12px; line-height:16px"><span style="color:#A3ACB9">Last light</span><span style="font-variant-numeric:tabular-nums">{{ light.last }}</span></div>
+              </div>
+            </div>
+          </div>
+
+          <div style="flex:none; height:36px; display:flex; align-items:center; gap:2px">
+            <button onClick="{{ prevDay }}" style="appearance:none; -webkit-appearance:none; border:0; background:transparent; color:#F2F4F7; font:inherit; margin:0 0 0 -6px; padding:0; cursor:pointer; -webkit-tap-highlight-color:transparent; width:36px; height:44px; display:flex; align-items:center; justify-content:center; opacity:{{ sc.prevOp }}"><span style="font-family:'Material Symbols Rounded'; font-size:22px; line-height:1; font-feature-settings:'liga'">chevron_left</span></button>
+            <div style="min-width:72px; text-align:center; font-size:14px; font-weight:600">{{ sc.day }}</div>
+            <button onClick="{{ nextDay }}" style="appearance:none; -webkit-appearance:none; border:0; background:transparent; color:#F2F4F7; font:inherit; margin:0; padding:0; cursor:pointer; -webkit-tap-highlight-color:transparent; width:36px; height:44px; display:flex; align-items:center; justify-content:center; opacity:{{ sc.nextOp }}"><span style="font-family:'Material Symbols Rounded'; font-size:22px; line-height:1; font-feature-settings:'liga'">chevron_right</span></button>
+            <div style="flex:1; display:flex; align-items:center; justify-content:center; gap:8px">
+              <span style="width:8px; height:8px; border-radius:4px; background:{{ sc.dot }}; transition:background .2s"></span>
+              <span style="font-size:17px; line-height:22px; font-weight:650; font-variant-numeric:tabular-nums">{{ sc.time }}</span>
+            </div>
+            <button onClick="{{ resetNow }}" style="appearance:none; -webkit-appearance:none; border:0; color:#0A0E14; font:inherit; margin:0; cursor:pointer; -webkit-tap-highlight-color:transparent; height:30px; min-width:56px; padding:0 12px; border-radius:15px; background:#F2F4F7; font-size:13px; font-weight:650; display:flex; align-items:center; justify-content:center; gap:3px; opacity:{{ sc.nowOp }}; pointer-events:{{ sc.nowPE }}; transition:opacity .2s"><span style="font-family:'Material Symbols Rounded'; font-size:16px; line-height:1; font-feature-settings:'liga'">replay</span>{{ sc.nowLabel }}</button>
+          </div>
+
+          <div onPointerDown="{{ scrubDown }}" onPointerMove="{{ scrubMove }}" onPointerUp="{{ scrubUp }}" onPointerCancel="{{ scrubUp }}" style="flex:none; position:relative; height:80px; touch-action:none; cursor:ew-resize">
+            <div style="position:absolute; left:0; top:0; height:68px; width:{{ sc.darkL }}px; border-radius:8px 0 0 8px; background:repeating-linear-gradient(135deg, rgba(242,244,247,0.06) 0 1px, transparent 1px 5px)"></div>
+            <div style="position:absolute; top:0; height:68px; left:{{ sc.darkRX }}px; width:{{ sc.darkRW }}px; border-radius:0 8px 8px 0; background:repeating-linear-gradient(135deg, rgba(242,244,247,0.06) 0 1px, transparent 1px 5px)"></div>
+            <div style="position:absolute; top:18px; height:36px; box-sizing:border-box; left:{{ sc.bandX }}px; width:{{ sc.bandW }}px; display:{{ sc.bandDisp }}; border-radius:6px; background:{{ sc.bandBg }}; border-bottom:2px solid {{ sc.bandFg }}; transition:left .3s, width .3s"></div>
+            <div style="position:absolute; top:16px; height:52px; width:0; left:{{ sc.nowX }}px; display:{{ sc.nowDisp }}; border-left:1px dashed rgba(242,244,247,0.45)"></div>
+            <sc-for list="{{ sc.cols }}" as="c" hint-placeholder-count="15">
+              <div style="position:absolute; top:0; width:0; height:80px; left:{{ c.x }}px">
+                <svg width="12" height="12" style="position:absolute; left:-6px; top:2px; transform:rotate({{ c.rot }}deg); color:{{ c.wcol }}; opacity:{{ c.op }}"><path d="M6 10.5V2M2.5 5.5L6 2l3.5 3.5" style="fill:none; stroke:currentColor; stroke-width:1.6; stroke-linecap:round; stroke-linejoin:round"></path></svg>
+                <div style="position:absolute; left:-6px; width:12px; bottom:26px; height:{{ c.h }}px; overflow:hidden; border-radius:3px 3px 1px 1px; background:{{ c.col }}; transition:height .3s, background .3s">
+                  <div style="position:absolute; left:0; right:0; top:0; height:{{ c.secH }}px; background:rgba(10,14,20,0.42)"></div>
+                </div>
+                <div style="position:absolute; left:-14px; width:28px; bottom:0; text-align:center; font-family:'SF Mono', ui-monospace, 'Geist Mono', Menlo, monospace; font-size:10px; line-height:12px; color:{{ c.lcol }}; transition:color .15s">{{ c.label }}</div>
+              </div>
+            </sc-for>
+            <svg width="390" height="80" style="position:absolute; left:0; top:0; pointer-events:none"><path d="{{ sc.area }}" style="fill:rgba(242,244,247,0.07)"></path><path d="{{ sc.line }}" style="fill:none; stroke:rgba(242,244,247,0.5); stroke-width:1.25"></path></svg>
+            <div style="position:absolute; top:0; width:0; height:80px; pointer-events:none; left:{{ sc.phX }}px; transition:{{ sc.phTrans }}">
+              <div style="position:absolute; left:-1px; top:0; width:2px; height:66px; border-radius:1px; background:#F2F4F7; box-shadow:0 0 10px rgba(242,244,247,0.45)"></div>
+              <div style="position:absolute; left:-8px; top:64px; width:16px; height:16px; border-radius:8px; background:#F2F4F7; box-shadow:0 2px 8px rgba(0,0,0,0.5); transform:scale({{ sc.knob }}); transition:transform .18s cubic-bezier(.2,.8,.2,1)">{{ knobPulse }}</div>
+            </div>
+          </div>
+
+          <div style="flex:none; height:0.5px; margin:8px 4px 6px; background:rgba(242,244,247,0.1)"></div>
+
+          <div style="flex:none; height:44px; display:grid; grid-template-columns:repeat(4, minmax(0,1fr)); gap:4px">
+            <sc-for list="{{ chips }}" as="c" hint-placeholder-count="4">
+              <button onClick="{{ c.onClick }}" style="appearance:none; -webkit-appearance:none; border:0; font:inherit; margin:0; padding:0 6px; cursor:pointer; -webkit-tap-highlight-color:transparent; min-width:0; height:44px; border-radius:15px; display:flex; align-items:center; justify-content:center; gap:7px; background:{{ c.bg }}; color:{{ c.fg }}; font-size:14px; font-weight:{{ c.fw }}; transition:background .2s, color .2s">
+                <span style="flex:none; width:8px; height:8px; border-radius:4px; background:{{ c.dot }}; box-shadow:0 0 0 3px {{ c.halo }}; transition:background .3s, box-shadow .3s"></span>
+                <span style="white-space:nowrap; overflow:hidden; text-overflow:ellipsis">{{ c.name }}</span>
+              </button>
+            </sc-for>
+          </div>
+
+          <div style="flex:none; height:52px; margin-top:4px; display:grid; grid-template-columns:repeat(3, minmax(0,1fr)); gap:4px">
+            <sc-for list="{{ tabsList }}" as="b" hint-placeholder-count="3">
+              <button onClick="{{ b.onClick }}" style="appearance:none; -webkit-appearance:none; border:0; font:inherit; margin:0; padding:0; cursor:pointer; -webkit-tap-highlight-color:transparent; height:52px; border-radius:26px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:2px; background:{{ b.bg }}; color:{{ b.fg }}; transition:background .2s, color .2s">
+                <span style="font-family:'Material Symbols Rounded'; font-size:24px; line-height:24px; font-feature-settings:'liga'; font-variation-settings:'FILL' {{ b.fill }}, 'wght' 400">{{ b.icon }}</span>
+                <span style="font-size:11px; line-height:13px; font-weight:600">{{ b.label }}</span>
+              </button>
+            </sc-for>
+          </div>
+        </div>
+
+      </div>
+    </x-import>
+  </div>
+</div>
+
+<sc-if value="{{ showBp }}" hint-placeholder-val="{{ true }}">
+<aside data-screen-label="Part 2 · Test script" style="order:3; flex:1 1 280px; min-width:260px; max-width:320px; display:flex; flex-direction:column; gap:28px">
+  <header style="display:flex; flex-direction:column; gap:12px">
+    <div style="font-family:'SF Mono', ui-monospace, 'Geist Mono', Menlo, monospace; font-size:11px; letter-spacing:.08em; text-transform:uppercase; color:#76808D">Part 2 · live prototype</div>
+    <h2 style="margin:0; font-size:24px; line-height:30px; font-weight:650; letter-spacing:-0.02em">Test script</h2>
+    <p style="margin:0; font-size:14px; line-height:21px; color:#A3ACB9; text-wrap:pretty">Persona: Monday, 6:20 AM, Blacks parking lot, 54°F, one cold thumb.</p>
+  </header>
+  <ol style="margin:0; padding:0; list-style:none; display:flex; flex-direction:column; gap:14px">
+    <li style="display:grid; grid-template-columns:22px minmax(0,1fr); gap:10px; font-size:14px; line-height:21px; color:#A3ACB9"><span style="font-family:'SF Mono', ui-monospace, 'Geist Mono', Menlo, monospace; font-size:11px; color:#76808D; padding-top:2px">01</span><span><strong style="color:#F2F4F7; font-weight:600">Drag the timeline</strong> in the deck. Verdict, why, tide, swell trains and all four spot dots re-rate live. Pass 11 AM to watch Blacks blow out.</span></li>
+    <li style="display:grid; grid-template-columns:22px minmax(0,1fr); gap:10px; font-size:14px; line-height:21px; color:#A3ACB9"><span style="font-family:'SF Mono', ui-monospace, 'Geist Mono', Menlo, monospace; font-size:11px; color:#76808D; padding-top:2px">02</span><span><strong style="color:#F2F4F7; font-weight:600">Tap the best window</strong> card. The playhead jumps to 7:30 AM; “Now” brings it back.</span></li>
+    <li style="display:grid; grid-template-columns:22px minmax(0,1fr); gap:10px; font-size:14px; line-height:21px; color:#A3ACB9"><span style="font-family:'SF Mono', ui-monospace, 'Geist Mono', Menlo, monospace; font-size:11px; color:#76808D; padding-top:2px">03</span><span><strong style="color:#F2F4F7; font-weight:600">Scroll the verdict.</strong> The cam docks into a mini-bar and stays live. Tap the mini-bar to undock.</span></li>
+    <li style="display:grid; grid-template-columns:22px minmax(0,1fr); gap:10px; font-size:14px; line-height:21px; color:#A3ACB9"><span style="font-family:'SF Mono', ui-monospace, 'Geist Mono', Menlo, monospace; font-size:11px; color:#76808D; padding-top:2px">04</span><span><strong style="color:#F2F4F7; font-weight:600">Pull the deck up</strong> by its grabber, or tap Swell &amp; buoy. You get primary vs secondary trains, the buoy, wetsuit and light. Flick it; it springs.</span></li>
+    <li style="display:grid; grid-template-columns:22px minmax(0,1fr); gap:10px; font-size:14px; line-height:21px; color:#A3ACB9"><span style="font-family:'SF Mono', ui-monospace, 'Geist Mono', Menlo, monospace; font-size:11px; color:#76808D; padding-top:2px">05</span><span><strong style="color:#F2F4F7; font-weight:600">Switch to Rincon</strong> to see the flat-spell state and its next rideable day. Scrub past 5:20 PM for after-dark.</span></li>
+    <li style="display:grid; grid-template-columns:22px minmax(0,1fr); gap:10px; font-size:14px; line-height:21px; color:#A3ACB9"><span style="font-family:'SF Mono', ui-monospace, 'Geist Mono', Menlo, monospace; font-size:11px; color:#76808D; padding-top:2px">06</span><span><strong style="color:#F2F4F7; font-weight:600">Open Tweaks.</strong> Clock → afternoon (blown out) or night (tomorrow’s dawn-patrol preview). Offline → cached forecast, cam on last frame.</span></li>
+  </ol>
+  <p style="margin:0; font-size:13px; line-height:19px; color:#76808D; text-wrap:pretty">The cam is a placeholder. Drop a real still onto it; each spot keeps its own.</p>
+  <section style="display:flex; flex-direction:column; gap:10px">
+    <div style="font-family:'SF Mono', ui-monospace, 'Geist Mono', Menlo, monospace; font-size:11px; letter-spacing:.08em; text-transform:uppercase; color:#76808D">Tokens</div>
+    <div style="display:grid; grid-template-columns:64px minmax(0,1fr); gap:6px 12px; font-size:13px; line-height:18px">
+      <span style="color:#76808D">Grid</span><span>4 / 8 pt</span>
+      <span style="color:#76808D">Type</span><span>11 · 13 · 15 · 17 · 20 · 28 · 72</span>
+      <span style="color:#76808D">Radii</span><span>14 · 18 · 30 · 40, concentric to the 48 pt corner</span>
+      <span style="color:#76808D">Surface</span><span>#0A0E14 · glass 76% + 30 px blur</span>
+      <span style="color:#76808D">Ink</span><span>#F2F4F7 · #A3ACB9 · #76808D</span>
+    </div>
+  </section>
+</aside>
+</sc-if>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;clock&quot;: {&quot;editor&quot;: &quot;enum&quot;, &quot;options&quot;: [&quot;dawn&quot;, &quot;afternoon&quot;, &quot;night&quot;], &quot;default&quot;: &quot;dawn&quot;, &quot;tsType&quot;: &quot;'dawn' | 'afternoon' | 'night'&quot;, &quot;section&quot;: &quot;Scenario&quot;}, &quot;offline&quot;: {&quot;editor&quot;: &quot;boolean&quot;, &quot;default&quot;: false, &quot;tsType&quot;: &quot;boolean&quot;, &quot;section&quot;: &quot;Scenario&quot;}, &quot;showBlueprint&quot;: {&quot;editor&quot;: &quot;boolean&quot;, &quot;default&quot;: true, &quot;tsType&quot;: &quot;boolean&quot;, &quot;section&quot;: &quot;Presentation&quot;}}">
+class Component extends DCLogic {
+  state = { spot: 'blacks', tab: 'cams', day: 0, t: 6.3333, dragging: false, bump: 0, connecting: false, docked: false, sheetOpen: false, pinned: false, sec: 0, vw: 1440, vh: 900 };
+  appRef = React.createRef();
+  camsRef = React.createRef();
+  anim = { sheet: { v: 0, vel: 0, to: 0 }, tab: { v: 0, vel: 0, to: 0 }, pin: { v: 0, vel: 0, to: 0 } };
+  scrollP = 0;
+  SHEET = 522;
+  D = {
+    spots: [
+      { id: 'blacks', name: 'Blacks', area: 'La Jolla', region: 'sd', facing: 265, amp: 1.15, tide: [2, 4.2], note: 'Scripps Canyon focuses it into A-frame peaks', water: 63, buoy: 'torrey', cam: 'North cliff cam', cycle: 470 },
+      { id: 'scripps', name: 'Scripps', area: 'La Jolla Shores', region: 'sd', facing: 280, amp: 0.6, tide: [0.8, 3.6], note: 'pier sandbars run about half the size of Blacks', water: 64, buoy: 'torrey', cam: 'Pier cam', cycle: 540 },
+      { id: 'swamis', name: "Swami's", area: 'Encinitas', region: 'sd', facing: 250, amp: 0.95, tide: [1.4, 4.2], note: 'the reef point lines up best on W–NW', water: 63, buoy: 'oceanside', cam: 'Bluff cam', cycle: 510 },
+      { id: 'rincon', name: 'Rincon', area: 'Carpinteria', region: 'sb', facing: 205, amp: 1.3, tide: [0.2, 3.2], note: 'the Channel Islands shadow anything north of 280°', water: 60, buoy: 'sb', cam: 'Indicator cam', cycle: 900, shadow: true },
+    ],
+    buoys: {
+      torrey: { name: 'Torrey Pines Outer', id: 'CDIP 100', k: 1.0, sst: 63.1 },
+      oceanside: { name: 'Oceanside Offshore', id: 'CDIP 045', k: 1.06, sst: 63.5 },
+      sb: { name: 'E. Santa Barbara', id: 'NDBC 46053', k: 0.72, sst: 60.4 },
+    },
+    days: [{ s: 'Mon', n: 2 }, { s: 'Tue', n: 3 }, { s: 'Wed', n: 4 }, { s: 'Thu', n: 5 }, { s: 'Fri', n: 6 }, { s: 'Sat', n: 7 }, { s: 'Sun', n: 8 }],
+    swell: [
+      { p: { h: [3.3, 2.9], t: [14, 13], d: [285, 287] }, s: { h: [1.1, 1.0], t: [13, 13], d: [205, 205] }, am: 1.0, pm: 1.0 },
+      { p: { h: [2.8, 2.4], t: [13, 12], d: [287, 288] }, s: { h: [1.0, 0.9], t: [12, 12], d: [205, 207] }, am: 0.9, pm: 1.15 },
+      { p: { h: [2.1, 1.9], t: [12, 11], d: [288, 289] }, s: { h: [0.9, 0.9], t: [12, 12], d: [208, 208] }, am: 0.6, pm: 0.8 },
+      { p: { h: [2.8, 4.3], t: [17, 16], d: [277, 278] }, s: { h: [0.8, 0.8], t: [11, 11], d: [210, 210] }, am: 1.2, pm: 0.7 },
+      { p: { h: [4.1, 3.5], t: [15, 15], d: [278, 280] }, s: { h: [0.7, 0.7], t: [11, 11], d: [212, 212] }, am: 1.4, pm: 0.55 },
+      { p: { h: [3.1, 2.7], t: [14, 13], d: [282, 284] }, s: { h: [0.8, 0.8], t: [12, 12], d: [205, 205] }, am: 1.0, pm: 1.1 },
+      { p: { h: [2.4, 2.1], t: [12, 12], d: [290, 292] }, s: { h: [0.9, 0.9], t: [13, 13], d: [200, 200] }, am: 0.7, pm: 1.3 },
+    ],
+    wind: {
+      sd: { d: [65, 70, 75, 80, 90, 135, 200, 245, 260, 270, 275, 280, 285, 320, 30], k: [3, 4, 4, 5, 4, 3, 4, 7, 10, 12, 12, 10, 7, 4, 3] },
+      sb: { d: [20, 15, 10, 10, 20, 60, 200, 230, 245, 255, 260, 260, 265, 280, 330], k: [4, 5, 5, 4, 3, 2, 4, 8, 12, 14, 15, 12, 8, 5, 4] },
+    },
+    light: { sd: [5.733, 6.15, 16.867, 17.283], sb: [5.883, 6.317, 16.983, 17.417] },
+    clocks: { dawn: { t: 6.3333, label: '6:20' }, afternoon: { t: 13.5, label: '1:30' }, night: { t: 20.5, label: '8:30' } },
+    colors: { flat: [0.7, 0.02, 250], poor: [0.74, 0.15, 30], fair: [0.84, 0.14, 80], good: [0.8, 0.15, 160], epic: [0.87, 0.17, 165] },
+    labels: { flat: 'Flat', poor: 'Poor', fair: 'Fair', good: 'Good', epic: 'Epic' },
+  };
+
+  lerp(a, b, f) { return a + (b - a) * f; }
+  clamp(x, a, b) { return Math.max(a, Math.min(b, x)); }
+  angd(a, b) { return ((a - b) % 360 + 540) % 360 - 180; }
+  lerpAng(a, b, f) { return (a + this.angd(b, a) * f + 360) % 360; }
+  norm(a) { return ((a % 360) + 540) % 360 - 180; }
+  tideAt(t, region) { if (region === 'sb') t -= 0.15; return 2.55 + 1.55 * Math.cos(2 * Math.PI * (t - 11.75) / 12.42) + 0.28 * Math.cos(2 * Math.PI * (t - 10.5) / 23.93) + 0.12 * Math.cos(2 * Math.PI * (t - 3) / 12); }
+  pf(T) { return this.clamp(Math.pow(T / 10, 0.8), 0.6, 1.5); }
+  expo(sp, d) { let e = Math.pow(Math.max(0, Math.cos(Math.abs(this.angd(d, sp.facing)) * Math.PI / 180)), 0.7); if (sp.shadow) { if (d >= 281) e *= 0.45; if (d < 235) e *= 0.25; } return e; }
+  windCat(rel, k) { return k < 2.5 ? 'glassy' : rel >= 135 ? 'offshore' : rel >= 112 ? 'cross-offshore' : rel >= 68 ? 'cross-shore' : rel >= 45 ? 'cross-onshore' : 'onshore'; }
+  windScore(c, k) {
+    if (c === 'glassy') return 0.95;
+    if (c === 'offshore') return k <= 12 ? 1 : k <= 20 ? 0.85 : 0.6;
+    if (c === 'cross-offshore') return k <= 8 ? 0.85 : 0.65;
+    if (c === 'cross-shore') return k <= 5 ? 0.7 : k <= 10 ? 0.5 : 0.3;
+    if (c === 'cross-onshore') return k <= 5 ? 0.6 : k <= 10 ? 0.35 : 0.2;
+    return k <= 5 ? 0.5 : k <= 8 ? 0.3 : k <= 12 ? 0.15 : 0.08;
+  }
+  sizeScore(h) {
+    const S = [[0.5, 0], [1, 0.12], [2, 0.32], [3, 0.55], [4, 0.72], [5, 0.82], [6, 0.9], [8, 1], [30, 1]];
+    for (let i = 1; i < S.length; i++) if (h <= S[i][0]) { const [a, b] = S[i - 1], [c, d] = S[i]; return this.clamp(this.lerp(b, d, (h - a) / (c - a)), 0, 1); }
+    return 1;
+  }
+  tideScore(sp, h) { const [a, b] = sp.tide; if (h >= a && h <= b) return 1; return Math.max(0.3, 1 - (h < a ? a - h : h - b) * 0.4); }
+
+  calc(si, d, t) {
+    const D = this.D, sp = D.spots[si], P = D.swell[d], f = this.clamp((t - 5) / 14, 0, 1);
+    const tr = x => ({ h: this.lerp(x.h[0], x.h[1], f), T: this.lerp(x.t[0], x.t[1], f), d: this.lerpAng(x.d[0], x.d[1], f) });
+    const wf = this.clamp((t - 10) / 6, 0, 1), ws = wf * wf * (3 - 2 * wf);
+    const trains = [tr(P.p), tr(P.s), { h: this.lerp(0.3, 1.0, ws), T: 7, d: 296 }].map(x => {
+      const e = this.expo(sp, x.d), hm = x.h * 0.3048 * e * sp.amp;
+      return { ...x, face: x.h * this.pf(x.T) * e * sp.amp, kj: 3.0 * hm * hm * x.T * x.T };
+    });
+    const H = Math.sqrt(trains.reduce((a, x) => a + x.face * x.face, 0));
+    const kj = trains.reduce((a, x) => a + x.kj, 0);
+    const W = D.wind[sp.region], xx = this.clamp(t - 5, 0, 14), i = Math.floor(xx), ff = xx - i, j = Math.min(14, i + 1);
+    let k = this.lerp(W.k[i], W.k[j], ff);
+    const wd = this.lerpAng(W.d[i], W.d[j], ff);
+    k *= t < 10.5 ? P.am : t < 11.5 ? this.lerp(P.am, P.pm, t - 10.5) : P.pm;
+    const rel = Math.abs(this.angd(wd, sp.facing)), cat = this.windCat(rel, k), wsc = this.windScore(cat, k);
+    const abs = d * 24 + t, td = this.tideAt(abs, sp.region), rising = this.tideAt(abs + 0.1, sp.region) > td, tsc = this.tideScore(sp, td);
+    const S = this.sizeScore(H * 1.02) * (0.75 + 0.25 * this.clamp((trains[0].T - 6) / 8, 0, 1));
+    const Q = 5 * S * (0.15 + 0.85 * wsc) * (0.6 + 0.4 * tsc);
+    const rating = H < 1 ? 'flat' : Q < 1.8 ? 'poor' : Q < 2.8 ? 'fair' : Q < 4.4 ? 'good' : 'epic';
+    return { t, d, H, kj, trains, wind: { k, d: wd, g: k * 1.35 + 1, rel, cat, score: wsc }, tide: { h: td, rising, score: tsc }, Q, rating };
+  }
+
+  ensure() {
+    if (this.G && this._gv === 4) return;
+    const D = this.D;
+    this.G = D.spots.map((_, si) => D.days.map((__, d) => { const rows = []; for (let i = 0; i < 57; i++) rows.push(this.calc(si, d, 5 + i * 0.25)); return rows; }));
+    this.BW = D.spots.map((_, si) => D.days.map((__, d) => this.findWindow(si, d)));
+    this._ex = {};
+    this._gv = 4;
+  }
+  light(si, d) { const L = this.D.light[this.D.spots[si].region], k = d * 0.012; return { first: L[0] + k, rise: L[1] + k, set: L[2] - k, last: L[3] - k }; }
+  findWindow(si, d) {
+    const rows = this.G[si][d], L = this.light(si, d);
+    let mx = -1, im = -1;
+    rows.forEach((r, i) => { if (r.t >= L.first && r.t <= L.last && r.Q > mx) { mx = r.Q; im = i; } });
+    if (im < 0 || mx < 1.8 || rows[im].H < 1) return null;
+    for (const fac of [0.955, 0.93, 0.9, 0.86]) {
+      const thr = Math.max(1.8, mx * fac);
+      let a = im, b = im;
+      while (a > 0 && rows[a - 1].Q >= thr && rows[a - 1].t >= L.first) a--;
+      while (b < rows.length - 1 && rows[b + 1].Q >= thr && rows[b + 1].t <= L.last) b++;
+      if (rows[b].t - rows[a].t >= 1.5 || fac === 0.86) return { a: rows[a].t, b: rows[b].t, mx, peak: rows[im], rating: rows[im].rating };
+    }
+    return null;
+  }
+  extremes(region, d) {
+    const key = region + d;
+    if (this._ex[key]) return this._ex[key];
+    const out = [], f = t => this.tideAt(d * 24 + t, region);
+    let prev = f(-1.02), cur = f(-1);
+    for (let t = -1; t <= 26; t += 0.02) { const nx = f(t + 0.02); if ((cur > prev && cur >= nx) || (cur < prev && cur <= nx)) out.push({ t, h: cur, type: cur > prev ? 'H' : 'L' }); prev = cur; cur = nx; }
+    return (this._ex[key] = out);
+  }
+  tidePaths(region, d, x0, w, y0, h, base) {
+    let line = '';
+    for (let i = 0; i <= 56; i++) { const t = 5 + i * 0.25, x = x0 + (t - 5) / 14 * w, y = y0 + (1 - this.tideAt(d * 24 + t, region) / 5) * h; line += (i ? 'L' : 'M') + x.toFixed(1) + ' ' + y.toFixed(1); }
+    return { line, area: line + 'L' + (x0 + w).toFixed(1) + ' ' + base + 'L' + x0 + ' ' + base + 'Z' };
+  }
+  tideXY(region, d, t, x0, w, y0, h) { return { x: x0 + (t - 5) / 14 * w, y: y0 + (1 - this.tideAt(d * 24 + t, region) / 5) * h }; }
+
+  fmt(t) { const x = ((t % 24) + 24) % 24; let h = Math.floor(x), m = Math.round((x - h) * 60); if (m === 60) { h = (h + 1) % 24; m = 0; } return (((h + 11) % 12) + 1) + ':' + String(m).padStart(2, '0') + ' ' + (h < 12 ? 'AM' : 'PM'); }
+  fmtC(t) { return this.fmt(t).replace(' AM', 'a').replace(' PM', 'p'); }
+  range(a, b) { const A = this.fmt(a), B = this.fmt(b); return A.slice(-2) === B.slice(-2) ? A.slice(0, -3) + ' – ' + B : A + ' – ' + B; }
+  dur(h) { const m = Math.max(0, Math.round(h * 60)), H = Math.floor(m / 60), M = m % 60; return H ? H + 'h' + (M ? ' ' + M + 'm' : '') : M + 'm'; }
+  compass(d) { return ['N', 'NNE', 'NE', 'ENE', 'E', 'ESE', 'SE', 'SSE', 'S', 'SSW', 'SW', 'WSW', 'W', 'WNW', 'NW', 'NNW'][Math.round((((d % 360) + 360) % 360) / 22.5) % 16]; }
+  num(x) { return Math.abs(x - Math.round(x)) < 0.01 ? String(Math.round(x)) : x.toFixed(1); }
+  rangeStr(H) {
+    let lo, hi;
+    if (H < 2) { lo = Math.max(0.5, Math.round(H * 0.82 * 2) / 2); hi = Math.round(H * 1.05 * 2) / 2; if (hi <= lo) hi = lo + 0.5; }
+    else { lo = Math.round(H * 0.82); hi = Math.round(H * 1.05); if (hi <= lo) hi = lo + 1; }
+    return { lo, hi, str: this.num(lo) + '–' + this.num(hi) };
+  }
+  body(ft) { const B = [[0, 'ankle'], [1, 'shin'], [1.5, 'knee'], [2.5, 'thigh'], [3, 'waist'], [3.5, 'stomach'], [4, 'chest'], [4.5, 'shoulder'], [5, 'head'], [6, 'overhead'], [8, 'well overhead']]; let w = 'ankle'; for (const [v, s] of B) if (ft >= v) w = s; return w; }
+  sizeWords(lo, hi) { const a = this.body(lo), b = this.body(hi), s = a === b ? a : a + ' to ' + b; return s.charAt(0).toUpperCase() + s.slice(1) + (b.indexOf('overhead') >= 0 ? '' : ' high'); }
+  catLabel(c) { return { glassy: 'Glassy', offshore: 'Offshore', 'cross-offshore': 'Cross-offshore', 'cross-shore': 'Cross-shore', 'cross-onshore': 'Cross-onshore', onshore: 'Onshore' }[c]; }
+  windKey(s) { return s >= 0.85 ? 'good' : s >= 0.5 ? 'fair' : 'poor'; }
+  tideKey(s) { return s >= 0.99 ? 'good' : s >= 0.7 ? 'fair' : 'poor'; }
+  feel(r) {
+    const c = r.wind.cat, k = r.wind.k;
+    if (r.rating === 'flat') return 'flat';
+    if (c === 'glassy') return 'glassy';
+    if (c === 'offshore') return k > 15 ? 'clean but windy' : 'clean';
+    if (c === 'cross-offshore') return 'mostly clean';
+    if (c === 'cross-shore') return 'textured';
+    if (c === 'cross-onshore') return k >= 8 ? 'choppy' : 'bumpy';
+    return k >= 8 ? 'blown out' : 'choppy';
+  }
+  air(region, t) { const b = region === 'sb' ? 51 : 54; return Math.round(t <= 13.5 ? b + 14 * Math.sin(this.clamp((t - 6) / 7.5, 0, 1) * Math.PI / 2) : b + 14 - (t - 13.5) * 2); }
+  col(k, a) { const c = this.D.colors[k] || this.D.colors.flat; return 'oklch(' + c[0] + ' ' + c[1] + ' ' + c[2] + ' / ' + (a == null ? 1 : a) + ')'; }
+  stamp(t, sec) { const total = Math.round(t * 3600) + 14 + sec, h = Math.floor(total / 3600) % 24, m = Math.floor(total / 60) % 60, s = total % 60; return (((h + 11) % 12) + 1) + ':' + String(m).padStart(2, '0') + ':' + String(s).padStart(2, '0'); }
+  dayName(d) { return d === 0 ? 'Today' : d === 1 ? 'Tomorrow' : this.D.days[d].s + ' ' + this.D.days[d].n; }
+  clockKey() { const c = this.props.clock; return this.D.clocks[c] ? c : 'dawn'; }
+  defaults(clock, si) { this.ensure(); if (clock === 'night') { const w = this.BW[si][1]; return { day: 1, t: w ? w.a : 6.5 }; } return { day: 0, t: this.D.clocks[clock].t }; }
+
+  windNext(si, d, t, score) {
+    const rows = this.G[si][d], i0 = Math.max(0, Math.ceil((t - 5) / 0.25 - 0.001));
+    const say = q => Math.round(q.wind.k) + ' kt ' + this.catLabel(q.wind.cat).toLowerCase();
+    if (score >= 0.85) { for (let i = i0 + 1; i < rows.length; i++) if (rows[i].wind.score < 0.6) return 'Clean until ~' + this.fmt(rows[i].t) + ', then ' + say(rows[i]); return 'Stays clean into the evening'; }
+    if (score < 0.6) { for (let i = i0 + 1; i < rows.length; i++) if (rows[i].wind.score >= 0.85) return 'Cleans up ~' + this.fmt(rows[i].t) + ' as it goes ' + this.catLabel(rows[i].wind.cat).toLowerCase(); return 'No clean-up before dark'; }
+    for (let i = i0 + 1; i < rows.length; i++) if (rows[i].wind.score < 0.5) return 'Light texture; onshore builds ~' + this.fmt(rows[i].t);
+    return 'Light texture through the evening';
+  }
+
+  callout(si, selDay, clock, nowT) {
+    const night = clock === 'night', refDay = night ? 1 : 0, refT = night ? 0 : nowT, BW = this.BW[si];
+    const nextFrom = d0 => { for (let d = d0; d < 7; d++) if (BW[d]) return d; return -1; };
+    const desc = (d, w) => { const m = this.calc(si, d, (w.a + w.b) / 2); return (m.tide.rising ? 'Rising tide' : 'Falling tide') + ' · ' + Math.round(m.wind.k) + ' kt ' + this.catLabel(m.wind.cat).toLowerCase() + ' · ' + this.rangeStr(m.H).str + ' ft'; };
+    const swellDesc = (d, w) => { const q = this.calc(si, d, w.a), x = q.trains[0]; return this.compass(x.d) + ' ' + Math.round(x.d) + '° @ ' + Math.round(x.T) + ' s · ' + this.rangeStr(q.H).str + ' ft'; };
+    const none = (cap, d) => ({ k: 'flat', caption: cap, range: 'Nothing rideable this week', detail: 'Swell models refresh every 6 hours', status: '', cta: '', day: d, t: 7 });
+    const isFlat = d => this.G[si][d].every(x => x.rating === 'flat');
+    if (selDay === refDay) {
+      const w = BW[refDay];
+      if (w && refT <= w.b) {
+        const status = night ? 'Alarm ' + this.fmt(this.light(si, 1).first - 0.25) : refT < w.a ? 'In ' + this.dur(w.a - refT) : 'On now · ' + this.dur(w.b - refT) + ' left';
+        return { k: w.rating, caption: night ? 'Best window tomorrow' : 'Best window today', range: this.range(w.a, w.b), detail: desc(refDay, w), status, cta: 'Jump', day: refDay, t: w.a };
+      }
+      const flat = isFlat(refDay), nd = nextFrom(refDay + 1);
+      const cap = flat ? 'Flat spell · next rideable' : w ? 'Window closed ' + this.fmt(w.b) + ' · next' : 'No clean window · next';
+      if (nd < 0) return none(cap, refDay);
+      const w2 = BW[nd];
+      return { k: w2.rating, caption: cap, range: this.dayName(nd) + ' ' + this.range(w2.a, w2.b), detail: flat ? swellDesc(nd, w2) : desc(nd, w2), status: '', cta: 'Preview', day: nd, t: w2.a };
+    }
+    const w = BW[selDay];
+    if (w) return { k: w.rating, caption: 'Best window · ' + this.dayName(selDay), range: this.range(w.a, w.b), detail: desc(selDay, w), status: '', cta: 'Jump', day: selDay, t: w.a };
+    const nd = nextFrom(selDay + 1), cap = (isFlat(selDay) ? 'Flat · ' : 'No clean window · ') + this.dayName(selDay) + ' · next';
+    if (nd < 0) return none(cap, selDay);
+    const w2 = BW[nd];
+    return { k: w2.rating, caption: cap, range: this.dayName(nd) + ' ' + this.range(w2.a, w2.b), detail: swellDesc(nd, w2), status: '', cta: 'Preview', day: nd, t: w2.a };
+  }
+
+  renderVals() {
+    this.ensure();
+    const D = this.D, st = this.state, col = (k, a) => this.col(k, a), dn = d => this.dayName(d);
+    const clock = this.clockKey(), C = D.clocks[clock], night = clock === 'night';
+    const offline = !!this.props.offline, showBp = this.props.showBlueprint !== false;
+    const si = Math.max(0, D.spots.findIndex(s => s.id === st.spot)), sp = D.spots[si];
+    const r = this.calc(si, st.day, st.t), p = r.trains[0], L = this.light(si, st.day);
+    const dark = st.t < L.first - 0.001 || st.t > L.last + 0.001;
+    const def = this.defaults(clock, si);
+    const isDefault = st.day === def.day && Math.abs(st.t - def.t) < 0.01;
+    const isLive = !night && st.day === 0 && Math.abs(st.t - C.t) < 0.01;
+    const rg = this.rangeStr(r.H), pk = dark ? 'flat' : r.rating, tl = this.fmt(st.t);
+
+    let eyebrow;
+    if (dark) eyebrow = (st.t < L.first ? 'Before first light · ' : 'After dark · ') + dn(st.day) + ' ' + tl;
+    else if (isLive) eyebrow = 'Live now · ' + tl;
+    else if (night && st.day === 1 && st.t < 11) eyebrow = 'Tomorrow’s dawn patrol · ' + tl;
+    else eyebrow = 'Forecast · ' + dn(st.day) + ' ' + tl;
+
+    const ex = this.extremes(sp.region, st.day), nx = ex.find(e => e.t > st.t + 0.01);
+    const wK = this.windKey(r.wind.score), tK = this.tideKey(r.tide.score);
+    const spk = this.tidePaths(sp.region, st.day, 4, 48, 8, 28, 44), sdot = this.tideXY(sp.region, st.day, st.t, 4, 48, 8, 28);
+    const hero = {
+      eyebrow, pill: dark ? 'Dark' : D.labels[r.rating], pillBg: col(pk, 0.16), pillFg: col(pk), range: rg.str, kj: Math.round(r.kj),
+      words: this.sizeWords(rg.lo, rg.hi) + ' · ' + this.feel(r) + (dark ? (st.t < L.first ? ' · first light ' + this.fmt(L.first) : ' · last light was ' + this.fmt(L.last)) : ''),
+      windRot: this.norm(r.wind.d + 180 - sp.facing).toFixed(0), windColor: col(wK), windCat: this.catLabel(r.wind.cat),
+      windDetail: Math.round(r.wind.k) + ' kt · gusts ' + Math.round(r.wind.g) + ' · ' + this.compass(r.wind.d),
+      tideH: r.tide.h.toFixed(1) + ' ft', tideTrend: r.tide.rising ? 'Rising' : 'Falling', tideCol: col(tK),
+      tideDetail: nx ? (nx.type === 'H' ? 'High ' : 'Low ') + nx.h.toFixed(1) + ' · ' + this.fmt(nx.t) : '',
+      sLine: spk.line, sArea: spk.area, sdx: sdot.x.toFixed(1), sdy: sdot.y.toFixed(1),
+    };
+
+    const co = this.callout(si, st.day, clock, C.t);
+    const win = { caption: co.caption, range: co.range, detail: co.detail, status: co.status, cta: co.cta, showCta: !!co.cta, bg: col(co.k, 0.13), fg: col(co.k), onClick: () => { if (co.cta) this.jump(co.day, co.t); } };
+
+    const swK = r.rating === 'flat' ? 'flat' : r.H >= 3 && p.T >= 11 ? 'good' : r.H >= 2 ? 'fair' : 'poor';
+    const swHead = r.rating === 'flat' ? 'Too small to break here' : p.T >= 13 ? 'Long-period ' + this.compass(p.d) + ' groundswell' : p.T >= 10 ? 'Mid-period ' + this.compass(p.d) + ' swell' : 'Short-period windswell';
+    const ta = sp.tide[0], tb = sp.tide[1], zone = r.tide.h < ta ? 'Below' : r.tide.h > tb ? 'Above' : 'Inside';
+    const why = {
+      lead: dark ? 'Why it would be' : 'Why it’s', word: D.labels[r.rating], color: col(r.rating), at: dn(st.day) + ' · ' + tl,
+      rows: [
+        { label: 'Swell', dot: col(swK), head: swHead, detail: p.h.toFixed(1) + ' ft @ ' + Math.round(p.T) + ' s from ' + Math.round(p.d) + '° — ' + sp.note },
+        { label: 'Wind', dot: col(wK), head: r.wind.cat === 'glassy' ? 'Glassy, under 3 kt' : Math.round(r.wind.k) + ' kt ' + this.catLabel(r.wind.cat).toLowerCase() + (r.wind.cat === 'onshore' && r.wind.k >= 8 ? ' — blown out' : ''), detail: this.windNext(si, st.day, st.t, r.wind.score) + ' · from ' + this.compass(r.wind.d) + ' ' + Math.round(r.wind.d) + '°' },
+        { label: 'Tide', dot: col(tK), head: r.tide.h.toFixed(1) + ' ft and ' + (r.tide.rising ? 'rising' : 'falling'), detail: zone + ' the ' + this.num(ta) + '–' + this.num(tb) + ' ft sweet spot here' + (nx ? ' · ' + (nx.type === 'H' ? 'high ' : 'low ') + nx.h.toFixed(1) + ' ft at ' + this.fmt(nx.t) : '') },
+      ],
+    };
+
+    const TW = 390, XC = t => (t - 5) / 14 * TW;
+    const tc = this.tidePaths(sp.region, st.day, 0, TW, 22, 76, 104), ts = this.tideXY(sp.region, st.day, st.t, 0, TW, 22, 76);
+    const tide = {
+      line: tc.line, area: tc.area, sx: ts.x.toFixed(1), sy: ts.y.toFixed(1), selX: (ts.x - 0.75).toFixed(1),
+      darkW: XC(L.first).toFixed(1), darkRX: XC(L.last).toFixed(1), darkRW: (TW - XC(L.last)).toFixed(1),
+      nowX: XC(this.clamp(C.t, 5, 19)).toFixed(1), nowDisp: !night && st.day === 0 ? 'block' : 'none',
+      readout: r.tide.h.toFixed(1) + ' ft ' + (r.tide.rising ? 'rising' : 'falling') + ' · ' + tl,
+      ex: ex.filter(e => e.t >= 5 && e.t <= 19).map(e => { const q = this.tideXY(sp.region, st.day, e.t, 0, TW, 22, 76); return { x: this.clamp(q.x - 32, 0, TW - 64).toFixed(1), y: (e.type === 'H' ? q.y - 30 : q.y + 7).toFixed(1), h: e.h.toFixed(1) + ' ft', time: this.fmtC(e.t), kind: e.type === 'H' ? 'High' : 'Low' }; }),
+      hours: [6, 9, 12, 15, 18].map(h => ({ x: (XC(h) - 16).toFixed(1), label: h === 12 ? '12p' : (h % 12) + (h < 12 ? 'a' : 'p') })),
+    };
+
+    const X = t => 10 + (t - 5) / 14 * 370, rows = this.G[si][st.day], cols = [];
+    for (let h = 5; h <= 19; h++) {
+      const q = rows[(h - 5) * 4], dk = h < L.first || h > L.last;
+      const share = q.kj > 0 ? q.trains[0].kj / q.kj : 1, bh = this.clamp(q.H / 6 * 34, 3, 34);
+      cols.push({ x: X(h).toFixed(1), rot: this.norm(q.wind.d + 180 - sp.facing).toFixed(0), wcol: col(this.windKey(q.wind.score)), op: dk ? 0.35 : 1, h: bh.toFixed(1), secH: (bh * (1 - share)).toFixed(1), col: dk ? col('flat', 0.45) : col(q.rating), label: [6, 9, 12, 15, 18].indexOf(h) >= 0 ? (h === 12 ? '12p' : (h % 12) + (h < 12 ? 'a' : 'p')) : '', lcol: Math.abs(h - st.t) < 0.7 ? 'rgba(118,128,141,0)' : '#76808D' });
+    }
+    const bw = this.BW[si][st.day], lane = this.tidePaths(sp.region, st.day, 10, 370, 56, 12, 68);
+    const sc = {
+      cols, line: lane.line, area: lane.area,
+      darkL: X(L.first).toFixed(1), darkRX: X(L.last).toFixed(1), darkRW: (390 - X(L.last)).toFixed(1),
+      bandX: bw ? (X(bw.a) - 8).toFixed(1) : 0, bandW: bw ? (X(bw.b) - X(bw.a) + 16).toFixed(1) : 0, bandDisp: bw ? 'block' : 'none', bandBg: bw ? col(bw.rating, 0.14) : 'transparent', bandFg: bw ? col(bw.rating, 0.9) : 'transparent',
+      nowX: X(this.clamp(C.t, 5, 19)).toFixed(1), nowDisp: !night && st.day === 0 ? 'block' : 'none',
+      phX: X(st.t).toFixed(1), knob: st.dragging ? 1.3 : 1, phTrans: st.dragging ? 'none' : 'left .45s cubic-bezier(.2,.8,.2,1)',
+      day: dn(st.day), prevOp: st.day > 0 ? 1 : 0.28, nextOp: st.day < 6 ? 1 : 0.28, time: tl, dot: col(pk),
+      nowOp: isDefault ? 0 : 1, nowPE: isDefault ? 'none' : 'auto', nowLabel: night ? 'Dawn' : 'Now',
+    };
+    const knobPulse = st.bump > 0 ? React.createElement('span', { key: 'k' + st.bump, style: { position: 'absolute', inset: 0, borderRadius: '50%', border: '2px solid rgba(242,244,247,0.85)', animation: 'detent 340ms ease-out forwards', pointerEvents: 'none' } }) : null;
+
+    const maxKj = Math.max(1, ...r.trains.map(x => x.kj));
+    const trains = r.trains.map((x, i) => ({
+      label: ['Primary', 'Secondary', 'Wind swell'][i],
+      kind: i === 2 ? 'Local sea breeze' : x.d >= 180 && x.d <= 235 ? 'Southern hemi' : x.T >= 13 ? 'Groundswell' : 'Swell',
+      h: x.h.toFixed(1), T: Math.round(x.T), dir: Math.round(x.d) + '° ' + this.compass(x.d), kj: Math.round(x.kj),
+      pct: Math.max(2, x.kj / maxKj * 100).toFixed(0), rot: this.norm(x.d + 180 - sp.facing).toFixed(0),
+    }));
+    const rb = this.calc(si, 0, this.clamp(C.t, 5, 19));
+    const buoyOf = key => { const b = D.buoys[key], hs = Math.sqrt(rb.trains.reduce((a, x) => a + x.h * x.h, 0)) * b.k, dp = rb.trains[0].d + 1; return { name: b.name, id: b.id, hs: hs.toFixed(1), tp: Math.round(rb.trains[0].T), dp: Math.round(dp), dc: this.compass(dp), sst: b.sst.toFixed(1) }; };
+    const buoy = Object.assign(buoyOf(sp.buoy), { when: offline ? 'Cached ' + this.fmt(C.t - 0.45) : 'Obs ' + this.fmt(C.t - 0.1) });
+    const wt = sp.water;
+    const suit = { water: wt, rec: wt >= 70 ? 'Boardshorts' : wt >= 66 ? 'Springsuit' : wt >= 62 ? '3/2 full suit' : wt >= 58 ? '4/3 full suit' : wt >= 54 ? '4/3 + booties' : '5/4 hooded', note: 'Air ' + this.air(sp.region, st.t) + '°F at ' + tl + (r.wind.k >= 8 ? ' · wind chill' : '') };
+    const light = { first: this.fmt(L.first), rise: this.fmt(L.rise), set: this.fmt(L.set), last: this.fmt(L.last), day: dn(st.day) };
+
+    const chips = D.spots.map((s, i) => { const q = this.calc(i, st.day, st.t), on = i === si; return { name: s.name, dot: col(q.rating), halo: col(q.rating, 0.18), bg: on ? 'rgba(242,244,247,0.12)' : 'transparent', fg: on ? '#F2F4F7' : '#A3ACB9', fw: on ? 600 : 500, onClick: () => this.selectSpot(s.id) }; });
+    const tabsList = [['cams', 'Cams', 'videocam'], ['forecast', 'Forecast', 'calendar_view_week'], ['map', 'Map', 'map']].map(([id, label, icon]) => { const on = st.tab === id; return { label, icon, fill: on ? 1 : 0, bg: on ? 'rgba(242,244,247,0.10)' : 'transparent', fg: on ? '#F2F4F7' : '#A3ACB9', onClick: () => this.setTab(id) }; });
+    const tv = {};
+    ['cams', 'forecast', 'map'].forEach(id => { const on = st.tab === id; tv[id] = { op: on ? 1 : 0, vis: on ? 'visible' : 'hidden' }; });
+
+    const fdays = D.days.map((dd, d) => {
+      const rw = this.G[si][d], w = this.BW[si][d], Ld = this.light(si, d), cells = [];
+      for (let h = 5; h <= 19; h++) { const q = rw[(h - 5) * 4]; cells.push({ bg: h < Ld.first || h > Ld.last ? 'rgba(242,244,247,0.07)' : col(q.rating, 0.92) }); }
+      const lit = rw.filter(q => q.t >= Ld.first && q.t <= Ld.last);
+      const pk2 = w ? w.peak : lit.reduce((a, b) => (b.Q > a.Q ? b : a), lit[0]), pq = pk2.trains[0];
+      const sw2 = this.compass(pq.d) + ' ' + Math.round(pq.T) + ' s', flat = rw.every(q => q.rating === 'flat');
+      return { dname: dd.s, dsub: d === 0 ? 'Today' : d === 1 ? 'Tomorrow' : 'Nov ' + dd.n, cells, detail: w ? 'Best ' + this.range(w.a, w.b) + ' · ' + sw2 : (flat ? 'Flat · ' : 'No clean window · ') + sw2, range: this.rangeStr(pk2.H).str, rating: D.labels[pk2.rating], color: col(pk2.rating), bg: d === st.day ? 'rgba(242,244,247,0.06)' : 'transparent', onClick: () => { this.jump(d, w ? w.a : 7); this.setTab('cams'); } };
+    });
+    let bd = -1, bq = -1;
+    this.BW[si].forEach((w, d) => { if (w && w.mx > bq) { bq = w.mx; bd = d; } });
+    let week;
+    if (bd < 0) week = { k: 'flat', caption: 'This week', title: 'No clean windows', detail: 'Swell models refresh every 6 hours', onClick: () => {} };
+    else {
+      const w = this.BW[si][bd], q = w.peak, pq = q.trains[0];
+      week = { k: w.rating, caption: 'Pick of the week', title: dn(bd) + ' · ' + D.labels[w.rating], detail: this.range(w.a, w.b) + ' · ' + this.rangeStr(q.H).str + ' ft · ' + Math.round(pq.d) + '° ' + this.compass(pq.d) + ' @ ' + Math.round(pq.T) + ' s · ' + (D.swell[bd].am >= 1.3 && w.a < 10 ? 'Santa Ana offshore' : Math.round(q.wind.k) + ' kt ' + this.catLabel(q.wind.cat).toLowerCase()), onClick: () => { this.jump(bd, w.a); this.setTab('cams'); } };
+    }
+    week.bg = col(week.k, 0.13); week.fg = col(week.k);
+
+    const node = o => Object.assign({ isSpot: false, isBuoy: false, isGap: false }, o);
+    const spotNode = i => { const s = D.spots[i], q = this.calc(i, st.day, st.t); return node({ isSpot: true, name: s.name, rating: D.labels[q.rating], color: col(q.rating), ring: i === si ? '0 0 0 3px #0A0E14, 0 0 0 5px ' + col(q.rating, 0.55) : '0 0 0 3px #0A0E14', detail: this.rangeStr(q.H).str + ' ft · ' + Math.round(q.wind.k) + ' kt ' + this.catLabel(q.wind.cat).toLowerCase() + ' · ' + s.water + '°F', onClick: () => { this.selectSpot(s.id); this.setTab('cams'); } }); };
+    const buoyNode = key => { const b = buoyOf(key); return node({ isBuoy: true, name: b.name, id: b.id, read: b.hs + ' ft · ' + b.tp + ' s · ' + b.dp + '° ' + b.dc + ' · ' + b.sst + '°F' }); };
+    const coast = [spotNode(3), buoyNode('sb'), node({ isGap: true, text: '≈ 150 mi · Ventura, LA & Orange County' }), buoyNode('oceanside'), spotNode(2), buoyNode('torrey'), spotNode(0), spotNode(1)];
+
+    const rn = this.calc(si, 0, this.clamp(C.t, 5, 19)), rnK = night ? 'flat' : rn.rating;
+    let setTxt, setSub, isSet = false;
+    if (night) { setTxt = 'Night'; setSub = 'Sets resume at dawn'; }
+    else if (offline) { setTxt = 'Set timer paused'; setSub = 'Needs the live stream'; }
+    else if (rn.rating === 'flat') { setTxt = 'No sets'; setSub = 'Flat · ankle-high ripples'; }
+    else {
+      const cyc = sp.cycle, ph = (st.sec + 380 + si * 97) % cyc;
+      if (ph < 64) { isSet = true; setTxt = 'Set · wave ' + (Math.floor(ph / 16) + 1) + ' of 4'; }
+      else { const rem = cyc - ph; setTxt = 'Lull ' + Math.floor(rem / 60) + ':' + String(rem % 60).padStart(2, '0'); }
+      setSub = 'Sets every ~' + Math.round(cyc / 60) + ' min';
+    }
+    const overlay = st.connecting ? 'Connecting to ' + sp.cam.toLowerCase() + '…' : night ? 'Cam dark · back at first light ' + this.fmt(this.light(si, 1).first) : offline ? 'No signal · last frame ' + this.fmt(C.t - 0.37) : '';
+    const windTxt = Math.round(rn.wind.k) + ' kt ' + this.catLabel(rn.wind.cat).toLowerCase();
+    const hud = {
+      live: night ? 'Night' : offline ? 'Cached' : 'Live', stamp: night || offline ? sp.cam : this.stamp(C.t, st.sec) + ' · ' + sp.cam,
+      setTxt, setSub, setBg: isSet ? 'rgba(242,244,247,0.94)' : 'rgba(10,14,20,0.5)', setFg: isSet ? '#0A0E14' : '#F2F4F7', setSubFg: isSet ? 'rgba(10,14,20,0.7)' : '#A3ACB9',
+      windRot: this.norm(rn.wind.d + 180 - sp.facing).toFixed(0), windCol: col(this.windKey(rn.wind.score)), windTxt,
+      swellRot: this.norm(rn.trains[0].d + 180 - sp.facing).toFixed(0), swellTxt: Math.round(rn.trains[0].T) + ' s · ' + Math.round(rn.trains[0].d) + '° ' + this.compass(rn.trains[0].d),
+      overlay, showOverlay: !!overlay, dim: night ? 0.78 : offline ? 0.45 : 0, filter: offline ? 'grayscale(1)' : 'none',
+      pipPE: st.docked ? 'none' : 'auto', catcherPE: st.docked ? 'auto' : 'none',
+      liveDot: React.createElement('span', { style: { display: 'block', width: 7, height: 7, borderRadius: 4, background: night || offline ? '#76808D' : '#F2F4F7', animation: night || offline ? 'none' : 'livepulse 2s ease-out infinite' } }),
+      sweep: st.connecting ? React.createElement('div', { key: 'sw', style: { position: 'absolute', top: 0, bottom: 0, left: 0, width: '30%', background: 'linear-gradient(90deg, rgba(242,244,247,0), #F2F4F7, rgba(242,244,247,0))', animation: 'sweep 0.9s ease-in-out infinite' } }) : null,
+    };
+    const mini = { name: sp.name, summary: night ? 'Night · first light ' + this.fmt(this.light(si, 1).first) : this.rangeStr(rn.H).str + ' ft · ' + windTxt, pill: night ? 'Dark' : D.labels[rn.rating], pillBg: col(rnK, 0.16), pillFg: col(rnK) };
+    const camSlots = D.spots.map((s, i) => ({ id: 'cam-' + s.id, ph: 'Drop a ' + s.name + ' cam still', disp: i === si ? 'block' : 'none' }));
+
+    const vw = st.vw, vh = st.vh, wide = showBp && vw >= 1280, side = vw >= 900;
+    const s = this.clamp(side ? (vh - 48) / 950 : (vw - 24) / 448, 0.5, 1);
+    this._scale = s;
+    const lay = { o1: wide ? 1 : 2, o2: wide ? 2 : 1, pos: wide ? 'sticky' : 'relative', s: s.toFixed(4), pw: Math.round(448 * s), ph: Math.round(950 * s) };
+    const upd = this.fmt(C.t - 0.37);
+
+    return {
+      showBp, lay, statusTime: C.label, appRef: this.appRef, camsRef: this.camsRef, onCamsScroll: this.onCamsScroll, tv, offline, updatedAt: upd,
+      spot: { name: sp.name, area: sp.area, facing: 'faces ' + this.compass(sp.facing) + ' ' + sp.facing + '°' },
+      hero, win, why, tide, sc, knobPulse, trains, buoy, suit, light, chips, tabsList, fdays, week, coast,
+      mapAt: dn(st.day).toLowerCase() + ' ' + tl, buoyAt: buoy.when.toLowerCase(), hud, mini, camSlots, sheetDay: dn(st.day) + ' · ' + tl,
+      footnote: offline ? 'Offline · showing the ' + upd + ' forecast saved on this device' : 'Updated ' + upd + ' · cached on this device for offline use',
+      scrubDown: this.scrubDown, scrubMove: this.scrubMove, scrubUp: this.scrubUp, sheetDown: this.sheetDown, sheetMove: this.sheetMove, sheetUp: this.sheetUp,
+      prevDay: this.prevDay, nextDay: this.nextDay, resetNow: this.resetNow, miniTap: this.miniTap, togglePin: this.togglePin,
+    };
+  }
+
+  onCamsScroll = e => { this.scrollP = this.clamp(e.currentTarget.scrollTop / 124, 0, 1); this.apply(); };
+  scrubDown = e => { const el = e.currentTarget; try { el.setPointerCapture(e.pointerId); } catch (_) {} this._scrubEl = el; this._scrubbing = true; this._lastT = this.state.t; this.setState({ dragging: true }); this.scrubTo(e.clientX); };
+  scrubMove = e => { if (this._scrubbing) this.scrubTo(e.clientX); };
+  scrubUp = () => { if (!this._scrubbing) return; this._scrubbing = false; this.setState({ dragging: false }); };
+  scrubTo(x) {
+    const r = this._scrubEl.getBoundingClientRect(), k = r.width / 390;
+    const f = this.clamp((x - r.left - 10 * k) / (370 * k), 0, 1), t = 5 + Math.round(f * 56) / 4, cur = this._lastT;
+    if (Math.abs(t - cur) < 0.001) return;
+    const cross = Math.floor(t + 1e-6) !== Math.floor(cur + 1e-6);
+    this._lastT = t;
+    this.setState(s => ({ t, bump: cross ? s.bump + 1 : s.bump }));
+    if (cross && navigator.vibrate) { try { navigator.vibrate(6); } catch (_) {} }
+  }
+  sheetDown = e => { const el = e.currentTarget; try { el.setPointerCapture(e.pointerId); } catch (_) {} const a = this.anim.sheet; a.drag = true; a.vel = 0; this._sd = { y: e.clientY, v: a.v, lastY: e.clientY, lastT: performance.now(), vel: 0, moved: false }; };
+  sheetMove = e => {
+    const d = this._sd; if (!d) return;
+    const now = performance.now(), dy = e.clientY - d.y, s = this._scale || 1;
+    if (Math.abs(dy) > 4) d.moved = true;
+    let v = d.v - dy / s / this.SHEET;
+    if (v < 0) v *= 0.3; if (v > 1) v = 1 + (v - 1) * 0.3;
+    this.anim.sheet.v = v;
+    const dt = now - d.lastT; if (dt > 0) d.vel = 0.75 * ((e.clientY - d.lastY) / dt) + 0.25 * d.vel;
+    d.lastY = e.clientY; d.lastT = now;
+    this.apply();
+  };
+  sheetUp = () => {
+    const d = this._sd; if (!d) return;
+    this._sd = null;
+    const a = this.anim.sheet, s = this._scale || 1;
+    a.drag = false;
+    if (!d.moved) a.to = a.to > 0.5 ? 0 : 1;
+    else { const vp = -(d.vel / s) / this.SHEET * 1000; a.to = a.v + vp * 0.16 > 0.5 ? 1 : 0; a.vel = this.clamp(vp, -8, 8); }
+    this.setState({ sheetOpen: a.to === 1 });
+    this.kick();
+  };
+  kick() { if (this._raf) return; this._last = performance.now(); this._raf = requestAnimationFrame(this.step); }
+  step = now => {
+    const dt = Math.min(0.032, Math.max(0.001, (now - this._last) / 1000));
+    this._last = now;
+    let active = false;
+    for (const key in this.anim) {
+      const a = this.anim[key];
+      if (a.drag) continue;
+      if (this.reduced) { a.v = a.to; a.vel = 0; continue; }
+      a.vel += (-320 * (a.v - a.to) - 30 * a.vel) * dt;
+      a.v += a.vel * dt;
+      if (Math.abs(a.v - a.to) > 0.0008 || Math.abs(a.vel) > 0.004) active = true; else { a.v = a.to; a.vel = 0; }
+    }
+    this.apply();
+    this._raf = active ? requestAnimationFrame(this.step) : null;
+  };
+  apply() {
+    const el = this.appRef.current; if (!el) return;
+    const a = this.anim, sheet = a.sheet.v;
+    const cam = this.clamp(Math.max(this.state.tab === 'cams' ? this.scrollP : 0, sheet, a.tab.v, a.pin.v), 0, 1);
+    el.style.setProperty('--cam', cam.toFixed(4));
+    el.style.setProperty('--sheet', this.clamp(sheet, -0.06, 1.06).toFixed(4));
+    const docked = cam > 0.5;
+    if (docked !== this.state.docked) this.setState({ docked });
+  }
+  selectSpot(id) {
+    if (id === this.state.spot) return;
+    const conn = !this.props.offline && this.clockKey() !== 'night';
+    this.setState({ spot: id, connecting: conn });
+    clearTimeout(this._ct);
+    if (conn) this._ct = setTimeout(() => this.setState({ connecting: false }), 800);
+  }
+  setTab(tab) { this.anim.tab.to = tab === 'cams' ? 0 : 1; this.setState({ tab }); this.kick(); }
+  jump(day, t) { this._lastT = t; this.setState({ day, t }); }
+  prevDay = () => this.setState(s => ({ day: Math.max(0, s.day - 1) }));
+  nextDay = () => this.setState(s => ({ day: Math.min(6, s.day + 1) }));
+  resetNow = () => { const si = Math.max(0, this.D.spots.findIndex(s => s.id === this.state.spot)), d = this.defaults(this.clockKey(), si); this.jump(d.day, d.t); };
+  miniTap = () => {
+    if (!this.state.docked) return;
+    const a = this.anim; a.pin.to = 0; a.sheet.to = 0; a.tab.to = 0;
+    this.setState({ pinned: false, sheetOpen: false, tab: 'cams' });
+    const el = this.camsRef.current; if (el) el.scrollTo({ top: 0, behavior: 'smooth' });
+    this.kick();
+  };
+  togglePin = e => { if (e && e.stopPropagation) e.stopPropagation(); const p = !this.state.pinned; this.anim.pin.to = p ? 1 : 0; this.setState({ pinned: p }); this.kick(); };
+
+  componentDidMount() {
+    this.onResize = () => this.setState({ vw: window.innerWidth, vh: window.innerHeight });
+    this.onResize();
+    window.addEventListener('resize', this.onResize);
+    this.timer = setInterval(() => this.setState(s => ({ sec: s.sec + 1 })), 1000);
+    this.reduced = !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+    const d = this.defaults(this.clockKey(), 0);
+    this.jump(d.day, d.t);
+    this._mt = setInterval(() => { if (this.appRef.current) { clearInterval(this._mt); this.apply(); } }, 120);
+  }
+  componentDidUpdate(pp) {
+    if (pp.clock !== this.props.clock) { const si = Math.max(0, this.D.spots.findIndex(s => s.id === this.state.spot)), d = this.defaults(this.clockKey(), si); this.jump(d.day, d.t); }
+  }
+  componentWillUnmount() { window.removeEventListener('resize', this.onResize); clearInterval(this.timer); clearInterval(this._mt); clearTimeout(this._ct); if (this._raf) cancelAnimationFrame(this._raf); }
+}
+</script>
+</body>
+</html>
