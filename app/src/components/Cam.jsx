@@ -102,7 +102,7 @@ function Dial({ children, beach = true }) {
   );
 }
 
-export default function Cam({ v, ic, liveCam, connecting, miniTap, togglePin }) {
+export default function Cam({ v, ic, liveCam, connecting, miniTap }) {
   const { cam, hud, mini } = v;
   // Once a provider player is running in full view, drop the bottom dials so its own controls stay visible.
   const [playing, setPlaying] = React.useState(() => new Set());
@@ -188,14 +188,6 @@ export default function Cam({ v, ic, liveCam, connecting, miniTap, togglePin }) 
           </div>
         )}
 
-        {hud.showLink && (
-          <a href={hud.link} target="_blank" rel="noopener noreferrer" title={hud.linkLabel} aria-label={hud.linkLabel} style={{ position: 'absolute', right: 66, bottom: 10, width: 48, height: 48, borderRadius: 24, display: 'flex', alignItems: 'center', justifyContent: 'center', ...GLASS_S, color: '#EEF3F6', pointerEvents: hud.pipPE }}>
-            <Icon src={ic.ext} size={18} />
-          </a>
-        )}
-        <button className="btn" onClick={togglePin} title="Dock cam" aria-label="Dock cam" style={{ color: '#EEF3F6', position: 'absolute', right: 12, bottom: 10, width: 48, height: 48, borderRadius: 24, display: 'flex', alignItems: 'center', justifyContent: 'center', ...GLASS_S, pointerEvents: hud.pipPE }}>
-          <Icon src={ic.pip} size={20} />
-        </button>
       </div>
 
       {/* Mini-bar (docked) */}
