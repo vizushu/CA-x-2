@@ -5,9 +5,11 @@ import E from './engine.js';
 
 const D = E.D, TZ = 'America/Los_Angeles';
 const SPOT = {
-  blacks: { lat: 32.8899, lon: -117.2513, mlat: 32.88, mlon: -117.27, station: '9410230', stationName: 'La Jolla' },
-  swamis: { lat: 33.0346, lon: -117.2924, mlat: 33.034, mlon: -117.305, station: '9410230', stationName: 'La Jolla' },
   lajolla: { lat: 32.8575, lon: -117.2570, mlat: 32.86, mlon: -117.27, station: '9410230', stationName: 'La Jolla' },
+  blacks: { lat: 32.8899, lon: -117.2513, mlat: 32.88, mlon: -117.27, station: '9410230', stationName: 'La Jolla' },
+  delmar: { lat: 32.9595, lon: -117.2685, mlat: 32.96, mlon: -117.28, station: '9410230', stationName: 'La Jolla' },
+  swamis: { lat: 33.0346, lon: -117.2924, mlat: 33.034, mlon: -117.305, station: '9410230', stationName: 'La Jolla' },
+  carlsbad: { lat: 33.1505, lon: -117.3480, mlat: 33.15, mlon: -117.36, station: '9410230', stationName: 'La Jolla' },
 };
 const MTN = {
   summit: { lat: 34.2364, lon: -116.8892, topM: 2499, baseM: 2134, plev: 750, d: 'd8', routes: ['18', '330'], site: 'https://www.bigbearmountainresort.com/webcams/snow-summit' },
@@ -18,7 +20,9 @@ const CT = 'https://cwwp2.dot.ca.gov/data/';
 const CAM = {
   blacks: { kind: 'none', label: 'No embeddable public cam', note: 'The Scripps Pier cam is run by Surfline and can’t be embedded. Add your own cam in Settings.', link: 'https://scripps.ucsd.edu/piercam', linkLabel: 'Scripps Pier cam' },
   swamis: { kind: 'img', src: 'https://embed.skylinewebcams.com/img/3461.jpg', every: 300, label: 'Encinitas · SkylineWebcams', live: 'https://www.skylinewebcams.com/webcam/united-states/california/encinitas/encinitas-california.html?w=3461', link: 'https://www.skylinewebcams.com/en/webcam/united-states/california/encinitas/encinitas-california.html', linkLabel: 'Watch live on SkylineWebcams' },
-  lajolla: { kind: 'none', label: 'La Jolla cam · SkylineWebcams', note: 'Tap the link button to watch it live, or paste a cam link for La Jolla Shores in Sources & settings.', link: 'https://www.skylinewebcams.com/en/webcam/united-states/california/san-diego/la-jolla.html', linkLabel: 'La Jolla cam on SkylineWebcams' },
+  lajolla: { kind: 'none', label: 'Live on HDOnTap', note: 'Tap the link button to watch it live, or paste a cam link in Sources & settings.', link: 'https://hdontap.com/stream/532541/', linkLabel: 'La Jolla Shores cam on HDOnTap' },
+  delmar: { kind: 'none', label: 'Live on HDOnTap', note: 'Tap the link button to watch it live, or paste a cam link in Sources & settings.', link: 'https://hdontap.com/stream/399483/', linkLabel: 'Del Mar cam on HDOnTap' },
+  carlsbad: { kind: 'none', label: 'Live on HDOnTap', note: 'Tap the link button to watch it live, or paste a cam link in Sources & settings.', link: 'https://hdontap.com/stream/155380/', linkLabel: 'Carlsbad cam on HDOnTap' },
   summit: { kind: 'img', src: CT + 'd8/cctv/image/sr18125lakegregory/sr18125lakegregory.jpg', every: 60, label: 'SR-18 Lake Gregory · Caltrans', link: MTN.summit.site, linkLabel: 'Snow Summit resort cams' },
   bear: { kind: 'img', src: CT + 'd8/cctv/image/sr138393nohwy18/sr138393nohwy18.jpg', every: 60, label: 'SR-138 at SR-18 · Caltrans', link: MTN.bear.site, linkLabel: 'Bear Mountain resort cams' },
   mammoth: { kind: 'img', src: CT + 'd9/cctv/image/sr203mammothmountain/sr203mammothmountain.jpg', every: 60, label: 'SR-203 Mammoth Mtn · Caltrans', link: MTN.mammoth.site, linkLabel: 'Mammoth Mountain' },
@@ -149,7 +153,7 @@ async function refresh() {
 async function fetchQuiet(url, key) { try { const r = await fetch(url); if (!r.ok) throw 0; const j = await r.json(); save(key, j); return j; } catch (e) { return load(key); } }
 
 // ---------- routing ----------
-const ORIG = { blacks: [32.8899, -117.2513], swamis: [33.0346, -117.2924], lajolla: [32.8575, -117.2570] };
+const ORIG = { blacks: [32.8899, -117.2513], swamis: [33.0346, -117.2924], lajolla: [32.8575, -117.2570], delmar: [32.9595, -117.2685], carlsbad: [33.1505, -117.3480] };
 const provNow = () => S.settings.prov !== 'none' && S.settings.key ? S.settings.prov : 'osrm';
 const provLabel = () => ({ tomtom: 'TomTom live traffic', mapbox: 'Mapbox live traffic', osrm: 'OSRM, no traffic' })[provNow()];
 if (!S.routesLoaded) { S.routesLoaded = true; S.routes = (load('lineup.routes') || {}).day === ymd(new Date()) ? load('lineup.routes').r : {}; }
