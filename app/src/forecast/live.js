@@ -11,6 +11,7 @@ const SPOT = {
   delmar: { lat: 32.9595, lon: -117.2685, mlat: 32.96, mlon: -117.28, station: '9410230', stationName: 'La Jolla' },
   swamis: { lat: 33.0346, lon: -117.2924, mlat: 33.034, mlon: -117.305, station: '9410230', stationName: 'La Jolla' },
   carlsbad: { lat: 33.1505, lon: -117.3480, mlat: 33.15, mlon: -117.36, station: '9410230', stationName: 'La Jolla' },
+  oceanside: { lat: 33.1932, lon: -117.3863, mlat: 33.19, mlon: -117.40, station: '9410230', stationName: 'La Jolla' },
 };
 const MTN = {
   summit: { lat: 34.2364, lon: -116.8892, topM: 2499, baseM: 2134, plev: 750, d: 'd8', routes: ['18', '330'], site: 'https://www.bigbearmountainresort.com/webcams/snow-summit' },
@@ -23,8 +24,9 @@ const CAM = {
   blacks: { kind: 'none', label: 'No embeddable public cam', note: 'The Scripps Pier cam is run by Surfline and can’t be embedded. Add your own cam in Settings.', link: 'https://scripps.ucsd.edu/piercam', linkLabel: 'Scripps Pier cam' },
   swamis: { kind: 'img', src: 'https://embed.skylinewebcams.com/img/3461.jpg', every: 300, label: 'Encinitas · SkylineWebcams', live: 'https://www.skylinewebcams.com/webcam/united-states/california/encinitas/encinitas-california.html?w=3461', link: 'https://www.skylinewebcams.com/en/webcam/united-states/california/encinitas/encinitas-california.html', linkLabel: 'Watch live on SkylineWebcams' },
   lajolla: { kind: 'iframe', src: 'https://g1.ipcamlive.com/player/player.php?alias=603d26c2977cf', label: 'La Jolla Shores · beach / pier', provider: 'La Jolla Shores Hotel · IPCamLive', link: 'https://www.ljshoreshotel.com/beach-cam/', linkLabel: 'La Jolla Shores Hotel beach cam' },
-  delmar: { kind: 'none', label: 'Live on HDOnTap', note: 'Tap the link button to watch it live, or paste a cam link in Sources & settings.', link: 'https://hdontap.com/stream/399483/', linkLabel: 'Del Mar cam on HDOnTap' },
-  carlsbad: { kind: 'none', label: 'Live on HDOnTap', note: 'Tap the link button to watch it live, or paste a cam link in Sources & settings.', link: 'https://hdontap.com/stream/155380/', linkLabel: 'Carlsbad cam on HDOnTap' },
+  delmar: { kind: 'iframe', status: 'pending', src: 'https://portal.hdontap.com/s/embed?stream=hdontap_delmar-17th_Street_4K_PTZ-HDOT', label: 'Del Mar Beach — South Roaming', title: 'Del Mar Beach south-roaming live camera', provider: 'HDOnTap', link: 'https://hdontap.com/stream/399483/del-mar-beach-south-roaming-live-webcam/', linkLabel: 'Del Mar Beach — South Roaming on HDOnTap', pendingNote: 'HDOnTap’s player only runs on sites it has authorized. Waiting for this site to be added; watch it on HDOnTap meanwhile.' },
+  carlsbad: { kind: 'iframe', src: 'https://www.youtube.com/embed/dyX57HKeckg?autoplay=1&mute=1&playsinline=1', label: 'Carlsbad Beach', title: 'Carlsbad Beach live camera', provider: 'YouTube', link: 'https://www.youtube.com/watch?v=dyX57HKeckg', linkLabel: 'Carlsbad Beach live cam on YouTube' },
+  oceanside: { kind: 'iframe', src: 'https://www.youtube.com/embed/cvP_F-c2Upw?autoplay=1&mute=1&playsinline=1', label: 'Oceanside · The Rooftop Bar', title: 'Oceanside rooftop live camera', provider: 'YouTube', link: 'https://www.youtube.com/watch?v=cvP_F-c2Upw', linkLabel: 'Oceanside live cam on YouTube' },
   summit: { kind: 'iframe', src: 'https://camstreamer.com/embed/6voUqxnwy6czzHMjNExPov1rHCMR2cKvz8Hk5OlO', label: 'Snow Summit · Miracle Mile', provider: 'Big Bear Mountain Resort', link: 'https://www.bigbearmountainresort.com/webcams/snow-summit', linkLabel: 'Snow Summit resort cams' },
   bear: { kind: 'iframe', src: 'https://camstreamer.com/embed/CGe2VBFnva0Xtz4cUkELesjftjTPM4nEJIByGTj7', label: 'Bear Mountain · Peak', provider: 'Big Bear Mountain Resort', link: 'https://www.bigbearmountainresort.com/webcams/bear-mountain', linkLabel: 'Bear Mountain resort cams' },
   mammoth: { kind: 'img', src: CT + 'd9/cctv/image/sr203mammothmountain/sr203mammothmountain.jpg', every: 60, label: 'SR-203 Mammoth Mtn · Caltrans', link: MTN.mammoth.site, linkLabel: 'Mammoth Mountain' },
@@ -34,12 +36,15 @@ const S = { off: 0, tday: '', raw: { tideH: {}, tideL: {}, cc: {} }, br: [], mt:
 function load(k) { try { return JSON.parse(localStorage.getItem(k)); } catch (e) { return null; } }
 function save(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
 S.settings = S.settings || Object.assign({ prov: 'none', key: '', swamisLive: false, cams: {} }, load('lineup.settings') || {});
-// Saved cam overrides win over defaults. Earlier builds suggested pasting the HDOnTap La Jolla Shores page into
-// Settings; that page can't be framed, so point that one override at the IPCamLive player. Other settings are untouched.
-const LAJOLLA_PLAYER = 'https://g1.ipcamlive.com/player/player.php?alias=603d26c2977cf';
+// Saved cam overrides win over defaults. Earlier builds suggested pasting HDOnTap stream pages into Settings;
+// those pages can't be framed, so point just those overrides at the current default player. Other settings stay.
 (function migrateCams() {
-  const cams = S.settings.cams || {}, ov = cams.lajolla, url = ov && (typeof ov === 'string' ? ov : ov.url);
-  if (url && /hdontap\.com/i.test(url)) { S.settings.cams = Object.assign({}, cams, { lajolla: { type: 'iframe', url: LAJOLLA_PLAYER } }); save('lineup.settings', S.settings); }
+  const cams = Object.assign({}, S.settings.cams || {}); let changed = false;
+  ['lajolla', 'delmar', 'carlsbad'].forEach(id => {
+    const ov = cams[id], url = ov && (typeof ov === 'string' ? ov : ov.url), def = CAM[id];
+    if (url && def && def.src && /hdontap\.com\/stream\//i.test(url)) { cams[id] = { type: def.kind, url: def.src }; changed = true; }
+  });
+  if (changed) { S.settings.cams = cams; save('lineup.settings', S.settings); }
 })();
 
 const DTF = new Intl.DateTimeFormat('en-US', { timeZone: TZ, hourCycle: 'h23', year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit' });
@@ -162,7 +167,7 @@ async function refresh() {
 async function fetchQuiet(url, key) { try { const r = await fetch(url); if (!r.ok) throw 0; const j = await r.json(); save(key, j); return j; } catch (e) { return load(key); } }
 
 // ---------- routing ----------
-const ORIG = { ob: [32.7495, -117.2550], blacks: [32.8899, -117.2513], swamis: [33.0346, -117.2924], lajolla: [32.8575, -117.2570], delmar: [32.9595, -117.2685], carlsbad: [33.1505, -117.3480] };
+const ORIG = { oceanside: [33.1932, -117.3863], ob: [32.7495, -117.2550], blacks: [32.8899, -117.2513], swamis: [33.0346, -117.2924], lajolla: [32.8575, -117.2570], delmar: [32.9595, -117.2685], carlsbad: [33.1505, -117.3480] };
 const provNow = () => S.settings.prov !== 'none' && S.settings.key ? S.settings.prov : 'osrm';
 const provLabel = () => ({ tomtom: 'TomTom live traffic', mapbox: 'Mapbox live traffic', osrm: 'OSRM, no traffic' })[provNow()];
 if (!S.routesLoaded) { S.routesLoaded = true; S.routes = (load('lineup.routes') || {}).day === ymd(new Date()) ? load('lineup.routes').r : {}; }
@@ -286,7 +291,7 @@ function overrideCam(id, ov) {
   const url = typeof ov === 'string' ? ov : ov && ov.url, type = typeof ov === 'object' && ov ? ov.type : null;
   if (!url) return null;
   const def = CAM[id];
-  if (def && def.src === url && (!type || type === def.kind)) return Object.assign({ id }, def); // same as the default: keep its label and credit
+  if (def && def.src === url && (!type || type === def.kind)) return null; // same as the default: use the default path (label, credit, pending status)
   const base = { id, link: url, linkLabel: 'Open cam source', provider: 'Your cam' };
   if (type === 'iframe') return Object.assign(base, { kind: 'iframe', src: url, label: 'Your cam' });
   if (type === 'hls') return Object.assign(base, { kind: 'hls', src: url, label: 'Your cam · live' });
@@ -302,16 +307,19 @@ function camOf(kind, i) {
   const id = kind === 'break' ? D.breaks[i].id : D.mtns[i].id, c = CAM[id], ov = overrideCam(id, (S.settings.cams || {})[id]);
   if (ov) return ov;
   if (S.camDown[id]) return { id, kind: 'none', label: 'Cam offline', note: c.label + ' isn’t responding.', link: c.link, linkLabel: c.linkLabel };
+  // Provider hasn't authorized this site's domain yet: say so instead of showing a broken frame or a false LIVE.
+  // ?trycams=1 renders the player anyway, to test once the provider adds the domain.
+  if (c.status === 'pending' && !/[?&]trycams\b/.test(location.search)) return Object.assign({ id }, c, { kind: 'pending' });
   if (id === 'swamis' && S.settings.swamisLive) return { id, kind: 'iframe', src: c.live, label: c.label + ' · live', provider: 'SkylineWebcams', link: c.link, linkLabel: c.linkLabel };
   return Object.assign({ id }, c);
 }
 E.camFeed = function (kind, i) {
   const f = camOf(kind, i), src = f.kind === 'img' ? f.src + (f.src.indexOf('?') < 0 ? '?' : '&') + 't=' + Math.floor(Date.now() / ((f.every || 60) * 1000)) : f.src || '';
   const onError = () => { S.camDown[f.id] = true; if (S.cb) S.cb(); };
-  return { key: f.id + '|' + f.kind + '|' + (f.src || ''), isImg: f.kind === 'img', isIframe: f.kind === 'iframe', isHls: f.kind === 'hls', isNone: f.kind === 'none', src, label: f.label, note: f.note || '', provider: f.provider || '', onError };
+  return { key: f.id + '|' + f.kind + '|' + (f.src || ''), isImg: f.kind === 'img', isIframe: f.kind === 'iframe', isPending: f.kind === 'pending', isHls: f.kind === 'hls', isNone: f.kind === 'none', src, label: f.label, note: f.pendingNote || f.note || '', provider: f.provider || '', title: f.title || (f.label + ' live camera'), link: f.link || '', linkLabel: f.linkLabel || '', onError };
 };
 E.camLabel = (kind, i) => { const f = camOf(kind, i); return f.label + (f.kind === 'img' ? ' · photo' : ''); };
-E.camLive = (view, bi, mi) => { if (view === 'split') return 'Cams'; const f = camOf(view === 'mountain' ? 'mtn' : 'break', view === 'mountain' ? mi : bi); return f.kind === 'iframe' || f.kind === 'hls' ? 'Live' : f.kind === 'img' ? 'Photo' : 'No cam'; };
+E.camLive = (view, bi, mi) => { if (view === 'split') return 'Cams'; const f = camOf(view === 'mountain' ? 'mtn' : 'break', view === 'mountain' ? mi : bi); return f.kind === 'pending' ? 'Pending' : f.kind === 'iframe' || f.kind === 'hls' ? 'Live' : f.kind === 'img' ? 'Photo' : 'No cam'; };
 E.camLinkFor = (kind, i) => { const f = camOf(kind, i); return f.link ? { url: f.link, label: f.linkLabel || 'Open source' } : null; };
 
 const Live = {
