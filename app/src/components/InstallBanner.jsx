@@ -4,7 +4,7 @@
 // In-app browsers (Instagram, Facebook, …) can't install at all, so it asks to open the link in the real browser.
 import React from 'react';
 import { iconUrl } from '../icons.js';
-import { Icon, T1, T2, T3 } from './ui.jsx';
+import { Icon, T1, T2, T3, TAP } from './ui.jsx';
 
 const KEY = 'lineup.installBanner';
 const SNOOZE_DAYS = 14;
@@ -42,8 +42,8 @@ export default function InstallBanner({ ready, hidden, bottom }) {
           {kind === 'inapp' && (<>Tap <Icon src={iconUrl('ellipsis-vertical')} size={14} style={{ display: 'inline-block', verticalAlign: '-2px', margin: '0 1px' }} /> or <Icon src={iconUrl('share')} size={14} style={{ display: 'inline-block', verticalAlign: '-2px', margin: '0 1px' }} /> and choose <b style={{ color: T1, fontWeight: 650 }}>Open in {isIOS ? 'Safari' : 'Chrome'}</b>.</>)}
         </div>
       </div>
-      {kind === 'button' && <button className="btn" onClick={install} style={{ flex: 'none', height: 36, padding: '0 16px', borderRadius: 18, background: 'var(--accbg, oklch(0.84 0.12 195))', color: 'var(--accfg, #04131A)', fontSize: 14, fontWeight: 700 }}>Install</button>}
-      <button className="btn" onClick={dismiss} aria-label="Dismiss" style={{ flex: 'none', width: 36, height: 36, borderRadius: 18, display: 'flex', alignItems: 'center', justifyContent: 'center', color: T3 }}>
+      {kind === 'button' && <button type="button" className="btn" onClick={install} style={{ flex: 'none', height: TAP, padding: '0 18px', borderRadius: TAP / 2, background: 'var(--accbg, oklch(0.84 0.12 195))', color: 'var(--accfg, #04131A)', fontSize: 14, fontWeight: 700 }}>Install</button>}
+      <button type="button" className="btn" onClick={dismiss} aria-label="Dismiss" style={{ flex: 'none', width: TAP, height: TAP, borderRadius: TAP / 2, display: 'flex', alignItems: 'center', justifyContent: 'center', color: T3 }}>
         <Icon src={iconUrl('x')} size={18} />
       </button>
     </div>

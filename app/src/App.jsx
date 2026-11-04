@@ -3,9 +3,9 @@ import React from 'react';
 import E from './forecast/engine.js';
 import Live from './forecast/live.js';
 import viewModel from './forecast/view.js';
-import { SANS, ModeScroller } from './components/ui.jsx';
+import { SANS, TAP, ModeScroller } from './components/ui.jsx';
 import SurfView from './components/SurfView.jsx';
-import DoubleView from './components/DoubleView.jsx';
+import DoubleView, { OrderBar } from './components/DoubleView.jsx';
 import SnowView from './components/SnowView.jsx';
 import Cam from './components/Cam.jsx';
 import Dock from './components/Dock.jsx';
@@ -40,7 +40,7 @@ export default class App extends React.Component {
   state = Object.assign(
     { mode: 'surf', breakId: 'swamis', mtnId: 'bear', order: 'surf', camView: 'split' },
     loadUI(),
-    { t: 6.5, follow: true, dragging: false, bump: 0, connecting: '', docked: false, sheetLevel: 0, splash: 'in', splashMin: false, pinned: false, sec: 0, vw: window.innerWidth, vh: window.innerHeight, data: 0, offline: false, },
+    { t: 6.5, follow: true, dragging: false, bump: 0, connecting: '', docked: false, sheetLevel: 0, splash: 'in', splashMin: false, pinned: false, sec: 0, vw: window.innerWidth, vh: window.innerHeight, data: 0, offline: false, refresh: 'idle', refreshMsg: '', attempts: 0, lastTry: '' },
   );
 
   appRef = React.createRef();
@@ -69,7 +69,22 @@ export default class App extends React.Component {
     return { s, ah: 932, pw: Math.round(448 * s), ph: Math.round(950 * s), bw: 448, bh: 950, bpad: 9, brad: 57, bbg: '#13181F', bsh: 'inset 0 0 0 1px rgba(238,243,246,0.09), 0 0 0 1px #000000, 0 50px 120px -30px rgba(0,0,0,0.95)', framed: true, pos: wide ? 'sticky' : 'relative', top: 24, left: 'auto', z: 'auto', o1: wide ? 1 : 2, o2: wide ? 2 : 1, rootPad: '40px 32px 72px' };
   }
 
-  refreshNow = () => Live.refresh();
+  // Manual refresh (Data card) and launch retry. Disabled while pending; the forecast on screen is never cleared, and
+  // the outcome is reported in plain language with the next step.
+  refreshNow = async () => {
+    if (this.state.refresh === 'pending') return;
+    const booting = !Live.isReady();
+    this.setState({ refresh: 'pending', refreshMsg: '' });
+    try { await Live.refresh(); } catch (e) { /* every feed already falls back to its cache; reported below */ }
+    const h = Live.health(), now = E.fmt(E.nowT()), off = navigator.onLine === false;
+    if (booting && !Live.isReady()) { this.setState(s => ({ refresh: 'failed', attempts: s.attempts + 1, lastTry: now })); return; }
+    let refresh = 'done', refreshMsg;
+    if (off) { refresh = 'failed'; refreshMsg = 'You’re offline. You’re seeing the forecast saved' + (h.at ? ' at ' + h.at : '') + '. It updates on its own when you’re back online.'; }
+    else if (h.live === 0) { refresh = 'failed'; refreshMsg = 'Couldn’t reach the weather services. You’re still seeing the forecast saved' + (h.at ? ' at ' + h.at : '') + '. Check your connection, then tap Refresh now.'; }
+    else if (h.failed + h.cached > 0) refreshMsg = 'Updated at ' + now + '. ' + (h.failed + h.cached) + ' of ' + h.total + ' feeds didn’t answer, so those parts use saved data. Try again in a minute.';
+    else refreshMsg = 'Up to date as of ' + now + '.';
+    this.setState({ refresh, refreshMsg });
+  };
 
   // ---------- gestures ----------
   activeRef() { const m = this.state.mode; return m === 'surf' ? this.surfRef : m === 'snow' ? this.snowRef : this.dblRef; }
@@ -206,13 +221,6 @@ export default class App extends React.Component {
   setOrder = o => this.setState({ order: o });
   jump(t, follow) { this._lastT = t; this.setState({ t, follow: !!follow }); }
   resetNow = () => this.jump(E.defaultT(), true);
-  miniTap = () => {
-    if (!this.state.docked) return;
-    const a = this.anim; a.pin.to = 0; a.sheet.to = Math.min(a.sheet.to, 1);
-    this.setState(s => ({ pinned: false, sheetLevel: Math.min(s.sheetLevel, 1) }));
-    const el = this.activeRef().current; if (el) el.scrollTo({ top: 0, behavior: this.reduced ? 'auto' : 'smooth' });
-    this.kick();
-  };
 
   // ---------- data + lifecycle ----------
   onData = () => {
@@ -240,7 +248,7 @@ export default class App extends React.Component {
     this._settleT = setTimeout(this.onResize, 400);
     this.onResize();
     window.addEventListener('resize', this.onResize);
-    this.onNet = () => this.setState({ offline: navigator.onLine === false });
+    this.onNet = () => { const off = navigator.onLine === false; this.setState({ offline: off }); if (!off && !Live.isReady() && Live.isSettled()) this.refreshNow(); }; // back online with nothing loaded: retry on its own
     this.onNet();
     window.addEventListener('online', this.onNet);
     window.addEventListener('offline', this.onNet);
@@ -271,7 +279,7 @@ export default class App extends React.Component {
   // ---------- render ----------
   renderApp(lay) {
     const st = this.state;
-    if (!Live.isReady()) return <Splash failed={Live.isSettled()} onRetry={this.refreshNow} />;
+    if (!Live.isReady()) return <Splash failed={Live.isSettled() || st.attempts > 0 || st.refresh === 'pending'} pending={st.refresh === 'pending'} offline={st.offline} attempts={st.attempts} lastTry={st.lastTry} onRetry={this.refreshNow} />;
     const D = E.D, bi = Math.max(0, D.breaks.findIndex(b => b.id === st.breakId)), mi = Math.max(0, D.mtns.findIndex(m => m.id === st.mtnId));
     Live.setCurrent(bi, mi);
     E.allowFetch = !st.dragging;
@@ -279,17 +287,19 @@ export default class App extends React.Component {
     this._exp = v.exp; this._ctrl = v.ctrl; this._theme = v.theme; this._nowT = v.nowT;
     const vk = st.mode === 'surf' ? 'beach' : st.mode === 'snow' ? 'mountain' : 'split';
     const off = !!this.props.offline || st.offline, liveCam = !off && E.camLive(vk, bi, mi) === 'Live';
-    Object.assign(v, { srcSummary: Live.summary(), dayWord: E.dayWord(), sheetLevel: st.sheetLevel, t: st.t });
-    const ic = v.ic, common = { v, ic, openDrawer: this.openDrawer };
+    Object.assign(v, { sources: Live.sources(), srcSummary: Live.summary(), dayWord: E.dayWord(), sheetLevel: st.sheetLevel, t: st.t });
+    const ic = v.ic, common = { v, ic, openDrawer: this.openDrawer, refresh: { state: st.refresh, msg: st.refreshMsg, onClick: this.refreshNow } };
+    const aboveDock = `calc(${v.dk.tab + v.dk.grab + 8}px + max(20px, env(safe-area-inset-bottom, 0px)))`, dbl = st.mode === 'double', orderH = TAP + 16;
     return (
       <>
         <div aria-hidden="true" style={{ position: 'absolute', inset: 0, pointerEvents: 'none', opacity: v.glowOp, transition: 'opacity .6s', background: 'radial-gradient(110% 40% at 50% 30%, rgba(214,224,240,0.18), rgba(214,224,240,0) 70%), radial-gradient(70% 30% at 15% 85%, rgba(80,200,215,0.07), rgba(80,200,215,0) 70%), linear-gradient(180deg, rgba(232,238,246,0.10) 0%, rgba(28,34,44,0) 45%, rgba(190,200,216,0.10) 100%)' }} />
         <ModeScroller label="Surf" ref={this.surfRef} onScroll={this.onScroll} onSwipe={this.swipeBreak} swipeKey={st.breakId} swipeDir={st.swipeDir} tv={v.tv.surf} padB={v.dk.padB}><SurfView {...common} S={v.S} /></ModeScroller>
-        <ModeScroller label="CA Double" ref={this.dblRef} onScroll={this.onScroll} tv={v.tv.double} padB={v.dk.padB}><DoubleView {...common} dbl={v.dbl} setOrder={this.setOrder} /></ModeScroller>
+        <ModeScroller label="CA Double" ref={this.dblRef} onScroll={this.onScroll} tv={v.tv.double} padB={v.dk.padB + orderH}><DoubleView {...common} dbl={v.dbl} /></ModeScroller>
         <ModeScroller label="Snow" ref={this.snowRef} onScroll={this.onScroll} onSwipe={this.swipeMtn} swipeKey={st.mtnId} swipeDir={st.swipeDir} tv={v.tv.snow} padB={v.dk.padB}><SnowView {...common} sn={v.sn} /></ModeScroller>
-        <Cam v={v} ic={ic} liveCam={liveCam} connecting={st.connecting} miniTap={this.miniTap} />
+        <Cam v={v} ic={ic} liveCam={liveCam} connecting={st.connecting} />
+        <OrderBar dbl={v.dbl} ic={ic} setOrder={this.setOrder} bottom={aboveDock} show={dbl && st.sheetLevel === 0} />
         <Dock v={v} ic={ic} bump={st.bump} h={this} />
-        {lay.app && !standalone() && <InstallBanner ready={st.splash === 'gone'} hidden={st.sheetLevel > 0} bottom={`calc(${v.dk.tab + v.dk.grab + 10}px + max(20px, env(safe-area-inset-bottom, 0px)))`} />}
+        {lay.app && !standalone() && <InstallBanner ready={st.splash === 'gone'} hidden={st.sheetLevel > 0} bottom={`calc(${v.dk.tab + v.dk.grab + 10 + (dbl ? orderH : 0)}px + max(20px, env(safe-area-inset-bottom, 0px)))`} />}
       </>
     );
   }

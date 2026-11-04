@@ -142,8 +142,10 @@ function rebuild() {
 S.rebuild = rebuild;
 function bump() { (S.rebuild || rebuild)(); if (S.cb) S.cb(); }
 
-async function refresh() {
-  if (S.inflight) return; S.inflight = true; S.settled = false;
+// Returns the in-flight promise when a refresh is already running, so callers can always await the result.
+function refresh() { if (S.inflight && S.pending) return S.pending; S.pending = doRefresh(); return S.pending; }
+async function doRefresh() {
+  S.inflight = true; S.settled = false;
   const jobs = [
     getJSON('coast', coastURL()).then(j => { if (j) S.raw.coast = j; }),
     getJSON('marine', marineURL()).then(j => { if (j) S.raw.marine = j; }),
@@ -155,8 +157,8 @@ async function refresh() {
     jobs.push(fetchQuiet(tideURL(st, 'hilo'), 'lineup.c.hilo' + st).then(j => { if (j) S.raw.tideL[st] = j; }));
   });
   ['d8', 'd9'].forEach(d => jobs.push(getJSON('cc' + d, CT + d + '/cc/ccStatus' + d.toUpperCase().replace('D', 'D0') + '.json').then(j => { if (j) S.raw.cc[d] = j; })));
-  await Promise.all(jobs.map(p => p.then(bump, bump)));
-  S.inflight = false; S.settled = true; bump();
+  try { await Promise.all(jobs.map(p => p.then(bump, bump))); }
+  finally { S.inflight = false; S.settled = true; S.pending = null; try { bump(); } catch (e) { /* keep the last good view */ } }
 }
 async function fetchQuiet(url, key) { try { const r = await fetch(url); if (!r.ok) throw 0; const j = await r.json(); save(key, j); return j; } catch (e) { return load(key); } }
 
@@ -301,7 +303,7 @@ function overrideCam(id, ov) {
 function camOf(kind, i) {
   const id = kind === 'break' ? D.breaks[i].id : D.mtns[i].id, c = CAM[id], ov = overrideCam(id, (S.settings.cams || {})[id]);
   if (ov) return ov;
-  if (S.camDown[id]) return { id, kind: 'none', label: 'Cam offline', note: c.label + ' isn’t responding.', link: c.link, linkLabel: c.linkLabel };
+  if (S.camDown[id]) return { id, kind: 'none', label: 'Cam not loading', note: 'The ' + c.label + ' stream isn’t responding right now. 2CA tries it again on the next refresh, every 10 minutes.', link: c.link, linkLabel: c.linkLabel };
   // Provider hasn't authorized this site's domain yet: say so instead of showing a broken frame or a false LIVE.
   // ?trycams=1 renders the player anyway, to test once the provider adds the domain.
   if (c.status === 'pending' && !/[?&]trycams\b/.test(location.search)) return Object.assign({ id }, c, { kind: 'pending' });
@@ -323,6 +325,8 @@ const Live = {
   stop() { S.cb = null; if (S.timers) { S.timers.forEach(clearInterval); S.timers = false; } },
   refresh() { S.camDown = {}; return refresh(); },
   isReady: () => S.ready, isSettled: () => S.settled,
+  /** Feed health after the last refresh: how many core feeds came back live, from cache, or not at all. */
+  health() { const ids = ['marine', 'coast', 'tide9410230', 'water', 'mtn', 'ccd8', 'ccd9'], h = { live: 0, cached: 0, failed: 0, total: ids.length }; ids.forEach(id => { const x = S.src[id]; if (!x || x.ok === false) h.failed++; else if (x.cached) h.cached++; else h.live++; if (x && x.t) h.t = Math.max(h.t || 0, x.t); }); h.at = h.t ? clockOf(h.t) : ''; return h; },
   setCurrent(bi, mi) { S.cur = [bi, mi]; },
   settings: () => S.settings,
   setTraffic(prov, key) { S.settings.prov = prov; S.settings.key = (key || '').trim(); save('lineup.settings', S.settings); Object.keys(S.routes).forEach(k => { if (k.indexOf('osrm|') !== 0) delete S.routes[k]; }); S.src.route = null; bump(); },

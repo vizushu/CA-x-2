@@ -44,6 +44,7 @@ export default function viewModel(st, props, ctx) {
     words: E.sizeWords(rg.lo, rg.hi) + ' · ' + E.feel(r) + (darkS ? ' · first light ' + E.fmt(L.first) : ''),
     windRot: E.norm(r.wind.d + 180 - B.facing).toFixed(0), windColor: col(wK), windCat: E.catLabel(r.wind.cat),
     windDetail: Math.round(r.wind.k) + ' kt · gusts ' + Math.round(r.wind.g) + ' · ' + E.compass(r.wind.d),
+    windK: Math.round(r.wind.k), tideNum: r.tide.h.toFixed(1), swellKj: Math.round(r.kj), swellTag: D.labels[r.H >= 3 && p.T >= 11 ? 'good' : r.H >= 2 ? 'fair' : 'poor'], swellCol: col(r.H >= 3 && p.T >= 11 ? 'good' : r.H >= 2 ? 'fair' : 'poor'), swellBg: col(r.H >= 3 && p.T >= 11 ? 'good' : r.H >= 2 ? 'fair' : 'poor', 0.16), windBg: col(wK, 0.16), tideBg: col(tK, 0.16),
     tideH: r.tide.h.toFixed(1) + ' ft', tideTrend: r.tide.rising ? 'Rising' : 'Dropping', tideCol: col(tK),
     tideDetail: nx ? (nx.type === 'H' ? 'High ' : 'Low ') + nx.h.toFixed(1) + ' · ' + E.fmt(nx.t) : '',
     sLine: spk.line, sArea: spk.area, sdx: sdot.x.toFixed(1), sdy: sdot.y.toFixed(1), win: sWin,
@@ -80,7 +81,7 @@ export default function viewModel(st, props, ctx) {
     words: s.season === 'pre' ? E.preseasonText(mi) : s.pre ? 'Last 24 h ' + M.fresh24 + '″ · summit gusts ~' + Math.round(s.gust) + ' mph' : s.post ? 'Lifts usually close at 4:00 PM' : s.surface + (s.hold ? ' · wind-hold risk on the ' + lc(M.hold) + ' until ~' + E.fmt(holdEnd) : ' · low wind-hold risk'),
     at: s.closed ? tl : tl, ladder: [lvl('Summit', M.top, s.temp, s.wind), lvl('Mid', Math.round((M.top + M.base) / 20) * 10, s.temp + M.dT / 2, s.wind * 0.62), lvl('Base', M.base, s.temp + M.dT, s.wind * 0.3)],
     lifts: E.liftsText(mi, s),
-    stepCols: E.surfaceSteps(mi).length, steps: E.surfaceSteps(mi).map(([k, label, range]) => ({ label, range, bg: s.surfK === k ? CHIP : 'transparent', fg: s.surfK === k ? T1 : T3 })),
+    stepCols: E.surfaceSteps(mi).length, steps: E.surfaceSteps(mi).map(([k, label, range]) => ({ label, range, bg: s.surfK === k ? CHIP : 'transparent', fg: s.surfK === k ? T1 : T3 })), surfaceNow: s.surface,
     win: s.season === 'pre' ? win(null, 'Not open yet', E.nextSnowText(mi), '', '', nowT) : !nw ? win(null, 'No standout window', 'Packed powder all day', '', '', nowT) : nowT <= nw.b
       ? win(nw, 'Best riding ' + E.dayWord(), nWinS.surface + ' before the chop · ' + (nWinS.hold ? 'summit still on hold' : 'summit open'), nowT < nw.a ? 'In ' + E.dur(nw.a - nowT) : 'On now · ' + E.dur(nw.b - nowT) + ' left', 'Jump', nw.a)
       : win(nw, 'Best riding · passed', 'Packed powder until the lifts close at 4:00 PM', '', 'Review', nw.a),
@@ -140,10 +141,10 @@ export default function viewModel(st, props, ctx) {
     groups: mode === 'surf' ? [gSurf] : mode === 'snow' ? [gSnow, gRoad] : st.order === 'surf' ? [gSurf, gRoad, gSnow] : [gSnow, gRoad, gSurf] };
 
   // ---------- DOCK ----------
-  const dk = { strip: glove ? 58 : 52, viz: glove ? 92 : 80, pills: glove ? 56 : 48, modes: glove ? 64 : 56, val: glove ? 17 : 15, modeFs: glove ? 15 : 14, glove };
+  const dk = { strip: 58, viz: glove ? 92 : 80, pills: 58, /* ≥ TAP (58 design px = 48 real px on 356-px+ phones) */ modes: glove ? 64 : 56, val: glove ? 17 : 15, modeFs: glove ? 15 : 14, glove };
   // Bottom tab bar (docked edge-to-edge) + a pull-up panel above it with three detents:
   // 0 = collapsed handle row, 1 = time strip + scrubber + spot pills, 2 = loadout drawer.
-  dk.tab = 56; /* same height in every mode; glove mode only enlarges the timeline controls */ dk.safe = 34; dk.grab = 48; dk.ctrl = dk.strip + dk.viz + 12 + dk.pills + 12;
+  dk.tab = 58; /* same height in every mode; glove mode only enlarges the scrubber */ dk.safe = 34; dk.grab = 58; dk.ctrl = dk.strip + dk.viz + 12 + dk.pills + 12;
   dk.exp = Math.max(160, (props.appH || 932) - 126 - dk.tab - dk.safe - dk.grab - dk.ctrl - 8); dk.padB = dk.tab + dk.safe + dk.grab + 20;
   const dNow = E.drive(bi, mi, t, st.order === 'surf');
   const cells = mode === 'surf' ? [['Surf', rg.str + ' ft', col(pkS)], ['Energy', Math.round(r.kj) + ' kJ'], ['Tide', r.tide.h.toFixed(1) + ' ft'], ['Wind', Math.round(r.wind.k) + ' kt ' + E.catShort(r.wind.cat), col(wK)]]
@@ -193,7 +194,6 @@ export default function viewModel(st, props, ctx) {
     live: offline ? 'Cached' : E.camLive(view, bi, mi), stamp: offline ? upd : E.clockSec(),
     showTimer: false, waterTxt: B.water + '°F', setTxt, setSub, setBg: isSet ? 'rgba(238,243,246,0.94)' : 'rgba(8,12,18,0.5)', setFg: isSet ? '#0A1016' : '#EEF3F6', setSubFg: isSet ? 'rgba(10,16,22,0.7)' : '#A3AEBA',
     showVis: mode === 'snow', visTxt: 'Summit vis ' + E.num1(sN.vis) + ' mi', visSub: sN.vis >= 3 ? 'Model visibility' : 'Clearing ~' + E.fmt(E.firstAfter(x => E.snowAt(mi, x).vis >= 3, nowT)),
-    showToggle: false, views: [['split', 'Split view', 'columns-2'], ['beach', 'Beach cam', 'waves'], ['mountain', 'Mountain cam', 'mountain-snow']].map(([id, title, n]) => ({ title, icon: ic(n), bg: st.camView === id ? 'rgba(238,243,246,0.92)' : 'transparent', fg: st.camView === id ? '#0A1016' : '#EEF3F6', onClick: () => ctx.setCamView(id) })),
     showOverlay: !!overlay, overlay,
     showSurfDials: view === 'beach', windRot: E.norm(rn.wind.d + 180 - B.facing).toFixed(0), windCol: colD(E.windKey(rn.wind.score)), windTxt: wTxt, swellRot: E.norm(rn.trains[0].d + 180 - B.facing).toFixed(0), swellTxt: Math.round(rn.trains[0].T) + ' s · ' + Math.round(rn.trains[0].d) + '° ' + E.compass(rn.trains[0].d),
     showSnowDials: view === 'mountain', sRot: (M.dir + 180) % 360, sCol: colD(E.gustKey(sN.gust)), sWind: 'Summit ' + Math.round(sN.wind) + ' mph', sSub: 'gusts ' + Math.round(sN.gust) + (sN.hold ? ' · wind hold' : ''), liftTxt: sN.season === 'pre' ? 'Pre-season' : 'Hold risk ' + (sN.gust >= 45 ? 'high' : sN.gust >= 30 ? 'medium' : 'low'), liftSub: 'Base ' + M.depth + '″ · model',

@@ -91,7 +91,7 @@ function Dial({ children, beach = true, plain = false }) {
   );
 }
 
-export default function Cam({ v, ic, liveCam, connecting, miniTap }) {
+export default function Cam({ v, ic, liveCam, connecting }) {
   const { cam, hud, mini } = v;
   // Once a provider player is running in full view, drop the bottom dials so its own controls stay visible.
   const shown = cam.halfDisp === 'block' ? [] : cam.bw === 100 ? cam.beach : cam.mtn;
@@ -115,7 +115,6 @@ export default function Cam({ v, ic, liveCam, connecting, miniTap }) {
         <div style={{ position: 'absolute', left: 0, right: 0, bottom: 0, height: 2, overflow: 'hidden', pointerEvents: 'none' }}>
           {connecting && <div style={{ position: 'absolute', top: 0, bottom: 0, left: 0, width: '30%', background: 'linear-gradient(90deg, rgba(238,243,246,0), #EEF3F6, rgba(238,243,246,0))', animation: 'sweep 0.9s ease-in-out infinite' }} />}
         </div>
-        <div onClick={miniTap} aria-hidden="true" style={{ position: 'absolute', inset: 0, cursor: 'pointer', pointerEvents: hud.catcherPE }} />
       </div>
 
       {/* HUD */}
@@ -138,15 +137,6 @@ export default function Cam({ v, ic, liveCam, connecting, miniTap }) {
           <div style={{ position: 'absolute', right: 16, top: 58, padding: '6px 12px', borderRadius: 14, textAlign: 'right', background: 'rgba(8,12,18,0.5)', color: '#EEF3F6', backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)', boxShadow: 'inset 0 0 0 0.5px rgba(238,243,246,0.16)' }}>
             <div style={{ fontSize: 13, lineHeight: '16px', fontWeight: 650 }}>{hud.visTxt}</div>
             <div style={{ fontSize: 10, lineHeight: '13px', color: '#A3AEBA' }}>{hud.visSub}</div>
-          </div>
-        )}
-        {hud.showToggle && (
-          <div role="group" aria-label="Cam view" style={{ position: 'absolute', right: 14, top: 52, display: 'flex', gap: 2, padding: 3, borderRadius: 17, background: 'rgba(8,12,18,0.55)', backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)', boxShadow: 'inset 0 0 0 0.5px rgba(238,243,246,0.16)', pointerEvents: hud.pipPE }}>
-            {hud.views.map(vw => (
-              <button key={vw.title} className="btn" onClick={vw.onClick} title={vw.title} aria-label={vw.title} style={{ width: 48, height: 40, borderRadius: 14, display: 'flex', alignItems: 'center', justifyContent: 'center', background: vw.bg, color: vw.fg, transition: 'background .2s, color .2s' }}>
-                <Icon src={vw.icon} size={18} />
-              </button>
-            ))}
           </div>
         )}
         {hud.showOverlay && (
@@ -184,8 +174,8 @@ export default function Cam({ v, ic, liveCam, connecting, miniTap }) {
 
       </div>
 
-      {/* Mini-bar (docked) */}
-      <div onClick={miniTap} role="button" aria-label="Show cam" style={{ position: 'absolute', left: 120, right: 8, top: 54, height: 64, display: 'flex', alignItems: 'center', gap: 10, cursor: 'pointer', color: '#EEF3F6', opacity: 'calc((var(--cam, 0) - 0.55) * 2.2)', pointerEvents: hud.catcherPE }}>
+      {/* Mini-bar (docked): informational only. The top header holds no controls; the dock handle closes the loadout. */}
+      <div aria-hidden={hud.catcherPE !== 'auto'} style={{ position: 'absolute', left: 120, right: 16, top: 54, height: 64, display: 'flex', alignItems: 'center', gap: 10, color: '#EEF3F6', opacity: 'calc((var(--cam, 0) - 0.55) * 2.2)', pointerEvents: 'none' }}>
         <div style={{ flex: 1, minWidth: 0 }}>
           <div className="nw" style={{ display: 'flex', alignItems: 'center', gap: 7, fontSize: 16, lineHeight: '20px', fontWeight: 600 }}>
             {mini.name}<span style={{ fontSize: 10, fontWeight: 700, letterSpacing: '.08em', color: '#A3AEBA', textTransform: 'uppercase' }}>{hud.live}</span>
@@ -195,7 +185,6 @@ export default function Cam({ v, ic, liveCam, connecting, miniTap }) {
         <div style={{ flex: 'none', height: 26, padding: '0 10px', borderRadius: 13, display: 'flex', alignItems: 'center', gap: 6, background: mini.pillBg, color: mini.pillFg, fontSize: 11, fontWeight: 700, letterSpacing: '.07em', textTransform: 'uppercase' }}>
           <span style={{ width: 6, height: 6, borderRadius: 3, background: mini.pillFg }} />{mini.pill}
         </div>
-        <span style={{ flex: 'none', width: 40, height: 48, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#A3AEBA' }}><Icon src={ic.chevDown} size={20} /></span>
       </div>
     </div>
   );

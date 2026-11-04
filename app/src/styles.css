@@ -3,6 +3,7 @@ a { color: #EEF3F6; text-decoration-color: rgba(238,243,246,.35); }
 a:hover { color: #FFFFFF; text-decoration-color: #FFFFFF; }
 
 .btn { appearance: none; -webkit-appearance: none; border: 0; background: none; color: inherit; font: inherit; margin: 0; padding: 0; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+.btn:disabled { cursor: default; }
 .btn:focus-visible, [role="slider"]:focus-visible, [role="button"]:focus-visible { outline: 2px solid var(--acc, oklch(0.82 0.1 190)); outline-offset: 2px; }
 .noscroll { scrollbar-width: none; }
 .noscroll::-webkit-scrollbar { display: none; }
@@ -21,4 +22,5 @@ a:hover { color: #FFFFFF; text-decoration-color: #FFFFFF; }
 
 @keyframes wordmarkIn { 0% { opacity: 0; transform: translateY(6px); letter-spacing: 0; filter: blur(2px); } 100% { opacity: 1; transform: none; filter: none; } }
 @keyframes spotInR { 0% { opacity: 0; transform: translateX(28px); } 100% { opacity: 1; transform: none; } }
+@keyframes spin { to { transform: rotate(360deg); } }
 @keyframes spotInL { 0% { opacity: 0; transform: translateX(-28px); } 100% { opacity: 1; transform: none; } }
