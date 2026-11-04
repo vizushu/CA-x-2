@@ -29,12 +29,37 @@ function HlsVideo({ src, label, onError }) {
   return <video ref={ref} muted autoPlay playsInline loop aria-label={label} onError={onError} style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', display: 'block', background: '#070B10' }} />;
 }
 
-function Feed({ f }) {
+/**
+ * Third-party iframe player (IPCamLive, Camstreamer, YouTube…). Tap-to-play: the iframe is only created after the
+ * viewer taps, so nothing loads in the background and the tap counts as the user gesture for the provider's player.
+ * Some providers (IPCamLive) still show their own Play control inside the frame; their controls are left intact.
+ */
+function IframeFeed({ f, onPlay }) {
+  const [on, setOn] = React.useState(false);
+  if (on) {
+    return (
+      <iframe src={f.src} title={f.label + ' live camera'} allow="autoplay; fullscreen; picture-in-picture; encrypted-media" allowFullScreen referrerPolicy="strict-origin-when-cross-origin"
+        style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', border: 0, display: 'block', background: '#000' }} />
+    );
+  }
+  return (
+    <button className="btn" onClick={e => { e.stopPropagation(); setOn(true); if (onPlay) onPlay(f.key); }} aria-label={'Play ' + f.label + ' live camera'}
+      style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 8, padding: '36px 20px 0', textAlign: 'center', color: '#EEF3F6' }}>
+      <span style={{ width: 52, height: 52, borderRadius: 26, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(238,243,246,0.16)', backdropFilter: 'blur(10px)', WebkitBackdropFilter: 'blur(10px)', boxShadow: 'inset 0 0 0 0.5px rgba(238,243,246,0.3)' }}>
+        <svg width="20" height="20" viewBox="0 0 20 20" aria-hidden="true"><path d="M6 3.8v12.4a.8.8 0 0 0 1.2.7l10-6.2a.8.8 0 0 0 0-1.4l-10-6.2A.8.8 0 0 0 6 3.8z" fill="currentColor" /></svg>
+      </span>
+      <span style={{ fontSize: 13, lineHeight: '17px', fontWeight: 650 }}>Tap to play · {f.label}</span>
+      {f.provider && <span style={{ fontSize: 11, lineHeight: '15px', color: '#A3AEBA' }}>Live player by {f.provider}</span>}
+    </button>
+  );
+}
+
+function Feed({ f, onPlay }) {
   return (
     <div style={{ position: 'absolute', inset: 0 }}>
       {f.isImg && <img src={f.src} alt={f.label} onError={f.onError} style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />}
       {f.isHls && <HlsVideo src={f.src} label={f.label} onError={f.onError} />}
-      {f.isFrame && <iframe src={f.src} title={f.label} allow="autoplay; encrypted-media; picture-in-picture; fullscreen" referrerPolicy="strict-origin-when-cross-origin" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', border: 0, display: 'block' }} />}
+      {f.isIframe && <IframeFeed f={f} onPlay={onPlay} />}
       {f.isNone && (
         <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 6, padding: '0 28px', textAlign: 'center' }}>
           <div style={{ fontSize: 13, lineHeight: '17px', fontWeight: 650, color: '#EEF3F6' }}>{f.label}</div>
@@ -67,6 +92,11 @@ function Dial({ children, beach = true }) {
 
 export default function Cam({ v, ic, liveCam, connecting, miniTap, togglePin }) {
   const { cam, hud, mini } = v;
+  // Once a provider player is running in full view, drop the bottom dials so its own controls stay visible.
+  const [playing, setPlaying] = React.useState(() => new Set());
+  const onPlay = React.useCallback(k => setPlaying(s => new Set(s).add(k)), []);
+  const shown = cam.halfDisp === 'block' ? [] : cam.bw === 100 ? cam.beach : cam.mtn;
+  const providerUi = shown.some(f => f.isIframe && playing.has(f.key));
   return (
     <div style={{ position: 'absolute', left: 0, top: 0, right: 0, height: 'calc(242px - 124px * var(--cam, 0))', zIndex: 5, overflow: 'hidden' }}>
       <div style={{ position: 'absolute', inset: 0, background: 'rgba(10,15,21,0.84)', backdropFilter: 'blur(24px) saturate(160%)', WebkitBackdropFilter: 'blur(24px) saturate(160%)', boxShadow: 'inset 0 -0.5px 0 rgba(238,243,246,0.08)', opacity: 'var(--cam, 0)' }} />
@@ -74,12 +104,12 @@ export default function Cam({ v, ic, liveCam, connecting, miniTap, togglePin }) 
       <div style={{ position: 'absolute', left: 'calc(16px * var(--cam, 0))', top: 'calc(61px * var(--cam, 0))', width: 'calc(430px - 338px * var(--cam, 0))', height: 'calc(242px - 190px * var(--cam, 0))', borderRadius: 'calc(12px * var(--cam, 0))', overflow: 'hidden', background: '#070B10', color: 'rgba(238,243,246,0.6)', filter: hud.filter }}>
         <div style={{ position: 'absolute', top: 0, bottom: 0, left: 0, width: cam.bw + '%', overflow: 'hidden', background: '#0D141C', transition: 'width .45s cubic-bezier(.2,.8,.2,1)' }}>
           <div style={{ position: 'absolute', inset: 0, background: 'repeating-linear-gradient(115deg, rgba(238,243,246,0.03) 0 10px, transparent 10px 20px)' }} />
-          {cam.beach.map(f => <Feed key={f.key} f={f} />)}
+          {cam.beach.map(f => <Feed key={f.key} f={f} onPlay={onPlay} />)}
           <HalfCaption show={cam.halfDisp} right={12} title={hud.bTitle} sub={hud.bSub} subFg={hud.bSubFg} />
         </div>
         <div style={{ position: 'absolute', top: 0, bottom: 0, left: cam.ml + '%', width: cam.mw + '%', overflow: 'hidden', background: '#121A23', transition: 'left .45s cubic-bezier(.2,.8,.2,1), width .45s cubic-bezier(.2,.8,.2,1)' }}>
           <div style={{ position: 'absolute', inset: 0, background: 'repeating-linear-gradient(65deg, rgba(238,243,246,0.035) 0 10px, transparent 10px 20px)' }} />
-          {cam.mtn.map(f => <Feed key={f.key} f={f} />)}
+          {cam.mtn.map(f => <Feed key={f.key} f={f} onPlay={onPlay} />)}
           <HalfCaption show={cam.halfDisp} right={60} title={hud.mTitle} sub={hud.mSub} subFg={hud.mSubFg} />
         </div>
         <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none', background: '#05080B', opacity: hud.dim, transition: 'opacity .4s' }} />
@@ -92,7 +122,7 @@ export default function Cam({ v, ic, liveCam, connecting, miniTap, togglePin }) 
       {/* HUD */}
       <div style={{ position: 'absolute', left: 0, top: 0, width: 430, height: 242, opacity: HUD_OP, pointerEvents: 'none' }}>
         <div style={{ position: 'absolute', left: 0, right: 0, top: 0, height: 96, background: 'linear-gradient(180deg, rgba(5,8,11,0.72), rgba(5,8,11,0))' }} />
-        <div style={{ position: 'absolute', left: 0, right: 0, bottom: 0, height: 96, background: 'linear-gradient(0deg, rgba(5,8,11,0.72), rgba(5,8,11,0))' }} />
+        <div style={{ position: 'absolute', left: 0, right: 0, bottom: 0, height: 96, opacity: providerUi ? 0 : 1, transition: 'opacity .3s', background: 'linear-gradient(0deg, rgba(5,8,11,0.72), rgba(5,8,11,0))' }} />
         <div style={{ position: 'absolute', left: 16, top: 58, height: 28, padding: '0 11px 0 10px', borderRadius: 14, display: 'flex', alignItems: 'center', gap: 8, background: 'rgba(8,12,18,0.5)', backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)', boxShadow: 'inset 0 0 0 0.5px rgba(238,243,246,0.16)', fontSize: 12, lineHeight: '16px', color: '#EEF3F6' }}>
           <span style={{ display: 'block', width: 7, height: 7, borderRadius: 4, background: liveCam ? '#EEF3F6' : '#A3AEBA', animation: liveCam ? 'livepulse 2s ease-out infinite' : 'none' }} />
           <span style={{ fontWeight: 700, letterSpacing: '.08em', textTransform: 'uppercase' }}>{hud.live}</span>
@@ -124,7 +154,7 @@ export default function Cam({ v, ic, liveCam, connecting, miniTap, togglePin }) 
           <div className="nw" style={{ position: 'absolute', left: '50%', top: 121, transform: 'translate(-50%,-50%)', padding: '8px 14px', borderRadius: 16, background: 'rgba(8,12,18,0.62)', backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)', fontSize: 13, lineHeight: '16px', fontWeight: 500, color: '#EEF3F6' }}>{hud.overlay}</div>
         )}
 
-        {hud.showSurfDials && (
+        {hud.showSurfDials && !providerUi && (
           <div style={{ position: 'absolute', left: 16, bottom: 14, display: 'flex', gap: 18, color: '#EEF3F6' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
               <Dial><Arrow rot={hud.windRot} color={hud.windCol} style={{ left: 8, top: 7 }} /></Dial>
@@ -136,7 +166,7 @@ export default function Cam({ v, ic, liveCam, connecting, miniTap, togglePin }) 
             </div>
           </div>
         )}
-        {hud.showSnowDials && (
+        {hud.showSnowDials && !providerUi && (
           <div style={{ position: 'absolute', left: 16, bottom: 14, display: 'flex', gap: 18, color: '#EEF3F6' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
               <Dial beach={false}><Arrow rot={hud.sRot} color={hud.sCol} style={{ left: 8, top: 8 }} /></Dial>
