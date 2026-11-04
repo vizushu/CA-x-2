@@ -38,7 +38,7 @@ function IframeFeed({ f, onPlay }) {
   const [on, setOn] = React.useState(false);
   if (on) {
     return (
-      <iframe src={f.src} title={f.label + ' live camera'} allow="autoplay; fullscreen; picture-in-picture; encrypted-media" allowFullScreen referrerPolicy="strict-origin-when-cross-origin"
+      <iframe src={f.src} title={f.title} allow="autoplay; fullscreen; picture-in-picture; encrypted-media" allowFullScreen referrerPolicy="strict-origin-when-cross-origin"
         style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', border: 0, display: 'block', background: '#000' }} />
     );
   }
@@ -54,11 +54,23 @@ function IframeFeed({ f, onPlay }) {
   );
 }
 
+/** Provider has not authorized this site yet: honest placeholder with attribution and a link out. */
+function PendingFeed({ f }) {
+  return (
+    <div role="status" style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 6, padding: '36px 28px 0', textAlign: 'center' }}>
+      <div style={{ fontSize: 13, lineHeight: '17px', fontWeight: 650, color: '#EEF3F6' }}>Camera connection pending</div>
+      <div style={{ fontSize: 12, lineHeight: '16px', fontWeight: 600, color: '#C9D2DA' }}>{f.label}{f.provider ? ' · ' + f.provider : ''}</div>
+      <div className="pretty" style={{ fontSize: 11, lineHeight: '15px', color: '#A3AEBA' }}>{f.note}</div>
+    </div>
+  );
+}
+
 function Feed({ f, onPlay }) {
   return (
     <div style={{ position: 'absolute', inset: 0 }}>
       {f.isImg && <img src={f.src} alt={f.label} onError={f.onError} style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />}
       {f.isHls && <HlsVideo src={f.src} label={f.label} onError={f.onError} />}
+      {f.isPending && <PendingFeed f={f} />}
       {f.isIframe && <IframeFeed f={f} onPlay={onPlay} />}
       {f.isNone && (
         <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 6, padding: '0 28px', textAlign: 'center' }}>
