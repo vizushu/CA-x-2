@@ -13,8 +13,8 @@ export default defineConfig({
       registerType: 'autoUpdate',
       includeAssets: ['icons/*.png'],
       manifest: {
-        name: 'Lineup — Surf + Snow',
-        short_name: 'Lineup',
+        name: '2CA — Surf + Snow + CA Double',
+        short_name: '2CA',
         description: 'Live surf, snow and California Double planner for Southern California.',
         start_url: './?app=1',
         scope: './',
