@@ -3,9 +3,9 @@
 import React from 'react';
 import wordmark from '../assets/wordmark.webp';
 
-export function Splash({ failed, leaving, onRetry }) {
+export function Splash({ failed, leaving, onRetry, onSkip }) {
   return (
-    <div role="status" aria-label={failed ? 'Couldn’t reach the forecast feeds' : 'California Double, loading'}
+    <div role="status" onClick={onSkip} aria-label={failed ? 'Couldn’t reach the forecast feeds' : 'California Double, loading'}
       style={{ position: 'absolute', inset: 0, zIndex: 70, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 36, padding: '0 36px', background: 'radial-gradient(120% 60% at 50% 45%, #1C222C 0%, #0D1017 100%)', opacity: leaving ? 0 : 1, transition: 'opacity .6s ease', pointerEvents: leaving ? 'none' : 'auto' }}>
       <img src={wordmark} alt="California Double — Surf · Snow · Same day" draggable={false}
         style={{ width: '100%', maxWidth: 358, height: 'auto', display: 'block', animation: 'wordmarkIn 1.4s cubic-bezier(.2,.7,.2,1) both' }} />

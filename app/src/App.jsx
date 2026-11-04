@@ -237,7 +237,7 @@ export default class App extends React.Component {
     this.reduced = !!(mq && mq.matches);
     this._t0 = Date.now();
     this.timer = setInterval(() => this.tick(), 1000);
-    this._splashT = setTimeout(() => this.setState({ splashMin: true }), 1500); // let the wordmark finish fading in
+    this._splashT = setTimeout(() => this.setState({ splashMin: true }), 2400); // 1.4 s fade-in + 1 s hold, then a 0.6 s fade-out (~3 s total)
     Live.init({ onUpdate: this.onData });
   }
   componentDidUpdate() {
@@ -288,7 +288,7 @@ export default class App extends React.Component {
     const appEl = (
       <div ref={this.appRef} style={{ position: 'relative', width: 430, height: lay.ah, overflow: 'hidden', background: 'var(--bg, #09141A)', color: 'var(--t1, #EEF4F6)', zIndex: 0, isolation: 'isolate', fontFamily: SANS, WebkitUserSelect: 'none', userSelect: 'none', transition: 'background-color .5s, color .5s' }}>
         {this.renderApp(lay)}
-        {Live.isReady() && st.splash !== 'gone' && <Splash leaving={st.splash === 'out'} />}
+        {Live.isReady() && st.splash !== 'gone' && <Splash leaving={st.splash === 'out'} onSkip={() => this.setState({ splashMin: true })} />}
       </div>
     );
     return (
