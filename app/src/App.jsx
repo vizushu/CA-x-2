@@ -271,7 +271,7 @@ export default class App extends React.Component {
     const ic = v.ic, common = { v, ic, openDrawer: this.openDrawer };
     return (
       <>
-        <div aria-hidden="true" style={{ position: 'absolute', inset: 0, pointerEvents: 'none', opacity: v.glowOp, transition: 'opacity .6s', background: 'radial-gradient(90% 34% at 50% 31%, rgba(96,205,200,0.14), rgba(96,205,200,0) 70%), linear-gradient(180deg, rgba(220,232,245,0.07) 0%, rgba(9,20,26,0) 42%, rgba(40,150,150,0.09) 100%)' }} />
+        <div aria-hidden="true" style={{ position: 'absolute', inset: 0, pointerEvents: 'none', opacity: v.glowOp, transition: 'opacity .6s', background: 'radial-gradient(110% 40% at 50% 30%, rgba(214,224,240,0.18), rgba(214,224,240,0) 70%), radial-gradient(70% 30% at 15% 85%, rgba(80,200,215,0.07), rgba(80,200,215,0) 70%), linear-gradient(180deg, rgba(232,238,246,0.10) 0%, rgba(28,34,44,0) 45%, rgba(190,200,216,0.10) 100%)' }} />
         <ModeScroller label="Surf" ref={this.surfRef} onScroll={this.onScroll} tv={v.tv.surf} padB={v.dk.padB}><SurfView {...common} S={v.S} /></ModeScroller>
         <ModeScroller label="CA Double" ref={this.dblRef} onScroll={this.onScroll} tv={v.tv.double} padB={v.dk.padB}><DoubleView {...common} dbl={v.dbl} setOrder={this.setOrder} /></ModeScroller>
         <ModeScroller label="Snow" ref={this.snowRef} onScroll={this.onScroll} tv={v.tv.snow} padB={v.dk.padB}><SnowView {...common} sn={v.sn} /></ModeScroller>

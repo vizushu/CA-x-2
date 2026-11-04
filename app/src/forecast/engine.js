@@ -29,7 +29,7 @@ const D = {
   labels: { flat: 'Flat', poor: 'Poor', fair: 'Fair', good: 'Good', epic: 'Epic' },
   themes: {
     surf: { bg: '#080D14', t1: '#EEF3F6', t2: '#A2ADBA', t3: '#74808E', fill: 'rgba(238,243,246,0.05)', hair: 'rgba(238,243,246,0.10)', glass: 'rgba(14,20,29,0.78)', chip: 'rgba(238,243,246,0.12)', acc: 'oklch(0.84 0.12 195)', accbg: 'oklch(0.84 0.12 195)', accfg: '#04131A', grab: 'rgba(238,243,246,0.3)' },
-    double: { bg: '#09141A', t1: '#EEF4F6', t2: '#A5B3BD', t3: '#778692', fill: 'rgba(238,244,246,0.05)', hair: 'rgba(238,244,246,0.10)', glass: 'rgba(12,24,30,0.78)', chip: 'rgba(238,244,246,0.12)', acc: 'oklch(0.82 0.1 190)', accbg: 'linear-gradient(90deg, oklch(0.8 0.1 190), oklch(0.93 0.03 240))', accfg: '#06161B', grab: 'rgba(238,244,246,0.3)' },
+    double: { bg: '#1C222C', t1: '#F3F5F8', t2: '#C1C8D3', t3: '#8F98A8', fill: 'rgba(220,228,240,0.08)', hair: 'rgba(220,228,240,0.15)', glass: 'rgba(42,48,60,0.84)', chip: 'rgba(220,228,240,0.16)', acc: 'oklch(0.9 0.02 255)', accbg: 'linear-gradient(90deg, oklch(0.84 0.12 195), oklch(0.93 0.015 255))', accfg: '#1C222C', grab: 'rgba(220,228,240,0.36)' }, // midnight silver: between surf's night and snow's daylight
     snow: { bg: '#E6ECF1', t1: '#0C1621', t2: '#3B4856', t3: '#566371', fill: 'rgba(12,22,33,0.05)', hair: 'rgba(12,22,33,0.12)', glass: 'rgba(246,249,251,0.86)', chip: 'rgba(12,22,33,0.08)', acc: 'oklch(0.47 0.13 250)', accbg: 'oklch(0.47 0.13 250)', accfg: '#FFFFFF', grab: 'rgba(12,22,33,0.25)' },
   },
 };

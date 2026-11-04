@@ -13,8 +13,8 @@ export default function DoubleView({ v, dbl, ic, openDrawer, setOrder }) {
           <svg width="96" height="96" style={{ position: 'absolute', left: 0, top: 0, transform: 'rotate(-90deg)' }} aria-hidden="true">
             <defs>
               <linearGradient id="lnHorizon" x1="0" y1="0" x2="1" y2="1">
-                <stop offset="0" style={{ stopColor: 'oklch(0.8 0.1 190)' }} />
-                <stop offset="1" style={{ stopColor: 'oklch(0.93 0.03 240)' }} />
+                <stop offset="0" style={{ stopColor: 'oklch(0.84 0.12 195)' }} />
+                <stop offset="1" style={{ stopColor: 'oklch(0.92 0.015 255)' }} />
               </linearGradient>
             </defs>
             <circle cx="48" cy="48" r="42" style={{ fill: 'none', stroke: HAIR, strokeWidth: 6 }} />
