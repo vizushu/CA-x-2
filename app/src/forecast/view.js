@@ -62,7 +62,7 @@ export default function viewModel(st, props, ctx) {
       ex: ex.filter(e => e.t >= 5 && e.t <= 17).map(e => { const y = 22 + (1 - E.clamp(e.h / 5.5, 0, 1)) * 76; return { x: E.clamp(XC(e.t) - 32, 0, 326).toFixed(1), y: (e.type === 'H' ? y - 30 : y + 7).toFixed(1), kind: e.type === 'H' ? 'High' : 'Low', h: e.h.toFixed(1) + ' ft', time: E.fmtC(e.t) }; }),
       hours: [5, 8, 11, 14, 17].map(h => ({ x: (XC(h) - 16).toFixed(1), label: (((h + 11) % 12) + 1) + (h < 12 ? 'a' : 'p') })),
     },
-    footnote: E.surfFootnote(bi, offline),
+    footnote: E.surfFootnote(bi, offline) + E.camCredit('break', bi),
   };
 
   // ---------- SNOW ----------
@@ -85,7 +85,7 @@ export default function viewModel(st, props, ctx) {
       ? win(nw, 'Best riding ' + E.dayWord(), nWinS.surface + ' before the chop · ' + (nWinS.hold ? 'summit still on hold' : 'summit open'), nowT < nw.a ? 'In ' + E.dur(nw.a - nowT) : 'On now · ' + E.dur(nw.b - nowT) + ' left', 'Jump', nw.a)
       : win(nw, 'Best riding · passed', 'Packed powder until the lifts close at 4:00 PM', '', 'Review', nw.a),
     teaser: snBoard + ' · ' + (s.vis < 3 ? 'low-light lens' : 'dark lens') + ' · R' + E.chainAt(mi, t) + ' on ' + M.grade.split(' / ')[0],
-    footnote: E.snowFootnote(mi, offline),
+    footnote: E.snowFootnote(mi, offline) + E.camCredit('mtn', mi),
   };
 
   // ---------- CA DOUBLE ----------
@@ -181,7 +181,7 @@ export default function viewModel(st, props, ctx) {
   const modes = { idx: ['surf', 'double', 'snow'].indexOf(mode), items: [['surf', 'Surf', 'waves'], ['double', 'CA Double', 'route'], ['snow', 'Snow', 'mountain-snow']].map(([id, label, n]) => ({ label, icon: ic(n), fg: id === mode ? 'var(--accfg, #06161B)' : T2, onClick: () => ctx.setMode(id) })) };
 
   // ---------- CAM + HUD ----------
-  const view = mode === 'surf' ? 'beach' : mode === 'snow' ? 'mountain' : st.camView;
+  const view = mode === 'surf' ? 'beach' : mode === 'snow' ? 'mountain' : 'split'; // CA Double always shows both cams
   const rn = E.surfAt(bi, E.clamp(nowT, 5, 17)), wTxt = Math.round(rn.wind.k) + ' kt ' + lc(E.catLabel(rn.wind.cat));
   let isSet = false; const setTxt = E.waterLine(bi), setSub = E.waterSub(bi);
   const overlay = st.connecting ? 'Connecting to ' + lc(st.connecting) + '…' : offline ? 'No signal · last frame ' + upd : '';
@@ -193,7 +193,7 @@ export default function viewModel(st, props, ctx) {
     live: offline ? 'Cached' : E.camLive(view, bi, mi), stamp: offline ? upd : E.clockSec(),
     showTimer: mode === 'surf', setTxt, setSub, setBg: isSet ? 'rgba(238,243,246,0.94)' : 'rgba(8,12,18,0.5)', setFg: isSet ? '#0A1016' : '#EEF3F6', setSubFg: isSet ? 'rgba(10,16,22,0.7)' : '#A3AEBA',
     showVis: mode === 'snow', visTxt: 'Summit vis ' + E.num1(sN.vis) + ' mi', visSub: sN.vis >= 3 ? 'Model visibility' : 'Clearing ~' + E.fmt(E.firstAfter(x => E.snowAt(mi, x).vis >= 3, nowT)),
-    showToggle: mode === 'double', views: [['split', 'Split view', 'columns-2'], ['beach', 'Beach cam', 'waves'], ['mountain', 'Mountain cam', 'mountain-snow']].map(([id, title, n]) => ({ title, icon: ic(n), bg: st.camView === id ? 'rgba(238,243,246,0.92)' : 'transparent', fg: st.camView === id ? '#0A1016' : '#EEF3F6', onClick: () => ctx.setCamView(id) })),
+    showToggle: false, views: [['split', 'Split view', 'columns-2'], ['beach', 'Beach cam', 'waves'], ['mountain', 'Mountain cam', 'mountain-snow']].map(([id, title, n]) => ({ title, icon: ic(n), bg: st.camView === id ? 'rgba(238,243,246,0.92)' : 'transparent', fg: st.camView === id ? '#0A1016' : '#EEF3F6', onClick: () => ctx.setCamView(id) })),
     showOverlay: !!overlay, overlay,
     showSurfDials: view === 'beach', windRot: E.norm(rn.wind.d + 180 - B.facing).toFixed(0), windCol: colD(E.windKey(rn.wind.score)), windTxt: wTxt, swellRot: E.norm(rn.trains[0].d + 180 - B.facing).toFixed(0), swellTxt: Math.round(rn.trains[0].T) + ' s · ' + Math.round(rn.trains[0].d) + '° ' + E.compass(rn.trains[0].d),
     showSnowDials: view === 'mountain', sRot: (M.dir + 180) % 360, sCol: colD(E.gustKey(sN.gust)), sWind: 'Summit ' + Math.round(sN.wind) + ' mph', sSub: 'gusts ' + Math.round(sN.gust) + (sN.hold ? ' · wind hold' : ''), liftTxt: sN.season === 'pre' ? 'Pre-season' : 'Hold risk ' + (sN.gust >= 45 ? 'high' : sN.gust >= 30 ? 'medium' : 'low'), liftSub: 'Base ' + M.depth + '″ · model',

@@ -23,7 +23,7 @@ const CAM = {
   carlsbad: { kind: 'iframe', src: 'https://www.youtube.com/embed/dyX57HKeckg?autoplay=1&mute=1&playsinline=1', label: 'Carlsbad Beach', title: 'Carlsbad Beach live camera', provider: 'YouTube', link: 'https://www.youtube.com/watch?v=dyX57HKeckg', linkLabel: 'Carlsbad Beach live cam on YouTube' },
   summit: { kind: 'iframe', src: 'https://camstreamer.com/embed/6voUqxnwy6czzHMjNExPov1rHCMR2cKvz8Hk5OlO', label: 'Snow Summit · Miracle Mile', provider: 'Big Bear Mountain Resort', link: 'https://www.bigbearmountainresort.com/webcams/snow-summit', linkLabel: 'Snow Summit resort cams' },
   bear: { kind: 'iframe', src: 'https://camstreamer.com/embed/CGe2VBFnva0Xtz4cUkELesjftjTPM4nEJIByGTj7', label: 'Bear Mountain · Peak', provider: 'Big Bear Mountain Resort', link: 'https://www.bigbearmountainresort.com/webcams/bear-mountain', linkLabel: 'Bear Mountain resort cams' },
-  mammoth: { kind: 'iframe', src: 'https://www.youtube-nocookie.com/embed/m4u2kGpkYD4?autoplay=1&mute=1&playsinline=1&loop=1&playlist=m4u2kGpkYD4', label: 'Mammoth Mountain', title: 'Mammoth Mountain live camera', provider: 'YouTube', link: 'https://www.youtube.com/watch?v=m4u2kGpkYD4', linkLabel: 'Mammoth Mountain live cam on YouTube' },
+  mammoth: { kind: 'iframe', src: 'https://www.youtube-nocookie.com/embed/awxz_oIlJE0?autoplay=1&mute=1&playsinline=1', label: 'Mammoth · The Summit, 11,053 ft', title: 'Mammoth Summit live camera', provider: 'Mammoth Mountain', link: 'https://www.mammothmountain.com/on-the-mountain/mammoth-webcam/the-summit', linkLabel: 'Mammoth Mountain · The Summit webcam' }, // YouTube broadcast; if Mammoth replaces it, take the new video ID from the official page (link)
 };
 const LABELS = { marine: 'Swell & water · Open-Meteo Marine', coast: 'Coastal wind & sun · Open-Meteo', mtn: 'Mountain weather & snow · Open-Meteo', tide9410230: 'Tides · NOAA La Jolla', water: 'Water temp · NOAA Scripps Pier', ccd8: 'Chain control · Caltrans D8 (Big Bear)', ccd9: 'Chain control · Caltrans D9 (US-395)', route: 'Drive time' };
 const S = { off: 0, tday: '', raw: { tideH: {}, tideL: {}, cc: {} }, br: [], mt: [], tide: {}, hilo: {}, cc: {}, routes: {}, src: {}, camDown: {}, water: null, ready: false, settled: false, inflight: false, timers: false, cur: [1, 1], cb: null };
@@ -315,6 +315,8 @@ E.camFeed = function (kind, i) {
 };
 E.camLabel = (kind, i) => { const f = camOf(kind, i); return f.label + (f.kind === 'img' ? ' · photo' : ''); };
 E.camLive = (view, bi, mi) => { if (view === 'split') return 'Cams'; const f = camOf(view === 'mountain' ? 'mtn' : 'break', view === 'mountain' ? mi : bi); return f.kind === 'pending' ? 'Pending' : f.kind === 'iframe' || f.kind === 'hls' ? 'Live' : f.kind === 'img' ? 'Photo' : 'No cam'; };
+/** Footnote credit for the cam on screen, e.g. ' · Cam: Mammoth · The Summit, 11,053 ft · Mammoth Mountain'. */
+E.camCredit = (kind, i) => { const f = camOf(kind, i); return f.kind === 'iframe' || f.kind === 'hls' || f.kind === 'img' ? ' · Cam: ' + f.label + (f.provider && f.label.indexOf(f.provider) < 0 ? ' · ' + f.provider : '') : ''; };
 E.camLinkFor = (kind, i) => { const f = camOf(kind, i); return f.link ? { url: f.link, label: f.linkLabel || 'Open source' } : null; };
 
 const Live = {
