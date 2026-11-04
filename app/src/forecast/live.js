@@ -5,6 +5,7 @@ import E from './engine.js';
 
 const D = E.D, TZ = 'America/Los_Angeles';
 const SPOT = {
+  ob: { lat: 32.7495, lon: -117.2550, mlat: 32.75, mlon: -117.27, station: '9410230', stationName: 'La Jolla' },
   lajolla: { lat: 32.8575, lon: -117.2570, mlat: 32.86, mlon: -117.27, station: '9410230', stationName: 'La Jolla' },
   blacks: { lat: 32.8899, lon: -117.2513, mlat: 32.88, mlon: -117.27, station: '9410230', stationName: 'La Jolla' },
   delmar: { lat: 32.9595, lon: -117.2685, mlat: 32.96, mlon: -117.28, station: '9410230', stationName: 'La Jolla' },
@@ -18,6 +19,7 @@ const MTN = {
 };
 const CT = 'https://cwwp2.dot.ca.gov/data/';
 const CAM = {
+  ob: { kind: 'hls', src: 'https://oceanbeachpier.cdn.coastalcameranetwork.com/sunba/oceanbeachpier/index.m3u8', label: 'Ocean Beach Pier · Coastal Camera Network', link: 'https://oceanbeachpier.cdn.coastalcameranetwork.com/sunba/oceanbeachpier/index.m3u8', linkLabel: 'Open the Ocean Beach Pier stream' },
   blacks: { kind: 'none', label: 'No embeddable public cam', note: 'The Scripps Pier cam is run by Surfline and can’t be embedded. Add your own cam in Settings.', link: 'https://scripps.ucsd.edu/piercam', linkLabel: 'Scripps Pier cam' },
   swamis: { kind: 'img', src: 'https://embed.skylinewebcams.com/img/3461.jpg', every: 300, label: 'Encinitas · SkylineWebcams', live: 'https://www.skylinewebcams.com/webcam/united-states/california/encinitas/encinitas-california.html?w=3461', link: 'https://www.skylinewebcams.com/en/webcam/united-states/california/encinitas/encinitas-california.html', linkLabel: 'Watch live on SkylineWebcams' },
   lajolla: { kind: 'none', label: 'Live on HDOnTap', note: 'Tap the link button to watch it live, or paste a cam link in Sources & settings.', link: 'https://hdontap.com/stream/532541/', linkLabel: 'La Jolla Shores cam on HDOnTap' },
@@ -153,7 +155,7 @@ async function refresh() {
 async function fetchQuiet(url, key) { try { const r = await fetch(url); if (!r.ok) throw 0; const j = await r.json(); save(key, j); return j; } catch (e) { return load(key); } }
 
 // ---------- routing ----------
-const ORIG = { blacks: [32.8899, -117.2513], swamis: [33.0346, -117.2924], lajolla: [32.8575, -117.2570], delmar: [32.9595, -117.2685], carlsbad: [33.1505, -117.3480] };
+const ORIG = { ob: [32.7495, -117.2550], blacks: [32.8899, -117.2513], swamis: [33.0346, -117.2924], lajolla: [32.8575, -117.2570], delmar: [32.9595, -117.2685], carlsbad: [33.1505, -117.3480] };
 const provNow = () => S.settings.prov !== 'none' && S.settings.key ? S.settings.prov : 'osrm';
 const provLabel = () => ({ tomtom: 'TomTom live traffic', mapbox: 'Mapbox live traffic', osrm: 'OSRM, no traffic' })[provNow()];
 if (!S.routesLoaded) { S.routesLoaded = true; S.routes = (load('lineup.routes') || {}).day === ymd(new Date()) ? load('lineup.routes').r : {}; }
@@ -273,17 +275,17 @@ E.waterSub = bi => (S.br[bi] || {}).wsrc === 'obs' ? 'NOAA Scripps Pier · ' + S
 function camOf(kind, i) {
   const id = kind === 'break' ? D.breaks[i].id : D.mtns[i].id, c = CAM[id], ov = (S.settings.cams || {})[id];
   if (S.camDown[id] && !ov) return { id, kind: 'none', label: 'Cam offline', note: c.label + ' isn’t responding.', link: c.link, linkLabel: c.linkLabel };
-  if (ov) { const y = ov.match(/(?:youtu\.be\/|v=|\/embed\/|\/live\/|\/shorts\/)([\w-]{11})/), ch = ov.match(/channel\/(UC[\w-]+)/); if (y || ch) return { id, kind: 'frame', src: y ? 'https://www.youtube.com/embed/' + y[1] + '?autoplay=1&mute=1&playsinline=1' : 'https://www.youtube.com/embed/live_stream?channel=' + ch[1] + '&autoplay=1&mute=1', label: 'Your cam · YouTube', link: ov, linkLabel: 'Open cam source' }; if (/\.(jpe?g|png|webp|gif)(\?|$)/i.test(ov)) return { id, kind: 'img', src: ov, every: 60, label: 'Your cam', link: ov, linkLabel: 'Open cam source' }; return { id, kind: 'frame', src: ov, label: 'Your cam', link: ov, linkLabel: 'Open cam source' }; }
+  if (ov) { const y = ov.match(/(?:youtu\.be\/|v=|\/embed\/|\/live\/|\/shorts\/)([\w-]{11})/), ch = ov.match(/channel\/(UC[\w-]+)/); if (y || ch) return { id, kind: 'frame', src: y ? 'https://www.youtube.com/embed/' + y[1] + '?autoplay=1&mute=1&playsinline=1' : 'https://www.youtube.com/embed/live_stream?channel=' + ch[1] + '&autoplay=1&mute=1', label: 'Your cam · YouTube', link: ov, linkLabel: 'Open cam source' }; if (/\.m3u8(\?|$)/i.test(ov)) return { id, kind: 'hls', src: ov, label: 'Your cam · live', link: ov, linkLabel: 'Open cam source' }; if (/\.(jpe?g|png|webp|gif)(\?|$)/i.test(ov)) return { id, kind: 'img', src: ov, every: 60, label: 'Your cam', link: ov, linkLabel: 'Open cam source' }; return { id, kind: 'frame', src: ov, label: 'Your cam', link: ov, linkLabel: 'Open cam source' }; }
   if (id === 'swamis' && S.settings.swamisLive) return { id, kind: 'frame', src: c.live, label: c.label + ' · live', link: c.link, linkLabel: c.linkLabel };
   return Object.assign({ id }, c);
 }
 E.camFeed = function (kind, i) {
   const f = camOf(kind, i), src = f.kind === 'img' ? f.src + (f.src.indexOf('?') < 0 ? '?' : '&') + 't=' + Math.floor(Date.now() / ((f.every || 60) * 1000)) : f.src || '';
   const onError = () => { S.camDown[f.id] = true; if (S.cb) S.cb(); };
-  return { key: f.id + '|' + f.kind + '|' + (f.src || ''), isImg: f.kind === 'img', isFrame: f.kind === 'frame', isNone: f.kind === 'none', src, label: f.label, note: f.note || '', onError };
+  return { key: f.id + '|' + f.kind + '|' + (f.src || ''), isImg: f.kind === 'img', isFrame: f.kind === 'frame', isHls: f.kind === 'hls', isNone: f.kind === 'none', src, label: f.label, note: f.note || '', onError };
 };
 E.camLabel = (kind, i) => { const f = camOf(kind, i); return f.label + (f.kind === 'img' ? ' · photo' : ''); };
-E.camLive = (view, bi, mi) => { if (view === 'split') return 'Cams'; const f = camOf(view === 'mountain' ? 'mtn' : 'break', view === 'mountain' ? mi : bi); return f.kind === 'frame' ? 'Live' : f.kind === 'img' ? 'Photo' : 'No cam'; };
+E.camLive = (view, bi, mi) => { if (view === 'split') return 'Cams'; const f = camOf(view === 'mountain' ? 'mtn' : 'break', view === 'mountain' ? mi : bi); return f.kind === 'frame' || f.kind === 'hls' ? 'Live' : f.kind === 'img' ? 'Photo' : 'No cam'; };
 E.camLinkFor = (kind, i) => { const f = camOf(kind, i); return f.link ? { url: f.link, label: f.linkLabel || 'Open source' } : null; };
 
 const Live = {

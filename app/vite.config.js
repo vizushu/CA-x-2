@@ -30,6 +30,7 @@ export default defineConfig({
       },
       workbox: {
         globPatterns: ['**/*.{js,css,html,svg,png,woff2}'],
+        globIgnores: ['**/hls-*.js'], // hls.js loads on demand; live video needs a network anyway
         navigateFallback: 'index.html',
         cleanupOutdatedCaches: true,
         runtimeCaching: [
