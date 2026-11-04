@@ -7,7 +7,7 @@ const D = E.D, TZ = 'America/Los_Angeles';
 const SPOT = {
   blacks: { lat: 32.8899, lon: -117.2513, mlat: 32.88, mlon: -117.27, station: '9410230', stationName: 'La Jolla' },
   swamis: { lat: 33.0346, lon: -117.2924, mlat: 33.034, mlon: -117.305, station: '9410230', stationName: 'La Jolla' },
-  lowers: { lat: 33.3962, lon: -117.5925, mlat: 33.375, mlon: -117.60, station: '9410580', stationName: 'Newport Beach' },
+  lajolla: { lat: 32.8575, lon: -117.2570, mlat: 32.86, mlon: -117.27, station: '9410230', stationName: 'La Jolla' },
 };
 const MTN = {
   summit: { lat: 34.2364, lon: -116.8892, topM: 2499, baseM: 2134, plev: 750, d: 'd8', routes: ['18', '330'], site: 'https://www.bigbearmountainresort.com/webcams/snow-summit' },
@@ -18,12 +18,12 @@ const CT = 'https://cwwp2.dot.ca.gov/data/';
 const CAM = {
   blacks: { kind: 'none', label: 'No embeddable public cam', note: 'The Scripps Pier cam is run by Surfline and can’t be embedded. Add your own cam in Settings.', link: 'https://scripps.ucsd.edu/piercam', linkLabel: 'Scripps Pier cam' },
   swamis: { kind: 'img', src: 'https://embed.skylinewebcams.com/img/3461.jpg', every: 300, label: 'Encinitas · SkylineWebcams', live: 'https://www.skylinewebcams.com/webcam/united-states/california/encinitas/encinitas-california.html?w=3461', link: 'https://www.skylinewebcams.com/en/webcam/united-states/california/encinitas/encinitas-california.html', linkLabel: 'Watch live on SkylineWebcams' },
-  lowers: { kind: 'none', label: 'No embeddable public cam', note: 'Trestles cams are run by Surfline. San Clemente’s city cam is the nearest public view.', link: 'https://www.sanclemente.gov', linkLabel: 'City of San Clemente' },
+  lajolla: { kind: 'none', label: 'La Jolla cam · SkylineWebcams', note: 'Tap the link button to watch it live, or paste a cam link for La Jolla Shores in Sources & settings.', link: 'https://www.skylinewebcams.com/en/webcam/united-states/california/san-diego/la-jolla.html', linkLabel: 'La Jolla cam on SkylineWebcams' },
   summit: { kind: 'img', src: CT + 'd8/cctv/image/sr18125lakegregory/sr18125lakegregory.jpg', every: 60, label: 'SR-18 Lake Gregory · Caltrans', link: MTN.summit.site, linkLabel: 'Snow Summit resort cams' },
   bear: { kind: 'img', src: CT + 'd8/cctv/image/sr138393nohwy18/sr138393nohwy18.jpg', every: 60, label: 'SR-138 at SR-18 · Caltrans', link: MTN.bear.site, linkLabel: 'Bear Mountain resort cams' },
   mammoth: { kind: 'img', src: CT + 'd9/cctv/image/sr203mammothmountain/sr203mammothmountain.jpg', every: 60, label: 'SR-203 Mammoth Mtn · Caltrans', link: MTN.mammoth.site, linkLabel: 'Mammoth Mountain' },
 };
-const LABELS = { marine: 'Swell & water · Open-Meteo Marine', coast: 'Coastal wind & sun · Open-Meteo', mtn: 'Mountain weather & snow · Open-Meteo', tide9410230: 'Tides · NOAA La Jolla', tide9410580: 'Tides · NOAA Newport Beach', water: 'Water temp · NOAA Scripps Pier', ccd8: 'Chain control · Caltrans D8 (Big Bear)', ccd9: 'Chain control · Caltrans D9 (US-395)', route: 'Drive time' };
+const LABELS = { marine: 'Swell & water · Open-Meteo Marine', coast: 'Coastal wind & sun · Open-Meteo', mtn: 'Mountain weather & snow · Open-Meteo', tide9410230: 'Tides · NOAA La Jolla', water: 'Water temp · NOAA Scripps Pier', ccd8: 'Chain control · Caltrans D8 (Big Bear)', ccd9: 'Chain control · Caltrans D9 (US-395)', route: 'Drive time' };
 const S = { off: 0, tday: '', raw: { tideH: {}, tideL: {}, cc: {} }, br: [], mt: [], tide: {}, hilo: {}, cc: {}, routes: {}, src: {}, camDown: {}, water: null, ready: false, settled: false, inflight: false, timers: false, cur: [1, 1], cb: null };
 function load(k) { try { return JSON.parse(localStorage.getItem(k)); } catch (e) { return null; } }
 function save(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
@@ -89,7 +89,7 @@ function rebuild() {
       if (sst && k0 >= 0) { const v = sst[k0 + Math.floor(h)]; if (v != null) o.sstF = /F/.test(U.sea_surface_temperature || '') ? v : v * 9 / 5 + 32; }
     }
     o.wsrc = 'model';
-    if (b.id === 'blacks' && S.water && S.water.v != null) { b.water = Math.round(S.water.v); o.wsrc = 'obs'; } else if (o.sstF != null) b.water = Math.round(o.sstF);
+    if ((b.id === 'blacks' || b.id === 'lajolla') && S.water && S.water.v != null) { b.water = Math.round(S.water.v); o.wsrc = 'obs'; } else if (o.sstF != null) b.water = Math.round(o.sstF);
     return o;
   });
   D.breaks.forEach(b => {
@@ -138,7 +138,7 @@ async function refresh() {
     getJSON('mtn', mtnURL()).then(j => { if (j) S.raw.mtn = j; }),
     getJSON('water', NOAA + 'product=water_temperature&date=latest&station=9410230').then(j => { const d = j && j.data && j.data[0]; S.water = d ? { v: +d.v, at: E.fmt(tH(d.t)) } : null; }),
   ];
-  ['9410230', '9410580'].forEach(st => {
+  ['9410230'].forEach(st => {
     jobs.push(getJSON('tide' + st, tideURL(st, 'h')).then(j => { if (j) S.raw.tideH[st] = j; }));
     jobs.push(fetchQuiet(tideURL(st, 'hilo'), 'lineup.c.hilo' + st).then(j => { if (j) S.raw.tideL[st] = j; }));
   });
@@ -149,7 +149,7 @@ async function refresh() {
 async function fetchQuiet(url, key) { try { const r = await fetch(url); if (!r.ok) throw 0; const j = await r.json(); save(key, j); return j; } catch (e) { return load(key); } }
 
 // ---------- routing ----------
-const ORIG = { blacks: [32.8899, -117.2513], swamis: [33.0346, -117.2924], lowers: [33.3962, -117.5925] };
+const ORIG = { blacks: [32.8899, -117.2513], swamis: [33.0346, -117.2924], lajolla: [32.8575, -117.2570] };
 const provNow = () => S.settings.prov !== 'none' && S.settings.key ? S.settings.prov : 'osrm';
 const provLabel = () => ({ tomtom: 'TomTom live traffic', mapbox: 'Mapbox live traffic', osrm: 'OSRM, no traffic' })[provNow()];
 if (!S.routesLoaded) { S.routesLoaded = true; S.routes = (load('lineup.routes') || {}).day === ymd(new Date()) ? load('lineup.routes').r : {}; }
@@ -294,7 +294,7 @@ const Live = {
   setCam(id, url) { S.settings.cams = Object.assign({}, S.settings.cams); if (url && url.trim()) S.settings.cams[id] = url.trim(); else delete S.settings.cams[id]; delete S.camDown[id]; save('lineup.settings', S.settings); bump(); },
   trafficLine() { const p = provNow(), s = S.src.route; if (p === 'osrm') return S.settings.prov !== 'none' ? 'Add a key to turn on live traffic' : 'Free-flow times from OSRM · no traffic'; if (!s) return provLabel() + ' · waiting for first route'; return s.ok ? provLabel() + ' · last route ' + clockOf(s.t) : 'Key rejected: ' + s.err; },
   sources() {
-    const ids = ['marine', 'coast', 'tide9410230', 'tide9410580', 'water', 'mtn', 'ccd8', 'ccd9'];
+    const ids = ['marine', 'coast', 'tide9410230', 'water', 'mtn', 'ccd8', 'ccd9'];
     const rows = ids.map(id => { const s = S.src[id]; const st = !s || s.ok === null ? 'pending' : s.ok ? (s.cached ? 'cached' : 'live') : 'failed'; return { label: LABELS[id], state: st === 'pending' ? 'Loading…' : st === 'failed' ? 'Unavailable' : (st === 'cached' ? 'Cached ' : 'Updated ') + clockOf(s.t), dot: st === 'live' ? 'oklch(0.8 0.15 160)' : st === 'cached' ? 'oklch(0.84 0.14 80)' : st === 'failed' ? 'oklch(0.74 0.15 30)' : '#778692' }; });
     const rs = S.src.route, rp = provNow();
     rows.push({ label: 'Drive time · ' + provLabel(), state: rs && rs.t ? (rs.ok ? 'Updated ' : 'Failed ') + clockOf(rs.t) : 'On demand', dot: rs && !rs.ok ? 'oklch(0.74 0.15 30)' : rp === 'osrm' ? 'oklch(0.84 0.14 80)' : 'oklch(0.8 0.15 160)' });
