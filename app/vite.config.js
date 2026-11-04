@@ -20,7 +20,7 @@ export default defineConfig({
         scope: './',
         display: 'standalone',
         orientation: 'portrait',
-        background_color: '#080D14',
+        background_color: '#F2F0EB',
         theme_color: '#080D14',
         icons: [
           { src: 'icons/icon-192.png', sizes: '192x192', type: 'image/png' },
