@@ -1,6 +1,7 @@
 // Cam viewport: 430×242 feed area that docks into a 92×52 thumbnail as --cam goes 0 → 1.
 import React from 'react';
 import { Arrow, Icon, MONO } from './ui.jsx';
+import { iconUrl } from '../icons.js';
 
 const HUD_OP = 'calc(1 - var(--cam, 0) * 2.2)';
 const GLASS_S = { background: 'rgba(8,12,18,0.45)', backdropFilter: 'blur(10px)', WebkitBackdropFilter: 'blur(10px)', boxShadow: 'inset 0 0 0 0.5px rgba(238,243,246,0.2)' };
@@ -79,10 +80,10 @@ function HalfCaption({ show, right, title, sub, subFg }) {
   );
 }
 
-function Dial({ children, beach = true }) {
+function Dial({ children, beach = true, plain = false }) {
   return (
     <div style={{ position: 'relative', width: 40, height: 40, borderRadius: 20, overflow: 'hidden', ...GLASS_S }}>
-      {beach
+      {plain ? null : beach
         ? <div style={{ position: 'absolute', left: 7, right: 7, bottom: 8, borderTop: '1px dashed rgba(238,243,246,0.45)' }} />
         : <div style={{ position: 'absolute', left: 19, top: 3, width: 2, height: 4, borderRadius: 1, background: 'rgba(238,243,246,0.6)' }} />}
       {children}
@@ -152,7 +153,7 @@ export default function Cam({ v, ic, liveCam, connecting, miniTap }) {
         )}
 
         {hud.showSurfDials && !providerUi && (
-          <div style={{ position: 'absolute', left: 16, bottom: 14, display: 'flex', gap: 18, color: '#EEF3F6' }}>
+          <div style={{ position: 'absolute', left: 16, right: 16, bottom: 14, display: 'flex', justifyContent: 'space-between', gap: 12, color: '#EEF3F6' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
               <Dial><Arrow rot={hud.windRot} color={hud.windCol} style={{ left: 8, top: 7 }} /></Dial>
               <div style={SHADOW_TXT}><div style={DIAL_CAP}>Wind</div><div style={{ fontSize: 13, lineHeight: '17px', fontWeight: 600 }}>{hud.windTxt}</div></div>
@@ -160,6 +161,10 @@ export default function Cam({ v, ic, liveCam, connecting, miniTap }) {
             <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
               <Dial><Arrow rot={hud.swellRot} color="#EEF3F6" style={{ left: 8, top: 7 }} /></Dial>
               <div style={SHADOW_TXT}><div style={DIAL_CAP}>Swell</div><div style={{ fontSize: 13, lineHeight: '17px', fontWeight: 600 }}>{hud.swellTxt}</div></div>
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              <Dial plain><Icon src={iconUrl('thermometer')} size={20} color="#EEF3F6" style={{ position: 'absolute', left: 10, top: 10 }} /></Dial>
+              <div style={SHADOW_TXT}><div style={DIAL_CAP}>Water</div><div className="tnum" style={{ fontSize: 13, lineHeight: '17px', fontWeight: 600 }}>{hud.waterTxt}</div></div>
             </div>
           </div>
         )}

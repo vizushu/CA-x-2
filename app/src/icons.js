@@ -16,6 +16,7 @@ import i_settings_2 from 'lucide-static/icons/settings-2.svg?url';
 import i_snowflake from 'lucide-static/icons/snowflake.svg?url';
 import i_waves from 'lucide-static/icons/waves.svg?url';
 import i_x from 'lucide-static/icons/x.svg?url';
+import i_thermometer from 'lucide-static/icons/thermometer.svg?url';
 import i_share from 'lucide-static/icons/share.svg?url';
 import i_square_plus from 'lucide-static/icons/square-plus.svg?url';
 import i_ellipsis_vertical from 'lucide-static/icons/ellipsis-vertical.svg?url';
@@ -41,6 +42,7 @@ const ICONS = {
   'waves': i_waves,
   'x': i_x,
   'share': i_share,
+  'thermometer': i_thermometer,
   'square-plus': i_square_plus,
   'ellipsis-vertical': i_ellipsis_vertical,
   'route': i_route,
