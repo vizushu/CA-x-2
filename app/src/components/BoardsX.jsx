@@ -1,4 +1,4 @@
-// CA Double tab icon: crossed surfboard + snowboard artwork. The board for the current mode is on top and lit;
+// CA Double tab icon: crossed surfboard + snowboard artwork (flat, two-tone). The board for the current mode is on top and lit;
 // the other is faded. In CA Double both are lit. The three states cross-fade.
 import React from 'react';
 import surf from '../assets/boards-surf.webp';
