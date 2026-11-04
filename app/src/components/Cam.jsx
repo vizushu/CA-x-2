@@ -122,7 +122,8 @@ export default function Cam({ v, ic, liveCam, connecting, miniTap }) {
       <div style={{ position: 'absolute', left: 0, top: 0, width: 430, height: 242, opacity: HUD_OP, pointerEvents: 'none' }}>
         <div style={{ position: 'absolute', left: 0, right: 0, top: 0, height: 96, background: 'linear-gradient(180deg, rgba(5,8,11,0.72), rgba(5,8,11,0))' }} />
         <div style={{ position: 'absolute', left: 0, right: 0, bottom: 0, height: 96, opacity: providerUi ? 0 : 1, transition: 'opacity .3s', background: 'linear-gradient(0deg, rgba(5,8,11,0.72), rgba(5,8,11,0))' }} />
-        <div style={{ position: 'absolute', left: 16, top: 60, height: 22, padding: '0 8px 0 7px', borderRadius: 11, display: 'flex', alignItems: 'center', gap: 6, background: 'rgba(8,12,18,0.5)', backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)', boxShadow: 'inset 0 0 0 0.5px rgba(238,243,246,0.16)', fontSize: 10.5, lineHeight: '14px', color: '#EEF3F6' }}>
+        {/* Upper-left corner of the feed; clears the status bar / dynamic island when installed (safe-area inset). */}
+        <div style={{ position: 'absolute', left: 12, top: 'max(12px, calc(var(--sat, env(safe-area-inset-top, 0px)) + 6px))', height: 22, padding: '0 8px 0 7px', borderRadius: 11, display: 'flex', alignItems: 'center', gap: 6, background: 'rgba(8,12,18,0.5)', backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)', boxShadow: 'inset 0 0 0 0.5px rgba(238,243,246,0.16)', fontSize: 10.5, lineHeight: '14px', color: '#EEF3F6' }}>
           <span style={{ display: 'block', width: 5, height: 5, borderRadius: 3, background: liveCam ? '#EEF3F6' : '#A3AEBA', animation: liveCam ? 'livepulse 2s ease-out infinite' : 'none' }} />
           <span style={{ fontWeight: 700, letterSpacing: '.06em', textTransform: 'uppercase' }}>{hud.live}</span>
           <span className="tnum" style={{ fontFamily: MONO, fontSize: 10, color: '#C9D2DA' }}>{hud.stamp}</span>
