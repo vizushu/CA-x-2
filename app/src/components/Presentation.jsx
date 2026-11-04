@@ -92,7 +92,7 @@ export function DeviceFrame({ width, height, time, children }) {
     <div style={{ width, height, borderRadius: 48, overflow: 'hidden', position: 'relative', background: '#000', boxShadow: '0 40px 80px rgba(0,0,0,0.18), 0 0 0 1px rgba(0,0,0,0.12)' }}>
       <div style={{ position: 'absolute', top: 11, left: '50%', transform: 'translateX(-50%)', width: 126, height: 37, borderRadius: 24, background: '#000', zIndex: 50 }} />
       <div style={{ position: 'absolute', top: 0, left: 0, right: 0, zIndex: 10, pointerEvents: 'none' }}><StatusBar time={time} /></div>
-      <div style={{ height: '100%' }}>{children}</div>
+      <div style={{ height: '100%', '--sat': '56px' }}>{children}</div>
       <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, zIndex: 60, height: 34, display: 'flex', justifyContent: 'center', alignItems: 'flex-end', paddingBottom: 8, pointerEvents: 'none' }}>
         <div style={{ width: 139, height: 5, borderRadius: 100, background: 'rgba(255,255,255,0.7)' }} />
       </div>
