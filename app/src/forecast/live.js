@@ -18,7 +18,7 @@ const MTN = {
 const CT = 'https://cwwp2.dot.ca.gov/data/';
 const CAM = {
   blacks: { kind: 'none', label: 'No embeddable public cam', note: 'The Scripps Pier cam is run by Surfline and can’t be embedded.', link: 'https://scripps.ucsd.edu/piercam', linkLabel: 'Scripps Pier cam' },
-  swamis: { kind: 'img', src: 'https://embed.skylinewebcams.com/img/3461.jpg', every: 300, label: 'Encinitas · SkylineWebcams', live: 'https://www.skylinewebcams.com/webcam/united-states/california/encinitas/encinitas-california.html?w=3461', link: 'https://www.skylinewebcams.com/en/webcam/united-states/california/encinitas/encinitas-california.html', linkLabel: 'Watch live on SkylineWebcams' },
+  swamis: { kind: 'none', label: 'Cam access pending', note: 'Swami’s will use the Pannikin Coffee & Tea cam once access is granted.' },
   lajolla: { kind: 'iframe', src: 'https://g1.ipcamlive.com/player/player.php?alias=603d26c2977cf', label: 'La Jolla Shores · beach / pier', provider: 'La Jolla Shores Hotel · IPCamLive', link: 'https://www.ljshoreshotel.com/beach-cam/', linkLabel: 'La Jolla Shores Hotel beach cam' },
   carlsbad: { kind: 'iframe', src: 'https://www.youtube.com/embed/dyX57HKeckg?autoplay=1&mute=1&playsinline=1', label: 'Carlsbad Beach', title: 'Carlsbad Beach live camera', provider: 'YouTube', link: 'https://www.youtube.com/watch?v=dyX57HKeckg', linkLabel: 'Carlsbad Beach live cam on YouTube' },
   summit: { kind: 'iframe', src: 'https://camstreamer.com/embed/6voUqxnwy6czzHMjNExPov1rHCMR2cKvz8Hk5OlO', label: 'Snow Summit · Miracle Mile', provider: 'Big Bear Mountain Resort', link: 'https://www.bigbearmountainresort.com/webcams/snow-summit', linkLabel: 'Snow Summit resort cams' },
@@ -305,7 +305,6 @@ function camOf(kind, i) {
   // Provider hasn't authorized this site's domain yet: say so instead of showing a broken frame or a false LIVE.
   // ?trycams=1 renders the player anyway, to test once the provider adds the domain.
   if (c.status === 'pending' && !/[?&]trycams\b/.test(location.search)) return Object.assign({ id }, c, { kind: 'pending' });
-  if (id === 'swamis' && S.settings.swamisLive) return { id, kind: 'iframe', src: c.live, label: c.label + ' · live', provider: 'SkylineWebcams', link: c.link, linkLabel: c.linkLabel };
   return Object.assign({ id }, c);
 }
 E.camFeed = function (kind, i) {
@@ -335,7 +334,7 @@ const Live = {
     const rows = ids.map(id => { const s = S.src[id]; const st = !s || s.ok === null ? 'pending' : s.ok ? (s.cached ? 'cached' : 'live') : 'failed'; return { label: LABELS[id], state: st === 'pending' ? 'Loading…' : st === 'failed' ? 'Unavailable' : (st === 'cached' ? 'Cached ' : 'Updated ') + clockOf(s.t), dot: st === 'live' ? 'oklch(0.8 0.15 160)' : st === 'cached' ? 'oklch(0.84 0.14 80)' : st === 'failed' ? 'oklch(0.74 0.15 30)' : '#778692' }; });
     const rs = S.src.route, rp = provNow();
     rows.push({ label: 'Drive time · ' + provLabel(), state: rs && rs.t ? (rs.ok ? 'Updated ' : 'Failed ') + clockOf(rs.t) : 'On demand', dot: rs && !rs.ok ? 'oklch(0.74 0.15 30)' : rp === 'osrm' ? 'oklch(0.84 0.14 80)' : 'oklch(0.8 0.15 160)' });
-    rows.push({ label: 'Cams · Caltrans CCTV + SkylineWebcams photo', state: 'Refresh 1–5 min', dot: 'oklch(0.8 0.15 160)' });
+    rows.push({ label: 'Cams · live players (YouTube, Camstreamer, IPCamLive)', state: 'Live', dot: 'oklch(0.8 0.15 160)' });
     return rows;
   },
   summary() { const r = this.sources(), n = r.filter(x => /Updated|Refresh|On demand/.test(x.state)).length; return n + ' of ' + r.length + ' live'; },

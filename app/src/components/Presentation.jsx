@@ -21,7 +21,7 @@ export function SourcesPanel({ order, rows }) {
       </section>
       <section style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
         <h2 style={H2}>Cams</h2>
-        <p className="pretty" style={P}><strong style={B}>Swami’s:</strong> SkylineWebcams’ Encinitas photo, refreshed every 5 minutes. Their terms allow the photo on any site; the live player is reserved for the webcam’s host.</p>
+        <p className="pretty" style={P}><strong style={B}>Swami’s:</strong> the Pannikin Coffee &amp; Tea cam, pending access.</p>
         <p className="pretty" style={P}><strong style={B}>La Jolla Shores, Carlsbad:</strong> live players from the La Jolla Shores Hotel (IPCamLive) and YouTube. Blacks has no public cam.</p>
         <p className="pretty" style={P}><strong style={B}>Mountains:</strong> Big Bear Mountain Resort’s Snow Summit (Miracle Mile) and Bear Mountain (Peak) players, tap to play; Mammoth Mountain’s The Summit cam (11,053 ft).</p>
       </section>
