@@ -5,9 +5,11 @@ import { iconUrl } from '../icons.js';
 
 const D = {
   breaks: [
-    { id: 'blacks', name: 'Blacks', short: 'Blacks', area: 'La Jolla', facing: 265, amp: 1.15, tide: [1.5, 4.6], water: 58, note: 'Scripps Canyon focuses it into A-frame peaks', cam: 'North cliff cam', cycle: 420 },
-    { id: 'swamis', name: "Swami's", short: "Swami's", area: 'Encinitas', facing: 250, amp: 0.95, tide: [1.0, 4.6], water: 58, note: 'the reef point lines up best on W–NW', cam: 'Bluff cam', cycle: 480 },
     { id: 'lajolla', name: 'La Jolla Shores', short: 'La Jolla', area: 'La Jolla', facing: 280, amp: 0.75, tide: [1.0, 4.0], water: 60, note: 'a sheltered sand-bottom beach break tucked inside the point, so it runs smaller than Blacks', cam: 'Shores cam', cycle: 480 },
+    { id: 'blacks', name: 'Blacks', short: 'Blacks', area: 'La Jolla', facing: 265, amp: 1.15, tide: [1.5, 4.6], water: 58, note: 'Scripps Canyon focuses it into A-frame peaks', cam: 'North cliff cam', cycle: 420 },
+    { id: 'delmar', name: 'Del Mar', short: 'Del Mar', area: 'Del Mar', facing: 265, amp: 0.9, tide: [1.0, 4.0], water: 60, note: 'a sand-bottom beach break whose peaks shift with the bars', cam: 'Beach cam', cycle: 480 },
+    { id: 'swamis', name: "Swami's", short: "Swami's", area: 'Encinitas', facing: 250, amp: 0.95, tide: [1.0, 4.6], water: 58, note: 'the reef point lines up best on W–NW', cam: 'Bluff cam', cycle: 480 },
+    { id: 'carlsbad', name: 'Carlsbad', short: 'Carlsbad', area: 'Carlsbad', facing: 260, amp: 0.95, tide: [1.0, 4.4], water: 60, note: 'open beach breaks that take W–NW swell straight on', cam: 'Beach cam', cycle: 480 },
   ],
   mtns: [
     { id: 'summit', name: 'Snow Summit', short: 'Summit', area: 'Big Bear Lake', base: 7000, top: 8200, lifts: 12, exposed: 3, fresh24: 7, fresh48: 10, depth: 30, wind: [34, 36, 38, 36, 32, 27, 22, 19, 17, 16, 15, 14, 14], dir: 40, temp: [14, 13, 13, 15, 18, 21, 24, 26, 27, 27, 26, 24, 22], dT: 9, vis: [0.3, 0.4, 0.8, 2, 5, 10, 10, 10, 10, 10, 10, 10, 10], powderH: 2.0, cam: 'Summit cam', hold: 'Summit chair', grade: 'SR-330 / SR-18', chain: [[0, 2], [8, 1], [12, 0]] },
@@ -17,6 +19,8 @@ const D = {
   routes: {
     'blacks-summit': { via: 'I-15 · SR-330 · SR-18', mi: 135, h: 2.55 }, 'blacks-bear': { via: 'I-15 · SR-210 · SR-38', mi: 138, h: 2.6 }, 'blacks-mammoth': { via: 'I-15 · US-395', mi: 352, h: 5.9 },
     'swamis-summit': { via: 'I-15 · SR-330 · SR-18', mi: 122, h: 2.35 }, 'swamis-bear': { via: 'I-15 · SR-210 · SR-38', mi: 125, h: 2.4 }, 'swamis-mammoth': { via: 'I-15 · US-395', mi: 338, h: 5.7 },
+    'delmar-summit': { via: 'I-15 · SR-330 · SR-18', mi: 128, h: 2.45 }, 'delmar-bear': { via: 'I-15 · SR-210 · SR-38', mi: 131, h: 2.5 }, 'delmar-mammoth': { via: 'I-15 · US-395', mi: 344, h: 5.8 },
+    'carlsbad-summit': { via: 'SR-78 · I-15 · SR-330', mi: 113, h: 2.2 }, 'carlsbad-bear': { via: 'SR-78 · I-15 · SR-38', mi: 116, h: 2.25 }, 'carlsbad-mammoth': { via: 'SR-78 · I-15 · US-395', mi: 330, h: 5.5 },
     'lajolla-summit': { via: 'I-15 · SR-330 · SR-18', mi: 134, h: 2.55 }, 'lajolla-bear': { via: 'I-15 · SR-210 · SR-38', mi: 137, h: 2.6 }, 'lajolla-mammoth': { via: 'I-15 · US-395', mi: 351, h: 5.9 },
   },
   wind: { d: [45, 45, 50, 55, 60, 75, 120, 230, 255, 265, 270, 275, 280], k: [8, 9, 10, 9, 8, 6, 3, 5, 8, 11, 12, 11, 9] },

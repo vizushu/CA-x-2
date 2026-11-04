@@ -101,7 +101,7 @@ export default function Dock({ v, ic, bump, h }) {
       {/* Location pills */}
       <div style={{ flex: 'none', height: dk.pills, display: 'grid', gridTemplateColumns: pills.cols, gap: 4 }}>
         {pills.items.map(pl => (
-          <button key={pl.label} className="btn" onClick={pl.onClick} aria-pressed={pl.fw === 650} style={{ padding: '0 8px', minWidth: 0, height: '100%', borderRadius: 16, display: 'flex', flexDirection: pl.dir, alignItems: 'center', justifyContent: 'center', gap: pl.gap, background: pl.bg, color: pl.fg, fontSize: pl.fs, lineHeight: '17px', fontWeight: pl.fw, transition: 'background .2s, color .2s' }}>
+          <button key={pl.label} className="btn" onClick={pl.onClick} aria-pressed={pl.fw === 650} style={{ padding: pl.pad, minWidth: 0, height: '100%', borderRadius: 16, display: 'flex', flexDirection: pl.dir, alignItems: 'center', justifyContent: 'center', gap: pl.gap, background: pl.bg, color: pl.fg, fontSize: pl.fs, lineHeight: '17px', fontWeight: pl.fw, transition: 'background .2s, color .2s' }}>
             {pl.hasIcon && <Icon src={pl.icon} size={14} />}
             {pl.hasDot && <Dot color={pl.dot} style={{ transition: 'background .3s' }} />}
             <span className="ell">{pl.label}</span>

@@ -22,7 +22,7 @@ export function SourcesPanel({ order, rows }) {
       <section style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
         <h2 style={H2}>Cams</h2>
         <p className="pretty" style={P}><strong style={B}>Swami’s:</strong> SkylineWebcams’ Encinitas photo, refreshed every 5 minutes. Their terms allow the photo on any site; the live player is reserved for the webcam’s host.</p>
-        <p className="pretty" style={P}><strong style={B}>Blacks and La Jolla Shores:</strong> Surfline runs the Scripps Pier cam and HDOnTap’s Shores streams are token-locked, so La Jolla links out to SkylineWebcams’ La Jolla cam. Every cam slot takes your own YouTube, image or embed URL.</p>
+        <p className="pretty" style={P}><strong style={B}>La Jolla Shores, Del Mar and Carlsbad:</strong> HDOnTap live cams, linked from the cam slot. Blacks has no public cam; Surfline runs the Scripps Pier cam.</p>
         <p className="pretty" style={P}><strong style={B}>Mountains:</strong> Caltrans road cams, which are public, plus a link out to each resort’s own cams.</p>
       </section>
       <section style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>

@@ -173,8 +173,8 @@ export default function viewModel(st, props, ctx) {
   };
 
   // ---------- PILLS + MODES ----------
-  const pill = o => Object.assign({ hasIcon: false, icon: '', hasDot: false, dot: 'transparent', hasScore: false, score: '', scoreFg: T1, fw: 500, bg: 'transparent', fg: T2, dir: 'row', gap: 6, fs: 14 }, o);
-  const items = mode === 'surf' ? D.breaks.map((b, i) => { const q = E.surfAt(i, t), on = i === bi; return pill({ label: b.short, hasDot: true, dot: col(q.rating), bg: on ? CHIP : 'transparent', fg: on ? T1 : T2, fw: on ? 650 : 500, onClick: () => ctx.selectBreak(b.id) }); })
+  const pill = o => Object.assign({ hasIcon: false, icon: '', hasDot: false, dot: 'transparent', hasScore: false, score: '', scoreFg: T1, fw: 500, bg: 'transparent', fg: T2, dir: 'row', gap: 6, fs: 14, pad: '0 8px' }, o);
+  const items = mode === 'surf' ? D.breaks.map((b, i) => { const q = E.surfAt(i, t), on = i === bi; return pill({ label: b.short, hasDot: true, dot: col(q.rating), bg: on ? CHIP : 'transparent', fg: on ? T1 : T2, fw: on ? 650 : 500, onClick: () => ctx.selectBreak(b.id) , fs: D.breaks.length > 4 ? 12.5 : 14, gap: D.breaks.length > 4 ? 4 : 6, pad: D.breaks.length > 4 ? '0 2px' : '0 8px' }); })
     : mode === 'snow' ? D.mtns.map((m, i) => { const q = E.snowAt(i, t), on = i === mi; return pill({ label: m.short, hasDot: true, dot: col(q.closed ? 'flat' : q.rating), bg: on ? CHIP : 'transparent', fg: on ? T1 : T2, fw: on ? 650 : 500, onClick: () => ctx.selectMtn(m.id) }); })
     : [pill({ label: B.short, hasIcon: true, icon: ic('repeat'), bg: FILL, fg: T1, fw: 650, onClick: () => ctx.cycleBreak() })].concat(D.mtns.map((m, i) => { const v = E.plan(bi, i, st.order).total, on = i === mi; return pill({ label: m.short, hasScore: true, score: v, scoreFg: col(E.scoreKey(v)), bg: on ? CHIP : 'transparent', fg: on ? T1 : T2, fw: on ? 650 : 500, dir: 'column', gap: 0, fs: 13, onClick: () => ctx.selectMtn(m.id) }); }));
   const pills = { cols: 'repeat(' + items.length + ', minmax(0,1fr))', items };
