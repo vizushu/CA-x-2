@@ -180,6 +180,7 @@ export default class App extends React.Component {
     if (th && (this._thMode !== this.state.mode || !el.style.getPropertyValue('--bg'))) {
       this._thMode = this.state.mode;
       for (const k in th) el.style.setProperty('--' + k, th[k]);
+      if (this.isApp()) { document.documentElement.style.background = th.bg; document.body.style.background = th.bg; } // any gap matches the theme
       const meta = document.querySelector('meta[name="theme-color"]');
       if (meta) meta.setAttribute('content', th.bg);
     }
@@ -227,7 +228,16 @@ export default class App extends React.Component {
     if (!Live.isReady() && !Live.isSettled() && Date.now() - this._t0 > 5000) { this._t0 = Date.now(); Live.refresh(); }
   }
   componentDidMount() {
-    this.onResize = () => this.setState({ vw: window.innerWidth, vh: window.innerHeight });
+    // iOS home-screen apps can report a short innerHeight at launch (leaving a strip at the bottom), so in
+    // standalone portrait use the full screen height; re-measure after the viewport settles.
+    this.onResize = () => {
+      let vh = Math.max(window.innerHeight, document.documentElement.clientHeight || 0);
+      if (standalone() && window.screen && window.screen.height > window.screen.width) vh = Math.max(vh, window.screen.height);
+      this.setState({ vw: window.innerWidth, vh });
+    };
+    if (window.visualViewport) window.visualViewport.addEventListener('resize', this.onResize);
+    window.addEventListener('orientationchange', () => setTimeout(this.onResize, 300));
+    this._settleT = setTimeout(this.onResize, 400);
     this.onResize();
     window.addEventListener('resize', this.onResize);
     this.onNet = () => this.setState({ offline: navigator.onLine === false });
@@ -253,7 +263,7 @@ export default class App extends React.Component {
     window.removeEventListener('resize', this.onResize);
     window.removeEventListener('online', this.onNet);
     window.removeEventListener('offline', this.onNet);
-    clearInterval(this.timer); clearTimeout(this._ct); clearTimeout(this._splashT); clearTimeout(this._splashOut);
+    clearInterval(this.timer); clearTimeout(this._ct); clearTimeout(this._splashT); clearTimeout(this._settleT); clearTimeout(this._splashOut);
     if (this._raf) cancelAnimationFrame(this._raf);
     Live.stop();
   }
