@@ -128,9 +128,8 @@ export default function Cam({ v, ic, liveCam, connecting, miniTap }) {
         </div>
 
         {hud.showTimer && (
-          <div style={{ position: 'absolute', right: 16, top: 58, padding: '6px 12px', borderRadius: 14, textAlign: 'right', background: hud.setBg, color: hud.setFg, backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)', boxShadow: 'inset 0 0 0 0.5px rgba(238,243,246,0.16)', transition: 'background .3s, color .3s' }}>
-            <div className="tnum" style={{ fontSize: 13, lineHeight: '16px', fontWeight: 650 }}>{hud.setTxt}</div>
-            <div style={{ fontSize: 10, lineHeight: '13px', color: hud.setSubFg }}>{hud.setSub}</div>
+          <div style={{ position: 'absolute', right: 16, top: 60, height: 22, padding: '0 9px', borderRadius: 11, display: 'flex', alignItems: 'center', background: hud.setBg, color: hud.setFg, backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)', boxShadow: 'inset 0 0 0 0.5px rgba(238,243,246,0.16)', transition: 'background .3s, color .3s' }}>
+            <div className="tnum" style={{ fontSize: 11, lineHeight: '14px', fontWeight: 650 }}>{hud.setTxt}</div>
           </div>
         )}
         {hud.showVis && (

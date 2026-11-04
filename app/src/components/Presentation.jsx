@@ -11,7 +11,7 @@ export function SourcesPanel({ order, rows }) {
   return (
     <aside data-screen-label="Live sources" style={{ order, flex: '1 1 340px', minWidth: 290, maxWidth: 400, display: 'flex', flexDirection: 'column', gap: 28 }}>
       <header style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-        <div style={EYEBROW}>Lineup Live · real data</div>
+        <div style={EYEBROW}>2CA · real data</div>
         <h1 style={{ margin: 0, fontSize: 32, lineHeight: '36px', fontWeight: 650, letterSpacing: '-0.025em' }}>Every number is live</h1>
         <p className="pretty" style={{ ...P, fontSize: 15, lineHeight: '22px' }}>Your browser pulls public feeds directly. Nothing on the phone is simulated, and when a feed can’t answer, the app says so.</p>
       </header>

@@ -12,7 +12,7 @@ const PRIMARY = { height: 48, padding: '0 18px', borderRadius: 14, background: '
 export function Loading({ title, rows, failed, onRetry }) {
   return (
     <div role="status" style={{ position: 'absolute', inset: 0, zIndex: 60, boxSizing: 'border-box', display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: 20, padding: '0 32px', background: '#09141A', color: '#EEF4F6' }}>
-      <div style={{ fontFamily: MONO, fontSize: 11, letterSpacing: '.08em', textTransform: 'uppercase', color: '#778692' }}>Lineup · live</div>
+      <div style={{ fontFamily: MONO, fontSize: 11, letterSpacing: '.08em', textTransform: 'uppercase', color: '#778692' }}>2CA · live</div>
       <div className="pretty" style={{ fontSize: 28, lineHeight: '34px', fontWeight: 650, letterSpacing: '-0.02em' }}>{title}</div>
       <SourceRows rows={rows} gap={12} fs={14} lh={19} labelColor="#A5B3BD" stateFs={12} />
       {failed && <button className="btn" onClick={onRetry} style={{ height: 52, borderRadius: 26, background: '#EEF4F6', color: '#09141A', fontSize: 15, fontWeight: 650 }}>Try again</button>}
