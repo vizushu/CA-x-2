@@ -121,10 +121,10 @@ export default function Dock({ v, ic, bump, h }) {
         return (
           <button key={md.label} className="btn" onClick={md.onClick} aria-label={md.label} aria-current={on ? 'page' : undefined} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 3, color: on ? 'var(--acc, oklch(0.82 0.1 190))' : T3, transition: 'color .25s' }}>
             {i === 1
-              ? <BoardsX mode={['surf', 'double', 'snow'][modes.idx]} size={dk.glove ? 46 : 42} />
+              ? <BoardsX mode={['surf', 'double', 'snow'][modes.idx]} size={42} />
               : <>
-                  <Icon src={md.icon} size={dk.glove ? 26 : 24} />
-                  <span style={{ fontSize: dk.glove ? 12 : 11, lineHeight: '13px', fontWeight: on ? 700 : 600 }}>{md.label}</span>
+                  <Icon src={md.icon} size={24} />
+                  <span style={{ fontSize: 11, lineHeight: '13px', fontWeight: on ? 700 : 600 }}>{md.label}</span>
                 </>}
           </button>
         );
