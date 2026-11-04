@@ -22,11 +22,11 @@ const CAM = {
   ob: { kind: 'hls', src: 'https://oceanbeachpier.cdn.coastalcameranetwork.com/sunba/oceanbeachpier/index.m3u8', label: 'Ocean Beach Pier · Coastal Camera Network', link: 'https://oceanbeachpier.cdn.coastalcameranetwork.com/sunba/oceanbeachpier/index.m3u8', linkLabel: 'Open the Ocean Beach Pier stream' },
   blacks: { kind: 'none', label: 'No embeddable public cam', note: 'The Scripps Pier cam is run by Surfline and can’t be embedded. Add your own cam in Settings.', link: 'https://scripps.ucsd.edu/piercam', linkLabel: 'Scripps Pier cam' },
   swamis: { kind: 'img', src: 'https://embed.skylinewebcams.com/img/3461.jpg', every: 300, label: 'Encinitas · SkylineWebcams', live: 'https://www.skylinewebcams.com/webcam/united-states/california/encinitas/encinitas-california.html?w=3461', link: 'https://www.skylinewebcams.com/en/webcam/united-states/california/encinitas/encinitas-california.html', linkLabel: 'Watch live on SkylineWebcams' },
-  lajolla: { kind: 'none', label: 'Live on HDOnTap', note: 'Tap the link button to watch it live, or paste a cam link in Sources & settings.', link: 'https://hdontap.com/stream/532541/', linkLabel: 'La Jolla Shores cam on HDOnTap' },
+  lajolla: { kind: 'iframe', src: 'https://g1.ipcamlive.com/player/player.php?alias=603d26c2977cf', label: 'La Jolla Shores · beach / pier', provider: 'La Jolla Shores Hotel · IPCamLive', link: 'https://www.ljshoreshotel.com/beach-cam/', linkLabel: 'La Jolla Shores Hotel beach cam' },
   delmar: { kind: 'none', label: 'Live on HDOnTap', note: 'Tap the link button to watch it live, or paste a cam link in Sources & settings.', link: 'https://hdontap.com/stream/399483/', linkLabel: 'Del Mar cam on HDOnTap' },
   carlsbad: { kind: 'none', label: 'Live on HDOnTap', note: 'Tap the link button to watch it live, or paste a cam link in Sources & settings.', link: 'https://hdontap.com/stream/155380/', linkLabel: 'Carlsbad cam on HDOnTap' },
-  summit: { kind: 'img', src: CT + 'd8/cctv/image/sr18125lakegregory/sr18125lakegregory.jpg', every: 60, label: 'SR-18 Lake Gregory · Caltrans', link: MTN.summit.site, linkLabel: 'Snow Summit resort cams' },
-  bear: { kind: 'img', src: CT + 'd8/cctv/image/sr138393nohwy18/sr138393nohwy18.jpg', every: 60, label: 'SR-138 at SR-18 · Caltrans', link: MTN.bear.site, linkLabel: 'Bear Mountain resort cams' },
+  summit: { kind: 'iframe', src: 'https://camstreamer.com/embed/6voUqxnwy6czzHMjNExPov1rHCMR2cKvz8Hk5OlO', label: 'Snow Summit · Miracle Mile', provider: 'Big Bear Mountain Resort', link: 'https://www.bigbearmountainresort.com/webcams/snow-summit', linkLabel: 'Snow Summit resort cams' },
+  bear: { kind: 'iframe', src: 'https://camstreamer.com/embed/CGe2VBFnva0Xtz4cUkELesjftjTPM4nEJIByGTj7', label: 'Bear Mountain · Peak', provider: 'Big Bear Mountain Resort', link: 'https://www.bigbearmountainresort.com/webcams/bear-mountain', linkLabel: 'Bear Mountain resort cams' },
   mammoth: { kind: 'img', src: CT + 'd9/cctv/image/sr203mammothmountain/sr203mammothmountain.jpg', every: 60, label: 'SR-203 Mammoth Mtn · Caltrans', link: MTN.mammoth.site, linkLabel: 'Mammoth Mountain' },
 };
 const LABELS = { marine: 'Swell & water · Open-Meteo Marine', coast: 'Coastal wind & sun · Open-Meteo', mtn: 'Mountain weather & snow · Open-Meteo', tide9410230: 'Tides · NOAA La Jolla', water: 'Water temp · NOAA Scripps Pier', ccd8: 'Chain control · Caltrans D8 (Big Bear)', ccd9: 'Chain control · Caltrans D9 (US-395)', route: 'Drive time' };
@@ -34,6 +34,13 @@ const S = { off: 0, tday: '', raw: { tideH: {}, tideL: {}, cc: {} }, br: [], mt:
 function load(k) { try { return JSON.parse(localStorage.getItem(k)); } catch (e) { return null; } }
 function save(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
 S.settings = S.settings || Object.assign({ prov: 'none', key: '', swamisLive: false, cams: {} }, load('lineup.settings') || {});
+// Saved cam overrides win over defaults. Earlier builds suggested pasting the HDOnTap La Jolla Shores page into
+// Settings; that page can't be framed, so point that one override at the IPCamLive player. Other settings are untouched.
+const LAJOLLA_PLAYER = 'https://g1.ipcamlive.com/player/player.php?alias=603d26c2977cf';
+(function migrateCams() {
+  const cams = S.settings.cams || {}, ov = cams.lajolla, url = ov && (typeof ov === 'string' ? ov : ov.url);
+  if (url && /hdontap\.com/i.test(url)) { S.settings.cams = Object.assign({}, cams, { lajolla: { type: 'iframe', url: LAJOLLA_PLAYER } }); save('lineup.settings', S.settings); }
+})();
 
 const DTF = new Intl.DateTimeFormat('en-US', { timeZone: TZ, hourCycle: 'h23', year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit' });
 function parts(d) { const p = {}; DTF.formatToParts(d).forEach(x => { p[x.type] = x.value; }); return p; }
@@ -272,20 +279,39 @@ E.snowFootnote = (mi, off) => (off ? 'Offline · ' : '') + 'Model snow from Open
 E.doubleFootnote = (mi, off) => (off ? 'Offline · ' : '') + 'Chains: Caltrans ' + ago('cc' + MTN[D.mtns[mi].id].d) + ' · drive: ' + provLabel();
 E.waterLine = bi => 'Water ' + D.breaks[bi].water + '°F';
 E.waterSub = bi => (S.br[bi] || {}).wsrc === 'obs' ? 'NOAA Scripps Pier · ' + S.water.at : 'Open-Meteo model';
+// Known iframe player origins (rendered as <iframe>, never as an image, <video> or plain link).
+const IFRAME_PLAYER = /^https:\/\/(g1\.ipcamlive\.com\/player\/|camstreamer\.com\/embed\/|www\.youtube(-nocookie)?\.com\/embed\/)/i;
+/** A saved override is a URL string or { type: 'iframe' | 'hls' | 'img', url }. An explicit type always wins. */
+function overrideCam(id, ov) {
+  const url = typeof ov === 'string' ? ov : ov && ov.url, type = typeof ov === 'object' && ov ? ov.type : null;
+  if (!url) return null;
+  const def = CAM[id];
+  if (def && def.src === url && (!type || type === def.kind)) return Object.assign({ id }, def); // same as the default: keep its label and credit
+  const base = { id, link: url, linkLabel: 'Open cam source', provider: 'Your cam' };
+  if (type === 'iframe') return Object.assign(base, { kind: 'iframe', src: url, label: 'Your cam' });
+  if (type === 'hls') return Object.assign(base, { kind: 'hls', src: url, label: 'Your cam · live' });
+  if (type === 'img') return Object.assign(base, { kind: 'img', src: url, every: 60, label: 'Your cam' });
+  if (IFRAME_PLAYER.test(url)) return Object.assign(base, { kind: 'iframe', src: url, label: 'Your cam' });
+  const y = url.match(/(?:youtu\.be\/|v=|\/live\/|\/shorts\/)([\w-]{11})/), ch = url.match(/channel\/(UC[\w-]+)/);
+  if (y || ch) return Object.assign(base, { kind: 'iframe', src: y ? 'https://www.youtube.com/embed/' + y[1] + '?autoplay=1&mute=1&playsinline=1' : 'https://www.youtube.com/embed/live_stream?channel=' + ch[1] + '&autoplay=1&mute=1', label: 'Your cam · YouTube', provider: 'YouTube' });
+  if (/\.m3u8(\?|$)/i.test(url)) return Object.assign(base, { kind: 'hls', src: url, label: 'Your cam · live' });
+  if (/\.(jpe?g|png|webp|gif)(\?|$)/i.test(url)) return Object.assign(base, { kind: 'img', src: url, every: 60, label: 'Your cam' });
+  return Object.assign(base, { kind: 'iframe', src: url, label: 'Your cam' });
+}
 function camOf(kind, i) {
-  const id = kind === 'break' ? D.breaks[i].id : D.mtns[i].id, c = CAM[id], ov = (S.settings.cams || {})[id];
-  if (S.camDown[id] && !ov) return { id, kind: 'none', label: 'Cam offline', note: c.label + ' isn’t responding.', link: c.link, linkLabel: c.linkLabel };
-  if (ov) { const y = ov.match(/(?:youtu\.be\/|v=|\/embed\/|\/live\/|\/shorts\/)([\w-]{11})/), ch = ov.match(/channel\/(UC[\w-]+)/); if (y || ch) return { id, kind: 'frame', src: y ? 'https://www.youtube.com/embed/' + y[1] + '?autoplay=1&mute=1&playsinline=1' : 'https://www.youtube.com/embed/live_stream?channel=' + ch[1] + '&autoplay=1&mute=1', label: 'Your cam · YouTube', link: ov, linkLabel: 'Open cam source' }; if (/\.m3u8(\?|$)/i.test(ov)) return { id, kind: 'hls', src: ov, label: 'Your cam · live', link: ov, linkLabel: 'Open cam source' }; if (/\.(jpe?g|png|webp|gif)(\?|$)/i.test(ov)) return { id, kind: 'img', src: ov, every: 60, label: 'Your cam', link: ov, linkLabel: 'Open cam source' }; return { id, kind: 'frame', src: ov, label: 'Your cam', link: ov, linkLabel: 'Open cam source' }; }
-  if (id === 'swamis' && S.settings.swamisLive) return { id, kind: 'frame', src: c.live, label: c.label + ' · live', link: c.link, linkLabel: c.linkLabel };
+  const id = kind === 'break' ? D.breaks[i].id : D.mtns[i].id, c = CAM[id], ov = overrideCam(id, (S.settings.cams || {})[id]);
+  if (ov) return ov;
+  if (S.camDown[id]) return { id, kind: 'none', label: 'Cam offline', note: c.label + ' isn’t responding.', link: c.link, linkLabel: c.linkLabel };
+  if (id === 'swamis' && S.settings.swamisLive) return { id, kind: 'iframe', src: c.live, label: c.label + ' · live', provider: 'SkylineWebcams', link: c.link, linkLabel: c.linkLabel };
   return Object.assign({ id }, c);
 }
 E.camFeed = function (kind, i) {
   const f = camOf(kind, i), src = f.kind === 'img' ? f.src + (f.src.indexOf('?') < 0 ? '?' : '&') + 't=' + Math.floor(Date.now() / ((f.every || 60) * 1000)) : f.src || '';
   const onError = () => { S.camDown[f.id] = true; if (S.cb) S.cb(); };
-  return { key: f.id + '|' + f.kind + '|' + (f.src || ''), isImg: f.kind === 'img', isFrame: f.kind === 'frame', isHls: f.kind === 'hls', isNone: f.kind === 'none', src, label: f.label, note: f.note || '', onError };
+  return { key: f.id + '|' + f.kind + '|' + (f.src || ''), isImg: f.kind === 'img', isIframe: f.kind === 'iframe', isHls: f.kind === 'hls', isNone: f.kind === 'none', src, label: f.label, note: f.note || '', provider: f.provider || '', onError };
 };
 E.camLabel = (kind, i) => { const f = camOf(kind, i); return f.label + (f.kind === 'img' ? ' · photo' : ''); };
-E.camLive = (view, bi, mi) => { if (view === 'split') return 'Cams'; const f = camOf(view === 'mountain' ? 'mtn' : 'break', view === 'mountain' ? mi : bi); return f.kind === 'frame' || f.kind === 'hls' ? 'Live' : f.kind === 'img' ? 'Photo' : 'No cam'; };
+E.camLive = (view, bi, mi) => { if (view === 'split') return 'Cams'; const f = camOf(view === 'mountain' ? 'mtn' : 'break', view === 'mountain' ? mi : bi); return f.kind === 'iframe' || f.kind === 'hls' ? 'Live' : f.kind === 'img' ? 'Photo' : 'No cam'; };
 E.camLinkFor = (kind, i) => { const f = camOf(kind, i); return f.link ? { url: f.link, label: f.linkLabel || 'Open source' } : null; };
 
 const Live = {

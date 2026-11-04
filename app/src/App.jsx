@@ -71,7 +71,8 @@ export default class App extends React.Component {
   // ---------- settings ----------
   draftFrom() {
     const cfg = Live.settings(), D = E.D, b = D.breaks.find(x => x.id === this.state.breakId) || D.breaks[0], m = D.mtns.find(x => x.id === this.state.mtnId) || D.mtns[0];
-    return { prov: cfg.prov, key: cfg.key, beach: cfg.cams[b.id] || '', mtn: cfg.cams[m.id] || '' };
+    const u = o => (typeof o === 'string' ? o : o && o.url) || '';
+    return { prov: cfg.prov, key: cfg.key, beach: u(cfg.cams[b.id]), mtn: u(cfg.cams[m.id]) };
   }
   setDraft(p) { this.setState(s => ({ draft: Object.assign({}, s.draft || this.draftFrom(), p) })); }
   settingsVals(D, bi, mi) {
