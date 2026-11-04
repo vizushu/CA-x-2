@@ -1,6 +1,7 @@
 // Bottom chrome: docked tab bar, plus a pull-up panel (handle → timeline controls → loadout drawer).
 import React from 'react';
 import { Arrow, Cap, Dot, FILL, HAIR, Icon, MONO, T1, T2, T3 } from './ui.jsx';
+import BoardsX from './BoardsX.jsx';
 
 const HATCH = `repeating-linear-gradient(135deg, ${HAIR} 0 1px, transparent 1px 5px)`;
 
@@ -118,9 +119,13 @@ export default function Dock({ v, ic, bump, h }) {
       {modes.items.map((md, i) => {
         const on = i === modes.idx;
         return (
-          <button key={md.label} className="btn" onClick={md.onClick} aria-current={on ? 'page' : undefined} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 3, color: on ? 'var(--acc, oklch(0.82 0.1 190))' : T3, transition: 'color .25s' }}>
-            <Icon src={md.icon} size={dk.glove ? 26 : 24} />
-            <span style={{ fontSize: dk.glove ? 12 : 11, lineHeight: '13px', fontWeight: on ? 700 : 600 }}>{md.label}</span>
+          <button key={md.label} className="btn" onClick={md.onClick} aria-label={md.label} aria-current={on ? 'page' : undefined} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 3, color: on ? 'var(--acc, oklch(0.82 0.1 190))' : T3, transition: 'color .25s' }}>
+            {i === 1
+              ? <BoardsX mode={['surf', 'double', 'snow'][modes.idx]} size={dk.glove ? 36 : 32} />
+              : <>
+                  <Icon src={md.icon} size={dk.glove ? 26 : 24} />
+                  <span style={{ fontSize: dk.glove ? 12 : 11, lineHeight: '13px', fontWeight: on ? 700 : 600 }}>{md.label}</span>
+                </>}
           </button>
         );
       })}
