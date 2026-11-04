@@ -194,8 +194,11 @@ export default class App extends React.Component {
     if (conn) this._ct = setTimeout(() => this.setState({ connecting: '' }), 900);
   }
   setMode(m) { if (m !== this.state.mode) this.setState({ mode: m }); }
-  selectBreak(id) { if (id === this.state.breakId) return; const i = E.D.breaks.findIndex(b => b.id === id); this.setState({ breakId: id }); this.connect(E.camLabel('break', i)); }
-  selectMtn(id) { if (id === this.state.mtnId) return; const i = E.D.mtns.findIndex(m => m.id === id); this.setState({ mtnId: id }); this.connect(E.camLabel('mtn', i)); }
+  selectBreak(id, dir = 0) { if (id === this.state.breakId) return; const i = E.D.breaks.findIndex(b => b.id === id); this.setState({ breakId: id, swipeDir: dir }); this.connect(E.camLabel('break', i)); }
+  selectMtn(id, dir = 0) { if (id === this.state.mtnId) return; const i = E.D.mtns.findIndex(m => m.id === id); this.setState({ mtnId: id, swipeDir: dir }); this.connect(E.camLabel('mtn', i)); }
+  // Swipe left = next location, right = previous (stops at the ends). swipeDir drives the slide-in.
+  swipeBreak = d => { const B = E.D.breaks, i = B.findIndex(b => b.id === this.state.breakId), j = i + d; if (j < 0 || j >= B.length) return; this.selectBreak(B[j].id, d); };
+  swipeMtn = d => { const M = E.D.mtns, i = M.findIndex(m => m.id === this.state.mtnId), j = i + d; if (j < 0 || j >= M.length) return; this.selectMtn(M[j].id, d); };
   cycleBreak() { const B = E.D.breaks, i = B.findIndex(b => b.id === this.state.breakId); this.selectBreak(B[(i + 1) % B.length].id); }
   setCamView(v) { this.setState({ camView: v }); }
   setOrder = o => this.setState({ order: o });
@@ -270,9 +273,9 @@ export default class App extends React.Component {
     return (
       <>
         <div aria-hidden="true" style={{ position: 'absolute', inset: 0, pointerEvents: 'none', opacity: v.glowOp, transition: 'opacity .6s', background: 'radial-gradient(110% 40% at 50% 30%, rgba(214,224,240,0.18), rgba(214,224,240,0) 70%), radial-gradient(70% 30% at 15% 85%, rgba(80,200,215,0.07), rgba(80,200,215,0) 70%), linear-gradient(180deg, rgba(232,238,246,0.10) 0%, rgba(28,34,44,0) 45%, rgba(190,200,216,0.10) 100%)' }} />
-        <ModeScroller label="Surf" ref={this.surfRef} onScroll={this.onScroll} tv={v.tv.surf} padB={v.dk.padB}><SurfView {...common} S={v.S} /></ModeScroller>
+        <ModeScroller label="Surf" ref={this.surfRef} onScroll={this.onScroll} onSwipe={this.swipeBreak} swipeKey={st.breakId} swipeDir={st.swipeDir} tv={v.tv.surf} padB={v.dk.padB}><SurfView {...common} S={v.S} /></ModeScroller>
         <ModeScroller label="CA Double" ref={this.dblRef} onScroll={this.onScroll} tv={v.tv.double} padB={v.dk.padB}><DoubleView {...common} dbl={v.dbl} setOrder={this.setOrder} /></ModeScroller>
-        <ModeScroller label="Snow" ref={this.snowRef} onScroll={this.onScroll} tv={v.tv.snow} padB={v.dk.padB}><SnowView {...common} sn={v.sn} /></ModeScroller>
+        <ModeScroller label="Snow" ref={this.snowRef} onScroll={this.onScroll} onSwipe={this.swipeMtn} swipeKey={st.mtnId} swipeDir={st.swipeDir} tv={v.tv.snow} padB={v.dk.padB}><SnowView {...common} sn={v.sn} /></ModeScroller>
         <Cam v={v} ic={ic} liveCam={liveCam} connecting={st.connecting} miniTap={this.miniTap} />
         <Dock v={v} ic={ic} bump={st.bump} h={this} />
       </>
