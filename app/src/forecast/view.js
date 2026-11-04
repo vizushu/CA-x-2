@@ -141,7 +141,10 @@ export default function viewModel(st, props, ctx) {
 
   // ---------- DOCK ----------
   const dk = { strip: glove ? 58 : 52, viz: glove ? 92 : 80, pills: glove ? 56 : 48, modes: glove ? 64 : 56, val: glove ? 17 : 15, modeFs: glove ? 15 : 14, glove };
-  dk.base = 24 + dk.strip + dk.viz + 12 + dk.pills + 6 + dk.modes + 12; dk.exp = (props.appH || 932) - 8 - 126 - dk.base; dk.padB = dk.base + 24; dk.modesR = dk.modes / 2; dk.modesR2 = dk.modes / 2 - 4;
+  // Bottom tab bar (docked edge-to-edge) + a pull-up panel above it with three detents:
+  // 0 = collapsed handle row, 1 = time strip + scrubber + spot pills, 2 = loadout drawer.
+  dk.tab = glove ? 60 : 52; dk.safe = 34; dk.grab = 48; dk.ctrl = dk.strip + dk.viz + 12 + dk.pills + 12;
+  dk.exp = Math.max(160, (props.appH || 932) - 126 - dk.tab - dk.safe - dk.grab - dk.ctrl - 8); dk.padB = dk.tab + dk.safe + dk.grab + 20;
   const dNow = E.drive(bi, mi, t, st.order === 'surf');
   const cells = mode === 'surf' ? [['Surf', rg.str + ' ft', col(pkS)], ['Energy', Math.round(r.kj) + ' kJ'], ['Tide', r.tide.h.toFixed(1) + ' ft'], ['Wind', Math.round(r.wind.k) + ' kt ' + E.catShort(r.wind.cat), col(wK)]]
     : mode === 'snow' ? [['Summit', Math.round(s.wind) + ' mph', col(E.gustKey(s.gust))], ['Temp', Math.round(s.temp) + '°F'], ['Surface', s.short], ['Hold risk', s.gust >= 45 ? 'High' : s.gust >= 30 ? 'Med' : 'Low', col(E.gustKey(s.gust))]]
@@ -207,6 +210,6 @@ export default function viewModel(st, props, ctx) {
     tv: { surf: { op: mode === 'surf' ? 1 : 0, vis: mode === 'surf' ? 'visible' : 'hidden' }, double: { op: mode === 'double' ? 1 : 0, vis: mode === 'double' ? 'visible' : 'hidden' }, snow: { op: mode === 'snow' ? 1 : 0, vis: mode === 'snow' ? 'visible' : 'hidden' } },
     dk, S, sn, dbl, drawer, strip, sc, pills, modes, cam, hud, mini,
     ic: { cloudOff: ic('cloud-off'), backpack: ic('backpack'), chevUp: ic('chevron-up'), chevDown: ic('chevron-down'), chevRight: ic('chevron-right'), pip: ic('picture-in-picture-2'), hand: ic('hand'), waves: ic('waves'), snow: ic('mountain-snow'), db: ic('database'), settings: ic('settings-2'), ext: ic('external-link'), x: ic('x'), refresh: ic('refresh-cw') },
-    theme: D.themes[mode], exp: dk.exp, nowT,
+    theme: D.themes[mode], exp: dk.exp, ctrl: dk.ctrl, nowT,
   };
 }

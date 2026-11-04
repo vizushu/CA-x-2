@@ -39,7 +39,7 @@ export default class App extends React.Component {
   state = Object.assign(
     { mode: 'surf', breakId: 'swamis', mtnId: 'bear', order: 'surf', camView: 'split' },
     loadUI(),
-    { t: 6.5, follow: true, dragging: false, bump: 0, connecting: '', docked: false, sheetOpen: false, pinned: false, sec: 0, vw: window.innerWidth, vh: window.innerHeight, data: 0, offline: false, settingsOpen: false, draft: null },
+    { t: 6.5, follow: true, dragging: false, bump: 0, connecting: '', docked: false, sheetLevel: 0, pinned: false, sec: 0, vw: window.innerWidth, vh: window.innerHeight, data: 0, offline: false, settingsOpen: false, draft: null },
   );
 
   appRef = React.createRef();
@@ -49,6 +49,7 @@ export default class App extends React.Component {
   anim = { sheet: { v: 0, vel: 0, to: 0 }, pin: { v: 0, vel: 0, to: 0 } };
   scrollP = 0;
   _exp = 508;
+  _ctrl = 216;
 
   saveUI() {
     const s = this.state;
@@ -125,20 +126,25 @@ export default class App extends React.Component {
     this.setT(clamp(Math.round((this.state.t + step) * 4) / 4, 5, 17));
   };
 
+  // Pull-up panel position. The spring runs on a 0–2 level (0 handle, 1 timeline, 2 loadout);
+  // drags are tracked in pixels because the two segments have different heights.
+  toPx(v) { return this._ctrl * Math.min(v, 1) + this._exp * Math.max(v - 1, 0); }
+  fromPx(p) { return p <= this._ctrl ? p / this._ctrl : 1 + (p - this._ctrl) / this._exp; }
+  setSheet(level) { this.anim.sheet.to = level; this.setState({ sheetLevel: level }); this.kick(); }
   sheetDown = e => {
     const el = e.currentTarget;
     try { el.setPointerCapture(e.pointerId); } catch (_) { /* not supported */ }
     const a = this.anim.sheet; a.drag = true; a.vel = 0;
-    this._sd = { y: e.clientY, v: a.v, lastY: e.clientY, lastT: performance.now(), vel: 0, moved: false };
+    this._sd = { y: e.clientY, p: this.toPx(clamp(a.v, 0, 2)), lastY: e.clientY, lastT: performance.now(), vel: 0, moved: false };
   };
   sheetMove = e => {
     const d = this._sd; if (!d) return;
-    const now = performance.now(), dy = e.clientY - d.y, s = this._scale || 1;
+    const now = performance.now(), dy = e.clientY - d.y, s = this._scale || 1, max = this._ctrl + this._exp;
     if (Math.abs(dy) > 4) d.moved = true;
-    let v = d.v - dy / s / this._exp;
-    if (v < 0) v *= 0.3;
-    if (v > 1) v = 1 + (v - 1) * 0.3;
-    this.anim.sheet.v = v;
+    let p = d.p - dy / s;
+    if (p < 0) p *= 0.3;
+    if (p > max) p = max + (p - max) * 0.3;
+    this.anim.sheet.v = p < 0 ? p / this._ctrl : p > max ? 2 + (p - max) / this._exp : this.fromPx(p);
     const dt = now - d.lastT;
     if (dt > 0) d.vel = 0.75 * ((e.clientY - d.lastY) / dt) + 0.25 * d.vel;
     d.lastY = e.clientY; d.lastT = now;
@@ -149,12 +155,22 @@ export default class App extends React.Component {
     this._sd = null;
     const a = this.anim.sheet, s = this._scale || 1;
     a.drag = false;
-    if (!d.moved) a.to = a.to > 0.5 ? 0 : 1;
-    else { const vp = -(d.vel / s) / this._exp * 1000; a.to = a.v + vp * 0.16 > 0.5 ? 1 : 0; a.vel = clamp(vp, -8, 8); }
-    this.setState({ sheetOpen: a.to === 1 });
-    this.kick();
+    let level;
+    if (!d.moved) level = this.state.sheetLevel === 0 ? 1 : 0;
+    else {
+      const vpx = -(d.vel / s) * 1000, cur = this.toPx(clamp(a.v, 0, 2)), proj = cur + vpx * 0.16;
+      const stops = [0, this._ctrl, this._ctrl + this._exp];
+      level = stops.reduce((best, x, i) => Math.abs(x - proj) < Math.abs(stops[best] - proj) ? i : best, 0);
+      a.vel = clamp(vpx / (a.v > 1 ? this._exp : this._ctrl), -8, 8);
+    }
+    this.setSheet(level);
   };
-  openDrawer = () => { this.anim.sheet.to = 1; this.setState({ sheetOpen: true }); this.kick(); };
+  sheetKey = e => {
+    if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); this.setSheet(this.state.sheetLevel === 0 ? 1 : 0); }
+    else if (e.key === 'ArrowUp') { e.preventDefault(); this.setSheet(Math.min(2, this.state.sheetLevel + 1)); }
+    else if (e.key === 'ArrowDown') { e.preventDefault(); this.setSheet(Math.max(0, this.state.sheetLevel - 1)); }
+  };
+  openDrawer = () => this.setSheet(2);
 
   // Spring integrator (k = 320, c = 30). Reduced motion snaps.
   kick() { if (this._raf) return; this._last = performance.now(); this._raf = requestAnimationFrame(this.step); }
@@ -173,12 +189,13 @@ export default class App extends React.Component {
     this.apply();
     this._raf = active ? requestAnimationFrame(this.step) : null;
   };
-  /** Writes --cam, --sheet and the theme tokens straight onto the app element (no re-render per frame). */
+  /** Writes --cam, --ctrl, --load and the theme tokens straight onto the app element (no re-render per frame). */
   apply() {
     const el = this.appRef.current; if (!el) return;
-    const a = this.anim, sheet = a.sheet.v, cam = clamp(Math.max(this.scrollP, sheet, a.pin.v), 0, 1);
+    const a = this.anim, sheet = a.sheet.v, cam = clamp(Math.max(this.scrollP, sheet - 1, a.pin.v), 0, 1);
     el.style.setProperty('--cam', cam.toFixed(4));
-    el.style.setProperty('--sheet', clamp(sheet, -0.06, 1.06).toFixed(4));
+    el.style.setProperty('--ctrl', clamp(sheet, -0.06, 1).toFixed(4));
+    el.style.setProperty('--load', clamp(sheet - 1, 0, 1.06).toFixed(4));
     const th = this._theme;
     if (th && (this._thMode !== this.state.mode || !el.style.getPropertyValue('--bg'))) {
       this._thMode = this.state.mode;
@@ -207,8 +224,8 @@ export default class App extends React.Component {
   resetNow = () => this.jump(E.defaultT(), true);
   miniTap = () => {
     if (!this.state.docked) return;
-    const a = this.anim; a.pin.to = 0; a.sheet.to = 0;
-    this.setState({ pinned: false, sheetOpen: false });
+    const a = this.anim; a.pin.to = 0; a.sheet.to = Math.min(a.sheet.to, 1);
+    this.setState(s => ({ pinned: false, sheetLevel: Math.min(s.sheetLevel, 1) }));
     const el = this.activeRef().current; if (el) el.scrollTo({ top: 0, behavior: this.reduced ? 'auto' : 'smooth' });
     this.kick();
   };
@@ -272,12 +289,12 @@ export default class App extends React.Component {
     Live.setCurrent(bi, mi);
     E.allowFetch = !st.dragging;
     const v = viewModel(st, Object.assign({}, this.props, { appH: lay.ah }), this);
-    this._exp = v.exp; this._theme = v.theme; this._nowT = v.nowT;
+    this._exp = v.exp; this._ctrl = v.ctrl; this._theme = v.theme; this._nowT = v.nowT;
     const vk = st.mode === 'surf' ? 'beach' : st.mode === 'snow' ? 'mountain' : st.camView;
     const lk = vk === 'split' ? null : E.camLinkFor(vk === 'mountain' ? 'mtn' : 'break', vk === 'mountain' ? mi : bi);
     const off = !!this.props.offline || st.offline, liveCam = !off && E.camLive(vk, bi, mi) === 'Live';
     v.hud = Object.assign({}, v.hud, { showLink: !!lk, link: lk ? lk.url : '#', linkLabel: lk ? lk.label : '' });
-    Object.assign(v, { srcSummary: Live.summary(), dayWord: E.dayWord(), sheetOpen: st.sheetOpen, t: st.t });
+    Object.assign(v, { srcSummary: Live.summary(), dayWord: E.dayWord(), sheetLevel: st.sheetLevel, t: st.t });
     const ic = v.ic, common = { v, ic, openDrawer: this.openDrawer, openSettings: this.openSettings };
     return (
       <>
