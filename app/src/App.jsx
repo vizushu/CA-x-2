@@ -1,0 +1,315 @@
+// Lineup app shell: UI state, gestures (scrubber, spring-driven drawer, cam docking), layout and data wiring.
+import React from 'react';
+import E from './forecast/engine.js';
+import Live from './forecast/live.js';
+import viewModel from './forecast/view.js';
+import { SANS, ModeScroller } from './components/ui.jsx';
+import SurfView from './components/SurfView.jsx';
+import DoubleView from './components/DoubleView.jsx';
+import SnowView from './components/SnowView.jsx';
+import Cam from './components/Cam.jsx';
+import Dock from './components/Dock.jsx';
+import { Loading, Settings } from './components/Sheets.jsx';
+import { DeviceFrame, InstallPanel, SourcesPanel } from './components/Presentation.jsx';
+
+const UI_KEY = 'lineup.ui';
+const clamp = (x, a, b) => Math.max(a, Math.min(b, x));
+
+function loadUI() {
+  try {
+    const u = JSON.parse(localStorage.getItem(UI_KEY) || '{}');
+    if (!u || typeof u !== 'object') return {};
+    const out = {};
+    if (['surf', 'double', 'snow'].includes(u.mode)) out.mode = u.mode;
+    if (E.D.breaks.some(b => b.id === u.breakId)) out.breakId = u.breakId;
+    if (E.D.mtns.some(m => m.id === u.mtnId)) out.mtnId = u.mtnId;
+    if (['surf', 'snow'].includes(u.order)) out.order = u.order;
+    if (['split', 'beach', 'mountain'].includes(u.camView)) out.camView = u.camView;
+    return out;
+  } catch (e) { return {}; }
+}
+
+export function standalone() {
+  try { return window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true; } catch (e) { return false; }
+}
+
+export default class App extends React.Component {
+  static defaultProps = { offline: false, glove: 'auto', showBlueprint: true };
+
+  state = Object.assign(
+    { mode: 'surf', breakId: 'swamis', mtnId: 'bear', order: 'surf', camView: 'split' },
+    loadUI(),
+    { t: 6.5, follow: true, dragging: false, bump: 0, connecting: '', docked: false, sheetOpen: false, pinned: false, sec: 0, vw: window.innerWidth, vh: window.innerHeight, data: 0, offline: false, settingsOpen: false, draft: null },
+  );
+
+  appRef = React.createRef();
+  surfRef = React.createRef();
+  dblRef = React.createRef();
+  snowRef = React.createRef();
+  anim = { sheet: { v: 0, vel: 0, to: 0 }, pin: { v: 0, vel: 0, to: 0 } };
+  scrollP = 0;
+  _exp = 508;
+
+  saveUI() {
+    const s = this.state;
+    try { localStorage.setItem(UI_KEY, JSON.stringify({ mode: s.mode, breakId: s.breakId, mtnId: s.mtnId, order: s.order, camView: s.camView })); } catch (e) { /* storage unavailable */ }
+  }
+
+  isApp() { return this.state.vw < 600 || standalone() || /[?&]app\b/.test(location.search); }
+
+  layout(app, showBp) {
+    const st = this.state;
+    if (app) {
+      const s = st.vw / 430, ah = Math.round(st.vh / s);
+      return { s, ah, pw: st.vw, ph: st.vh, bw: 430, bh: ah, bpad: 0, brad: 0, bbg: '#09141A', bsh: 'none', framed: false, pos: 'fixed', top: 0, left: 0, z: 50, o1: 2, o2: 1, rootPad: '0px' };
+    }
+    const wide = showBp && st.vw >= 1280, side = st.vw >= 900, s = clamp(side ? (st.vh - 48) / 950 : (st.vw - 24) / 448, 0.5, 1);
+    return { s, ah: 932, pw: Math.round(448 * s), ph: Math.round(950 * s), bw: 448, bh: 950, bpad: 9, brad: 57, bbg: '#13181F', bsh: 'inset 0 0 0 1px rgba(238,243,246,0.09), 0 0 0 1px #000000, 0 50px 120px -30px rgba(0,0,0,0.95)', framed: true, pos: wide ? 'sticky' : 'relative', top: 24, left: 'auto', z: 'auto', o1: wide ? 1 : 2, o2: wide ? 2 : 1, rootPad: '40px 32px 72px' };
+  }
+
+  // ---------- settings ----------
+  draftFrom() {
+    const cfg = Live.settings(), D = E.D, b = D.breaks.find(x => x.id === this.state.breakId) || D.breaks[0], m = D.mtns.find(x => x.id === this.state.mtnId) || D.mtns[0];
+    return { prov: cfg.prov, key: cfg.key, beach: cfg.cams[b.id] || '', mtn: cfg.cams[m.id] || '' };
+  }
+  setDraft(p) { this.setState(s => ({ draft: Object.assign({}, s.draft || this.draftFrom(), p) })); }
+  settingsVals(D, bi, mi) {
+    const cfg = Live.settings(), b = D.breaks[bi], m = D.mtns[mi], d = this.state.draft || this.draftFrom();
+    const seg = on => ({ bg: on ? 'rgba(238,244,246,0.16)' : 'transparent', fg: on ? '#EEF4F6' : '#A5B3BD' });
+    return {
+      provs: [['tomtom', 'TomTom'], ['mapbox', 'Mapbox'], ['none', 'Off']].map(([id, label]) => Object.assign({ label, onClick: () => this.setDraft({ prov: id }) }, seg(d.prov === id))),
+      key: d.key, keyDis: d.prov === 'none', keyPh: d.prov === 'mapbox' ? 'Mapbox access token' : d.prov === 'tomtom' ? 'TomTom API key' : 'Pick TomTom or Mapbox first',
+      trafficLine: Live.trafficLine(), onKey: e => this.setDraft({ key: e.target.value }), saveTraffic: () => Live.setTraffic(d.prov, d.key),
+      swPhoto: seg(!cfg.swamisLive), swLive: seg(!!cfg.swamisLive), setPhoto: () => Live.setSwamisLive(false), setLive: () => Live.setSwamisLive(true),
+      beach: d.beach, mtn: d.mtn, beachName: b.name, mtnName: m.name,
+      onBeach: e => this.setDraft({ beach: e.target.value }), onMtn: e => this.setDraft({ mtn: e.target.value }),
+      saveCams: () => { Live.setCam(b.id, d.beach); Live.setCam(m.id, d.mtn); },
+    };
+  }
+  openSettings = () => this.setState({ settingsOpen: true, draft: this.draftFrom() });
+  closeSettings = () => this.setState({ settingsOpen: false, draft: null });
+  refreshNow = () => Live.refresh();
+
+  // ---------- gestures ----------
+  activeRef() { const m = this.state.mode; return m === 'surf' ? this.surfRef : m === 'snow' ? this.snowRef : this.dblRef; }
+  onScroll = e => { const el = e.currentTarget; if (el !== this.activeRef().current) return; this.scrollP = clamp(el.scrollTop / 124, 0, 1); this.apply(); };
+
+  scrubDown = e => {
+    const el = e.currentTarget;
+    try { el.setPointerCapture(e.pointerId); } catch (_) { /* not supported */ }
+    this._scrubEl = el; this._scrubbing = true; this._lastT = this.state.t;
+    this.setState({ dragging: true, follow: false });
+    this.scrubTo(e.clientX);
+  };
+  scrubMove = e => { if (this._scrubbing) this.scrubTo(e.clientX); };
+  scrubUp = () => { if (!this._scrubbing) return; this._scrubbing = false; this.setState({ dragging: false }); };
+  scrubTo(x) {
+    const r = this._scrubEl.getBoundingClientRect(), k = r.width / 390;
+    const f = clamp((x - r.left - 10 * k) / (370 * k), 0, 1), t = 5 + Math.round(f * 48) / 4;
+    this.setT(t);
+  }
+  setT(t) {
+    const cur = this._lastT == null ? this.state.t : this._lastT;
+    if (Math.abs(t - cur) < 0.001) return;
+    const cross = Math.floor(t + 1e-6) !== Math.floor(cur + 1e-6);
+    this._lastT = t;
+    this.setState(s => ({ t, follow: false, bump: cross ? s.bump + 1 : s.bump }));
+    if (cross && navigator.vibrate) { try { navigator.vibrate(6); } catch (_) { /* ignore */ } }
+  }
+  scrubKey = e => {
+    const step = { ArrowLeft: -0.25, ArrowRight: 0.25, PageDown: -1, PageUp: 1 }[e.key];
+    if (e.key === 'Home') { e.preventDefault(); this.setT(5); return; }
+    if (e.key === 'End') { e.preventDefault(); this.setT(17); return; }
+    if (!step) return;
+    e.preventDefault();
+    this.setT(clamp(Math.round((this.state.t + step) * 4) / 4, 5, 17));
+  };
+
+  sheetDown = e => {
+    const el = e.currentTarget;
+    try { el.setPointerCapture(e.pointerId); } catch (_) { /* not supported */ }
+    const a = this.anim.sheet; a.drag = true; a.vel = 0;
+    this._sd = { y: e.clientY, v: a.v, lastY: e.clientY, lastT: performance.now(), vel: 0, moved: false };
+  };
+  sheetMove = e => {
+    const d = this._sd; if (!d) return;
+    const now = performance.now(), dy = e.clientY - d.y, s = this._scale || 1;
+    if (Math.abs(dy) > 4) d.moved = true;
+    let v = d.v - dy / s / this._exp;
+    if (v < 0) v *= 0.3;
+    if (v > 1) v = 1 + (v - 1) * 0.3;
+    this.anim.sheet.v = v;
+    const dt = now - d.lastT;
+    if (dt > 0) d.vel = 0.75 * ((e.clientY - d.lastY) / dt) + 0.25 * d.vel;
+    d.lastY = e.clientY; d.lastT = now;
+    this.apply();
+  };
+  sheetUp = () => {
+    const d = this._sd; if (!d) return;
+    this._sd = null;
+    const a = this.anim.sheet, s = this._scale || 1;
+    a.drag = false;
+    if (!d.moved) a.to = a.to > 0.5 ? 0 : 1;
+    else { const vp = -(d.vel / s) / this._exp * 1000; a.to = a.v + vp * 0.16 > 0.5 ? 1 : 0; a.vel = clamp(vp, -8, 8); }
+    this.setState({ sheetOpen: a.to === 1 });
+    this.kick();
+  };
+  openDrawer = () => { this.anim.sheet.to = 1; this.setState({ sheetOpen: true }); this.kick(); };
+
+  // Spring integrator (k = 320, c = 30). Reduced motion snaps.
+  kick() { if (this._raf) return; this._last = performance.now(); this._raf = requestAnimationFrame(this.step); }
+  step = now => {
+    const dt = Math.min(0.032, Math.max(0.001, (now - this._last) / 1000));
+    this._last = now;
+    let active = false;
+    for (const key in this.anim) {
+      const a = this.anim[key];
+      if (a.drag) continue;
+      if (this.reduced) { a.v = a.to; a.vel = 0; continue; }
+      a.vel += (-320 * (a.v - a.to) - 30 * a.vel) * dt;
+      a.v += a.vel * dt;
+      if (Math.abs(a.v - a.to) > 0.0008 || Math.abs(a.vel) > 0.004) active = true; else { a.v = a.to; a.vel = 0; }
+    }
+    this.apply();
+    this._raf = active ? requestAnimationFrame(this.step) : null;
+  };
+  /** Writes --cam, --sheet and the theme tokens straight onto the app element (no re-render per frame). */
+  apply() {
+    const el = this.appRef.current; if (!el) return;
+    const a = this.anim, sheet = a.sheet.v, cam = clamp(Math.max(this.scrollP, sheet, a.pin.v), 0, 1);
+    el.style.setProperty('--cam', cam.toFixed(4));
+    el.style.setProperty('--sheet', clamp(sheet, -0.06, 1.06).toFixed(4));
+    const th = this._theme;
+    if (th && (this._thMode !== this.state.mode || !el.style.getPropertyValue('--bg'))) {
+      this._thMode = this.state.mode;
+      for (const k in th) el.style.setProperty('--' + k, th[k]);
+      const meta = document.querySelector('meta[name="theme-color"]');
+      if (meta) meta.setAttribute('content', th.bg);
+    }
+    const docked = cam > 0.5;
+    if (docked !== this.state.docked) this.setState({ docked });
+  }
+
+  // ---------- selection ----------
+  connect(label) {
+    const conn = this.props.offline || this.state.offline ? '' : label;
+    this.setState({ connecting: conn });
+    clearTimeout(this._ct);
+    if (conn) this._ct = setTimeout(() => this.setState({ connecting: '' }), 900);
+  }
+  setMode(m) { if (m !== this.state.mode) this.setState({ mode: m }); }
+  selectBreak(id) { if (id === this.state.breakId) return; const i = E.D.breaks.findIndex(b => b.id === id); this.setState({ breakId: id }); this.connect(E.camLabel('break', i)); }
+  selectMtn(id) { if (id === this.state.mtnId) return; const i = E.D.mtns.findIndex(m => m.id === id); this.setState({ mtnId: id }); this.connect(E.camLabel('mtn', i)); }
+  cycleBreak() { const B = E.D.breaks, i = B.findIndex(b => b.id === this.state.breakId); this.selectBreak(B[(i + 1) % B.length].id); }
+  setCamView(v) { this.setState({ camView: v }); }
+  setOrder = o => this.setState({ order: o });
+  jump(t, follow) { this._lastT = t; this.setState({ t, follow: !!follow }); }
+  resetNow = () => this.jump(E.defaultT(), true);
+  miniTap = () => {
+    if (!this.state.docked) return;
+    const a = this.anim; a.pin.to = 0; a.sheet.to = 0;
+    this.setState({ pinned: false, sheetOpen: false });
+    const el = this.activeRef().current; if (el) el.scrollTo({ top: 0, behavior: this.reduced ? 'auto' : 'smooth' });
+    this.kick();
+  };
+  togglePin = e => { if (e && e.stopPropagation) e.stopPropagation(); const p = !this.state.pinned; this.anim.pin.to = p ? 1 : 0; this.setState({ pinned: p }); this.kick(); };
+
+  // ---------- data + lifecycle ----------
+  onData = () => {
+    if (Live.isReady() && !this._first) { this._first = true; this.jump(E.defaultT(), true); }
+    this.setState(s => ({ data: s.data + 1 }));
+  };
+  tick() {
+    this.setState(s => ({ sec: s.sec + 1 }));
+    if (this.state.follow && !this.state.dragging && Live.isReady() && this.state.sec % 15 === 0) {
+      const t = E.defaultT(); if (Math.abs(t - this.state.t) > 0.001) this.setState({ t });
+    }
+    // First open: if nothing has arrived after 5 s, ask again.
+    if (!Live.isReady() && !Live.isSettled() && Date.now() - this._t0 > 5000) { this._t0 = Date.now(); Live.refresh(); }
+  }
+  componentDidMount() {
+    this.onResize = () => this.setState({ vw: window.innerWidth, vh: window.innerHeight });
+    this.onResize();
+    window.addEventListener('resize', this.onResize);
+    this.onNet = () => this.setState({ offline: navigator.onLine === false });
+    this.onNet();
+    window.addEventListener('online', this.onNet);
+    window.addEventListener('offline', this.onNet);
+    this.onKey = e => { if (e.key === 'Escape' && this.state.settingsOpen) this.closeSettings(); };
+    window.addEventListener('keydown', this.onKey);
+    const mq = window.matchMedia ? window.matchMedia('(prefers-reduced-motion: reduce)') : null;
+    this.reduced = !!(mq && mq.matches);
+    this._t0 = Date.now();
+    this.timer = setInterval(() => this.tick(), 1000);
+    Live.init({ onUpdate: this.onData });
+  }
+  componentDidUpdate() {
+    const s = this.state, ps = this._ps || {};
+    if (ps.mode !== s.mode) { const el = this.activeRef().current; this.scrollP = el ? clamp(el.scrollTop / 124, 0, 1) : 0; }
+    if (this._ps && (ps.mode !== s.mode || ps.breakId !== s.breakId || ps.mtnId !== s.mtnId || ps.order !== s.order || ps.camView !== s.camView)) this.saveUI();
+    this._ps = { mode: s.mode, breakId: s.breakId, mtnId: s.mtnId, order: s.order, camView: s.camView };
+    this.apply();
+  }
+  componentWillUnmount() {
+    window.removeEventListener('resize', this.onResize);
+    window.removeEventListener('online', this.onNet);
+    window.removeEventListener('offline', this.onNet);
+    window.removeEventListener('keydown', this.onKey);
+    clearInterval(this.timer); clearTimeout(this._ct);
+    if (this._raf) cancelAnimationFrame(this._raf);
+    Live.stop();
+  }
+
+  // ---------- render ----------
+  renderApp(lay) {
+    const st = this.state;
+    const srcRows = Live.sources();
+    if (!Live.isReady()) {
+      const failed = Live.isSettled();
+      return <Loading title={failed ? 'Couldn’t reach the forecast feeds' : 'Fetching live conditions…'} rows={srcRows.slice(0, 8)} failed={failed} onRetry={this.refreshNow} />;
+    }
+    const D = E.D, bi = Math.max(0, D.breaks.findIndex(b => b.id === st.breakId)), mi = Math.max(0, D.mtns.findIndex(m => m.id === st.mtnId));
+    Live.setCurrent(bi, mi);
+    E.allowFetch = !st.dragging;
+    const v = viewModel(st, Object.assign({}, this.props, { appH: lay.ah }), this);
+    this._exp = v.exp; this._theme = v.theme; this._nowT = v.nowT;
+    const vk = st.mode === 'surf' ? 'beach' : st.mode === 'snow' ? 'mountain' : st.camView;
+    const lk = vk === 'split' ? null : E.camLinkFor(vk === 'mountain' ? 'mtn' : 'break', vk === 'mountain' ? mi : bi);
+    const off = !!this.props.offline || st.offline, liveCam = !off && E.camLive(vk, bi, mi) === 'Live';
+    v.hud = Object.assign({}, v.hud, { showLink: !!lk, link: lk ? lk.url : '#', linkLabel: lk ? lk.label : '' });
+    Object.assign(v, { srcSummary: Live.summary(), dayWord: E.dayWord(), sheetOpen: st.sheetOpen, t: st.t });
+    const ic = v.ic, common = { v, ic, openDrawer: this.openDrawer, openSettings: this.openSettings };
+    return (
+      <>
+        <div aria-hidden="true" style={{ position: 'absolute', inset: 0, pointerEvents: 'none', opacity: v.glowOp, transition: 'opacity .6s', background: 'radial-gradient(90% 34% at 50% 31%, rgba(96,205,200,0.14), rgba(96,205,200,0) 70%), linear-gradient(180deg, rgba(220,232,245,0.07) 0%, rgba(9,20,26,0) 42%, rgba(40,150,150,0.09) 100%)' }} />
+        <ModeScroller label="Surf" ref={this.surfRef} onScroll={this.onScroll} tv={v.tv.surf} padB={v.dk.padB}><SurfView {...common} S={v.S} /></ModeScroller>
+        <ModeScroller label="CA Double" ref={this.dblRef} onScroll={this.onScroll} tv={v.tv.double} padB={v.dk.padB}><DoubleView {...common} dbl={v.dbl} setOrder={this.setOrder} /></ModeScroller>
+        <ModeScroller label="Snow" ref={this.snowRef} onScroll={this.onScroll} tv={v.tv.snow} padB={v.dk.padB}><SnowView {...common} sn={v.sn} /></ModeScroller>
+        <Cam v={v} ic={ic} liveCam={liveCam} connecting={st.connecting} miniTap={this.miniTap} togglePin={this.togglePin} />
+        <Dock v={v} ic={ic} bump={st.bump} h={this} />
+        {st.settingsOpen && <Settings set={this.settingsVals(D, bi, mi)} srcRows={srcRows} ic={ic} onClose={this.closeSettings} onRefresh={this.refreshNow} />}
+      </>
+    );
+  }
+
+  render() {
+    const st = this.state, app = this.isApp(), showBp = !app && this.props.showBlueprint !== false, lay = this.layout(app, showBp);
+    this._scale = lay.s;
+    const appEl = (
+      <div ref={this.appRef} style={{ position: 'relative', width: 430, height: lay.ah, overflow: 'hidden', background: 'var(--bg, #09141A)', color: 'var(--t1, #EEF4F6)', zIndex: 0, isolation: 'isolate', fontFamily: SANS, WebkitUserSelect: 'none', userSelect: 'none', transition: 'background-color .5s, color .5s' }}>
+        {this.renderApp(lay)}
+      </div>
+    );
+    return (
+      <div style={{ minHeight: '100vh', boxSizing: 'border-box', padding: lay.rootPad, background: '#05080B', color: '#EEF3F6', fontFamily: SANS, display: 'flex', flexWrap: 'wrap', justifyContent: 'center', alignItems: 'flex-start', gap: 56 }}>
+        {showBp && <SourcesPanel order={lay.o1} rows={Live.sources()} />}
+        <div style={{ order: lay.o2, flex: 'none', position: lay.pos, top: lay.top, left: lay.left, zIndex: lay.z, width: lay.pw, height: lay.ph }}>
+          <div style={{ width: lay.bw, height: lay.bh, boxSizing: 'border-box', padding: lay.bpad, borderRadius: lay.brad, background: lay.bbg, boxShadow: lay.bsh, transform: `scale(${lay.s.toFixed(4)})`, transformOrigin: '0 0' }}>
+            {lay.framed ? <DeviceFrame width={430} height={lay.ah} time={E.clockLabel()}>{appEl}</DeviceFrame> : appEl}
+          </div>
+        </div>
+        {showBp && <InstallPanel />}
+      </div>
+    );
+  }
+}
