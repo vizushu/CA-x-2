@@ -1,0 +1,5 @@
+path: ds
+train: ds/training.txt
+val: ds/validation.txt
+nc: 1
+names: ['rip']
