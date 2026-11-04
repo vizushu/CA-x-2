@@ -230,7 +230,6 @@ export default class App extends React.Component {
     const el = this.activeRef().current; if (el) el.scrollTo({ top: 0, behavior: this.reduced ? 'auto' : 'smooth' });
     this.kick();
   };
-  togglePin = e => { if (e && e.stopPropagation) e.stopPropagation(); const p = !this.state.pinned; this.anim.pin.to = p ? 1 : 0; this.setState({ pinned: p }); this.kick(); };
 
   // ---------- data + lifecycle ----------
   onData = () => {
@@ -292,9 +291,7 @@ export default class App extends React.Component {
     const v = viewModel(st, Object.assign({}, this.props, { appH: lay.ah }), this);
     this._exp = v.exp; this._ctrl = v.ctrl; this._theme = v.theme; this._nowT = v.nowT;
     const vk = st.mode === 'surf' ? 'beach' : st.mode === 'snow' ? 'mountain' : st.camView;
-    const lk = vk === 'split' ? null : E.camLinkFor(vk === 'mountain' ? 'mtn' : 'break', vk === 'mountain' ? mi : bi);
     const off = !!this.props.offline || st.offline, liveCam = !off && E.camLive(vk, bi, mi) === 'Live';
-    v.hud = Object.assign({}, v.hud, { showLink: !!lk, link: lk ? lk.url : '#', linkLabel: lk ? lk.label : '' });
     Object.assign(v, { srcSummary: Live.summary(), dayWord: E.dayWord(), sheetLevel: st.sheetLevel, t: st.t });
     const ic = v.ic, common = { v, ic, openDrawer: this.openDrawer, openSettings: this.openSettings };
     return (
@@ -303,7 +300,7 @@ export default class App extends React.Component {
         <ModeScroller label="Surf" ref={this.surfRef} onScroll={this.onScroll} tv={v.tv.surf} padB={v.dk.padB}><SurfView {...common} S={v.S} /></ModeScroller>
         <ModeScroller label="CA Double" ref={this.dblRef} onScroll={this.onScroll} tv={v.tv.double} padB={v.dk.padB}><DoubleView {...common} dbl={v.dbl} setOrder={this.setOrder} /></ModeScroller>
         <ModeScroller label="Snow" ref={this.snowRef} onScroll={this.onScroll} tv={v.tv.snow} padB={v.dk.padB}><SnowView {...common} sn={v.sn} /></ModeScroller>
-        <Cam v={v} ic={ic} liveCam={liveCam} connecting={st.connecting} miniTap={this.miniTap} togglePin={this.togglePin} />
+        <Cam v={v} ic={ic} liveCam={liveCam} connecting={st.connecting} miniTap={this.miniTap} />
         <Dock v={v} ic={ic} bump={st.bump} h={this} />
         {st.settingsOpen && <Settings set={this.settingsVals(D, bi, mi)} srcRows={srcRows} ic={ic} onClose={this.closeSettings} onRefresh={this.refreshNow} />}
       </>
