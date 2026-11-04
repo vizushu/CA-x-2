@@ -9,7 +9,7 @@ import DoubleView from './components/DoubleView.jsx';
 import SnowView from './components/SnowView.jsx';
 import Cam from './components/Cam.jsx';
 import Dock from './components/Dock.jsx';
-import { Loading } from './components/Sheets.jsx';
+import { Splash } from './components/Sheets.jsx';
 import { DeviceFrame, InstallPanel, SourcesPanel } from './components/Presentation.jsx';
 
 const UI_KEY = 'lineup.ui';
@@ -39,7 +39,7 @@ export default class App extends React.Component {
   state = Object.assign(
     { mode: 'surf', breakId: 'swamis', mtnId: 'bear', order: 'surf', camView: 'split' },
     loadUI(),
-    { t: 6.5, follow: true, dragging: false, bump: 0, connecting: '', docked: false, sheetLevel: 0, pinned: false, sec: 0, vw: window.innerWidth, vh: window.innerHeight, data: 0, offline: false, },
+    { t: 6.5, follow: true, dragging: false, bump: 0, connecting: '', docked: false, sheetLevel: 0, splash: 'in', splashMin: false, pinned: false, sec: 0, vw: window.innerWidth, vh: window.innerHeight, data: 0, offline: false, },
   );
 
   appRef = React.createRef();
@@ -234,9 +234,11 @@ export default class App extends React.Component {
     this.reduced = !!(mq && mq.matches);
     this._t0 = Date.now();
     this.timer = setInterval(() => this.tick(), 1000);
+    this._splashT = setTimeout(() => this.setState({ splashMin: true }), 1500); // let the wordmark finish fading in
     Live.init({ onUpdate: this.onData });
   }
   componentDidUpdate() {
+    if (this.state.splash === 'in' && this.state.splashMin && Live.isReady()) { this.setState({ splash: 'out' }); this._splashOut = setTimeout(() => this.setState({ splash: 'gone' }), 650); }
     const s = this.state, ps = this._ps || {};
     if (ps.mode !== s.mode) { const el = this.activeRef().current; this.scrollP = el ? clamp(el.scrollTop / 124, 0, 1) : 0; }
     if (this._ps && (ps.mode !== s.mode || ps.breakId !== s.breakId || ps.mtnId !== s.mtnId || ps.order !== s.order || ps.camView !== s.camView)) this.saveUI();
@@ -247,7 +249,7 @@ export default class App extends React.Component {
     window.removeEventListener('resize', this.onResize);
     window.removeEventListener('online', this.onNet);
     window.removeEventListener('offline', this.onNet);
-    clearInterval(this.timer); clearTimeout(this._ct);
+    clearInterval(this.timer); clearTimeout(this._ct); clearTimeout(this._splashT); clearTimeout(this._splashOut);
     if (this._raf) cancelAnimationFrame(this._raf);
     Live.stop();
   }
@@ -255,11 +257,7 @@ export default class App extends React.Component {
   // ---------- render ----------
   renderApp(lay) {
     const st = this.state;
-    const srcRows = Live.sources();
-    if (!Live.isReady()) {
-      const failed = Live.isSettled();
-      return <Loading title={failed ? 'Couldn’t reach the forecast feeds' : 'Fetching live conditions…'} rows={srcRows.slice(0, 8)} failed={failed} onRetry={this.refreshNow} />;
-    }
+    if (!Live.isReady()) return <Splash failed={Live.isSettled()} onRetry={this.refreshNow} />;
     const D = E.D, bi = Math.max(0, D.breaks.findIndex(b => b.id === st.breakId)), mi = Math.max(0, D.mtns.findIndex(m => m.id === st.mtnId));
     Live.setCurrent(bi, mi);
     E.allowFetch = !st.dragging;
@@ -287,6 +285,7 @@ export default class App extends React.Component {
     const appEl = (
       <div ref={this.appRef} style={{ position: 'relative', width: 430, height: lay.ah, overflow: 'hidden', background: 'var(--bg, #09141A)', color: 'var(--t1, #EEF4F6)', zIndex: 0, isolation: 'isolate', fontFamily: SANS, WebkitUserSelect: 'none', userSelect: 'none', transition: 'background-color .5s, color .5s' }}>
         {this.renderApp(lay)}
+        {Live.isReady() && st.splash !== 'gone' && <Splash leaving={st.splash === 'out'} />}
       </div>
     );
     return (
