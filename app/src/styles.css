@@ -18,3 +18,7 @@ a:hover { color: #FFFFFF; text-decoration-color: #FFFFFF; }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: 1ms !important; animation-iteration-count: 1 !important; transition-duration: 1ms !important; }
 }
+
+@keyframes wordmarkIn { 0% { opacity: 0; transform: translateY(6px); letter-spacing: 0; filter: blur(2px); } 100% { opacity: 1; transform: none; filter: none; } }
+@keyframes spotInR { 0% { opacity: 0; transform: translateX(28px); } 100% { opacity: 1; transform: none; } }
+@keyframes spotInL { 0% { opacity: 0; transform: translateX(-28px); } 100% { opacity: 1; transform: none; } }

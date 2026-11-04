@@ -9,7 +9,7 @@ import DoubleView from './components/DoubleView.jsx';
 import SnowView from './components/SnowView.jsx';
 import Cam from './components/Cam.jsx';
 import Dock from './components/Dock.jsx';
-import { Loading } from './components/Sheets.jsx';
+import { Splash } from './components/Sheets.jsx';
 import { DeviceFrame, InstallPanel, SourcesPanel } from './components/Presentation.jsx';
 
 const UI_KEY = 'lineup.ui';
@@ -39,7 +39,7 @@ export default class App extends React.Component {
   state = Object.assign(
     { mode: 'surf', breakId: 'swamis', mtnId: 'bear', order: 'surf', camView: 'split' },
     loadUI(),
-    { t: 6.5, follow: true, dragging: false, bump: 0, connecting: '', docked: false, sheetLevel: 0, pinned: false, sec: 0, vw: window.innerWidth, vh: window.innerHeight, data: 0, offline: false, },
+    { t: 6.5, follow: true, dragging: false, bump: 0, connecting: '', docked: false, sheetLevel: 0, splash: 'in', splashMin: false, pinned: false, sec: 0, vw: window.innerWidth, vh: window.innerHeight, data: 0, offline: false, },
   );
 
   appRef = React.createRef();
@@ -194,8 +194,11 @@ export default class App extends React.Component {
     if (conn) this._ct = setTimeout(() => this.setState({ connecting: '' }), 900);
   }
   setMode(m) { if (m !== this.state.mode) this.setState({ mode: m }); }
-  selectBreak(id) { if (id === this.state.breakId) return; const i = E.D.breaks.findIndex(b => b.id === id); this.setState({ breakId: id }); this.connect(E.camLabel('break', i)); }
-  selectMtn(id) { if (id === this.state.mtnId) return; const i = E.D.mtns.findIndex(m => m.id === id); this.setState({ mtnId: id }); this.connect(E.camLabel('mtn', i)); }
+  selectBreak(id, dir = 0) { if (id === this.state.breakId) return; const i = E.D.breaks.findIndex(b => b.id === id); this.setState({ breakId: id, swipeDir: dir }); this.connect(E.camLabel('break', i)); }
+  selectMtn(id, dir = 0) { if (id === this.state.mtnId) return; const i = E.D.mtns.findIndex(m => m.id === id); this.setState({ mtnId: id, swipeDir: dir }); this.connect(E.camLabel('mtn', i)); }
+  // Swipe left = next location, right = previous (stops at the ends). swipeDir drives the slide-in.
+  swipeBreak = d => { const B = E.D.breaks, i = B.findIndex(b => b.id === this.state.breakId), j = i + d; if (j < 0 || j >= B.length) return; this.selectBreak(B[j].id, d); };
+  swipeMtn = d => { const M = E.D.mtns, i = M.findIndex(m => m.id === this.state.mtnId), j = i + d; if (j < 0 || j >= M.length) return; this.selectMtn(M[j].id, d); };
   cycleBreak() { const B = E.D.breaks, i = B.findIndex(b => b.id === this.state.breakId); this.selectBreak(B[(i + 1) % B.length].id); }
   setCamView(v) { this.setState({ camView: v }); }
   setOrder = o => this.setState({ order: o });
@@ -234,9 +237,11 @@ export default class App extends React.Component {
     this.reduced = !!(mq && mq.matches);
     this._t0 = Date.now();
     this.timer = setInterval(() => this.tick(), 1000);
+    this._splashT = setTimeout(() => this.setState({ splashMin: true }), 1500); // let the wordmark finish fading in
     Live.init({ onUpdate: this.onData });
   }
   componentDidUpdate() {
+    if (this.state.splash === 'in' && this.state.splashMin && Live.isReady()) { this.setState({ splash: 'out' }); this._splashOut = setTimeout(() => this.setState({ splash: 'gone' }), 650); }
     const s = this.state, ps = this._ps || {};
     if (ps.mode !== s.mode) { const el = this.activeRef().current; this.scrollP = el ? clamp(el.scrollTop / 124, 0, 1) : 0; }
     if (this._ps && (ps.mode !== s.mode || ps.breakId !== s.breakId || ps.mtnId !== s.mtnId || ps.order !== s.order || ps.camView !== s.camView)) this.saveUI();
@@ -247,7 +252,7 @@ export default class App extends React.Component {
     window.removeEventListener('resize', this.onResize);
     window.removeEventListener('online', this.onNet);
     window.removeEventListener('offline', this.onNet);
-    clearInterval(this.timer); clearTimeout(this._ct);
+    clearInterval(this.timer); clearTimeout(this._ct); clearTimeout(this._splashT); clearTimeout(this._splashOut);
     if (this._raf) cancelAnimationFrame(this._raf);
     Live.stop();
   }
@@ -255,11 +260,7 @@ export default class App extends React.Component {
   // ---------- render ----------
   renderApp(lay) {
     const st = this.state;
-    const srcRows = Live.sources();
-    if (!Live.isReady()) {
-      const failed = Live.isSettled();
-      return <Loading title={failed ? 'Couldn’t reach the forecast feeds' : 'Fetching live conditions…'} rows={srcRows.slice(0, 8)} failed={failed} onRetry={this.refreshNow} />;
-    }
+    if (!Live.isReady()) return <Splash failed={Live.isSettled()} onRetry={this.refreshNow} />;
     const D = E.D, bi = Math.max(0, D.breaks.findIndex(b => b.id === st.breakId)), mi = Math.max(0, D.mtns.findIndex(m => m.id === st.mtnId));
     Live.setCurrent(bi, mi);
     E.allowFetch = !st.dragging;
@@ -272,9 +273,9 @@ export default class App extends React.Component {
     return (
       <>
         <div aria-hidden="true" style={{ position: 'absolute', inset: 0, pointerEvents: 'none', opacity: v.glowOp, transition: 'opacity .6s', background: 'radial-gradient(110% 40% at 50% 30%, rgba(214,224,240,0.18), rgba(214,224,240,0) 70%), radial-gradient(70% 30% at 15% 85%, rgba(80,200,215,0.07), rgba(80,200,215,0) 70%), linear-gradient(180deg, rgba(232,238,246,0.10) 0%, rgba(28,34,44,0) 45%, rgba(190,200,216,0.10) 100%)' }} />
-        <ModeScroller label="Surf" ref={this.surfRef} onScroll={this.onScroll} tv={v.tv.surf} padB={v.dk.padB}><SurfView {...common} S={v.S} /></ModeScroller>
+        <ModeScroller label="Surf" ref={this.surfRef} onScroll={this.onScroll} onSwipe={this.swipeBreak} swipeKey={st.breakId} swipeDir={st.swipeDir} tv={v.tv.surf} padB={v.dk.padB}><SurfView {...common} S={v.S} /></ModeScroller>
         <ModeScroller label="CA Double" ref={this.dblRef} onScroll={this.onScroll} tv={v.tv.double} padB={v.dk.padB}><DoubleView {...common} dbl={v.dbl} setOrder={this.setOrder} /></ModeScroller>
-        <ModeScroller label="Snow" ref={this.snowRef} onScroll={this.onScroll} tv={v.tv.snow} padB={v.dk.padB}><SnowView {...common} sn={v.sn} /></ModeScroller>
+        <ModeScroller label="Snow" ref={this.snowRef} onScroll={this.onScroll} onSwipe={this.swipeMtn} swipeKey={st.mtnId} swipeDir={st.swipeDir} tv={v.tv.snow} padB={v.dk.padB}><SnowView {...common} sn={v.sn} /></ModeScroller>
         <Cam v={v} ic={ic} liveCam={liveCam} connecting={st.connecting} miniTap={this.miniTap} />
         <Dock v={v} ic={ic} bump={st.bump} h={this} />
       </>
@@ -287,6 +288,7 @@ export default class App extends React.Component {
     const appEl = (
       <div ref={this.appRef} style={{ position: 'relative', width: 430, height: lay.ah, overflow: 'hidden', background: 'var(--bg, #09141A)', color: 'var(--t1, #EEF4F6)', zIndex: 0, isolation: 'isolate', fontFamily: SANS, WebkitUserSelect: 'none', userSelect: 'none', transition: 'background-color .5s, color .5s' }}>
         {this.renderApp(lay)}
+        {Live.isReady() && st.splash !== 'gone' && <Splash leaving={st.splash === 'out'} />}
       </div>
     );
     return (
