@@ -10,6 +10,7 @@ import SnowView from './components/SnowView.jsx';
 import Cam from './components/Cam.jsx';
 import Dock from './components/Dock.jsx';
 import { Splash } from './components/Sheets.jsx';
+import InstallBanner from './components/InstallBanner.jsx';
 import { DeviceFrame, InstallPanel, SourcesPanel } from './components/Presentation.jsx';
 
 const UI_KEY = 'lineup.ui';
@@ -62,7 +63,7 @@ export default class App extends React.Component {
     const st = this.state;
     if (app) {
       const s = st.vw / 430, ah = Math.round(st.vh / s);
-      return { s, ah, pw: st.vw, ph: st.vh, bw: 430, bh: ah, bpad: 0, brad: 0, bbg: '#09141A', bsh: 'none', framed: false, pos: 'fixed', top: 0, left: 0, z: 50, o1: 2, o2: 1, rootPad: '0px' };
+      return { app: true, s, ah, pw: st.vw, ph: st.vh, bw: 430, bh: ah, bpad: 0, brad: 0, bbg: '#09141A', bsh: 'none', framed: false, pos: 'fixed', top: 0, left: 0, z: 50, o1: 2, o2: 1, rootPad: '0px' };
     }
     const wide = showBp && st.vw >= 1280, side = st.vw >= 900, s = clamp(side ? (st.vh - 48) / 950 : (st.vw - 24) / 448, 0.5, 1);
     return { s, ah: 932, pw: Math.round(448 * s), ph: Math.round(950 * s), bw: 448, bh: 950, bpad: 9, brad: 57, bbg: '#13181F', bsh: 'inset 0 0 0 1px rgba(238,243,246,0.09), 0 0 0 1px #000000, 0 50px 120px -30px rgba(0,0,0,0.95)', framed: true, pos: wide ? 'sticky' : 'relative', top: 24, left: 'auto', z: 'auto', o1: wide ? 1 : 2, o2: wide ? 2 : 1, rootPad: '40px 32px 72px' };
@@ -278,6 +279,7 @@ export default class App extends React.Component {
         <ModeScroller label="Snow" ref={this.snowRef} onScroll={this.onScroll} onSwipe={this.swipeMtn} swipeKey={st.mtnId} swipeDir={st.swipeDir} tv={v.tv.snow} padB={v.dk.padB}><SnowView {...common} sn={v.sn} /></ModeScroller>
         <Cam v={v} ic={ic} liveCam={liveCam} connecting={st.connecting} miniTap={this.miniTap} />
         <Dock v={v} ic={ic} bump={st.bump} h={this} />
+        {lay.app && !standalone() && <InstallBanner ready={st.splash === 'gone'} hidden={st.sheetLevel > 0} bottom={`calc(${v.dk.tab + v.dk.grab + 10}px + max(20px, env(safe-area-inset-bottom, 0px)))`} />}
       </>
     );
   }

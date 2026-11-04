@@ -11,6 +11,11 @@ import './styles.css';
 import App, { standalone } from './App.jsx';
 
 // Optional URL switches (the prototype's “Tweaks”): ?glove=on|off|auto, ?offline=1, ?blueprint=0
+// Chrome/Edge/Samsung fire this once when the app is installable; keep it so the install banner can open the
+// browser's own install dialog from a button. (iOS has no equivalent; the banner shows instructions there.)
+window.addEventListener('beforeinstallprompt', e => { e.preventDefault(); window.__installPrompt = e; window.dispatchEvent(new Event('installable')); });
+window.addEventListener('appinstalled', () => { window.__installPrompt = null; window.dispatchEvent(new Event('installable')); });
+
 const q = new URLSearchParams(location.search);
 const glove = ['on', 'off', 'auto'].includes(q.get('glove')) ? q.get('glove') : 'auto';
 
