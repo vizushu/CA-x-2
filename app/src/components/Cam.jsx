@@ -152,8 +152,9 @@ export default function Cam({ v, ic, liveCam, connecting, miniTap }) {
           <div className="nw" style={{ position: 'absolute', left: '50%', top: 121, transform: 'translate(-50%,-50%)', padding: '8px 14px', borderRadius: 16, background: 'rgba(8,12,18,0.62)', backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)', fontSize: 13, lineHeight: '16px', fontWeight: 500, color: '#EEF3F6' }}>{hud.overlay}</div>
         )}
 
-        {hud.showSurfDials && !providerUi && (
+        {hud.showSurfDials && (
           <div style={{ position: 'absolute', left: 16, right: 16, bottom: 14, display: 'flex', justifyContent: 'space-between', gap: 12, color: '#EEF3F6' }}>
+            {!providerUi && (<>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
               <Dial><Arrow rot={hud.windRot} color={hud.windCol} style={{ left: 8, top: 7 }} /></Dial>
               <div style={SHADOW_TXT}><div style={DIAL_CAP}>Wind</div><div style={{ fontSize: 13, lineHeight: '17px', fontWeight: 600 }}>{hud.windTxt}</div></div>
@@ -162,7 +163,9 @@ export default function Cam({ v, ic, liveCam, connecting, miniTap }) {
               <Dial><Arrow rot={hud.swellRot} color="#EEF3F6" style={{ left: 8, top: 7 }} /></Dial>
               <div style={SHADOW_TXT}><div style={DIAL_CAP}>Swell</div><div style={{ fontSize: 13, lineHeight: '17px', fontWeight: 600 }}>{hud.swellTxt}</div></div>
             </div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            </>)}
+            {/* Water stays on every surf spot, even while a provider's live player is running */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginLeft: 'auto' }}>
               <Dial plain><Icon src={iconUrl('thermometer')} size={20} color="#EEF3F6" style={{ position: 'absolute', left: 10, top: 10 }} /></Dial>
               <div style={SHADOW_TXT}><div style={DIAL_CAP}>Water</div><div className="tnum" style={{ fontSize: 13, lineHeight: '17px', fontWeight: 600 }}>{hud.waterTxt}</div></div>
             </div>
