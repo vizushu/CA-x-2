@@ -190,7 +190,7 @@ export default function viewModel(st, props, ctx) {
     mtn: [E.camFeed('mtn', mi)] };
   const hud = {
     filter: offline ? 'grayscale(1)' : 'none', dim: offline ? 0.45 : 0, catcherPE: st.docked ? 'auto' : 'none', pipPE: st.docked ? 'none' : 'auto',
-    live: offline ? 'Cached' : E.camLive(view, bi, mi), stamp: offline ? 'cached ' + upd : view === 'split' ? '2 feeds' : E.camLabel(view === 'mountain' ? 'mtn' : 'break', view === 'mountain' ? mi : bi),
+    live: offline ? 'Cached' : E.camLive(view, bi, mi), stamp: offline ? upd : E.clockSec(),
     showTimer: mode === 'surf', setTxt, setSub, setBg: isSet ? 'rgba(238,243,246,0.94)' : 'rgba(8,12,18,0.5)', setFg: isSet ? '#0A1016' : '#EEF3F6', setSubFg: isSet ? 'rgba(10,16,22,0.7)' : '#A3AEBA',
     showVis: mode === 'snow', visTxt: 'Summit vis ' + E.num1(sN.vis) + ' mi', visSub: sN.vis >= 3 ? 'Model visibility' : 'Clearing ~' + E.fmt(E.firstAfter(x => E.snowAt(mi, x).vis >= 3, nowT)),
     showToggle: mode === 'double', views: [['split', 'Split view', 'columns-2'], ['beach', 'Beach cam', 'waves'], ['mountain', 'Mountain cam', 'mountain-snow']].map(([id, title, n]) => ({ title, icon: ic(n), bg: st.camView === id ? 'rgba(238,243,246,0.92)' : 'transparent', fg: st.camView === id ? '#0A1016' : '#EEF3F6', onClick: () => ctx.setCamView(id) })),

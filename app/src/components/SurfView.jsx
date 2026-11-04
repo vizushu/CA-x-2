@@ -1,7 +1,7 @@
 import React from 'react';
 import { Arrow, Cap, Dot, FILL, Footer, HAIR, LoadoutTeaser, OfflineBanner, RatingPill, T1, T2, T3, WindowCard, MONO } from './ui.jsx';
 
-export default function SurfView({ v, S, ic, openDrawer, openSettings }) {
+export default function SurfView({ v, S, ic, openDrawer }) {
   return (
     <>
       <OfflineBanner show={v.offline} text={v.offlineTxt} icon={ic.cloudOff} />
@@ -53,7 +53,6 @@ export default function SurfView({ v, S, ic, openDrawer, openSettings }) {
       </div>
 
       <WindowCard win={S.win} chevron={ic.chevRight} />
-      <LoadoutTeaser text={S.teaser} onClick={openDrawer} ic={ic} />
 
       <div style={{ marginTop: 34 }}>
         <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', gap: 12 }}>
@@ -99,7 +98,8 @@ export default function SurfView({ v, S, ic, openDrawer, openSettings }) {
         </div>
       </div>
 
-      <Footer footnote={S.footnote} ic={ic} onSettings={openSettings} summary={v.srcSummary} />
+      <LoadoutTeaser text={S.teaser} onClick={openDrawer} ic={ic} mt={16} />
+      <Footer footnote={S.footnote} ic={ic} />
     </>
   );
 }

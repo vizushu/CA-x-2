@@ -1,7 +1,7 @@
 import React from 'react';
 import { Cap, Footer, HAIR, Icon, LoadoutTeaser, OfflineBanner, T1, T2, T3, FILL } from './ui.jsx';
 
-export default function DoubleView({ v, dbl, ic, openDrawer, openSettings, setOrder }) {
+export default function DoubleView({ v, dbl, ic, openDrawer, setOrder }) {
   return (
     <>
       <OfflineBanner show={v.offline} text={v.offlineTxt} icon={ic.cloudOff} />
@@ -85,7 +85,7 @@ export default function DoubleView({ v, dbl, ic, openDrawer, openSettings, setOr
       </div>
       <div className="pretty" style={{ fontSize: 13, lineHeight: '19px', color: T2, marginTop: 16 }}>{dbl.insight}</div>
       <LoadoutTeaser label="Loadout for both" text={dbl.teaser} onClick={openDrawer} ic={ic} mt={16} />
-      <Footer footnote={dbl.footnote} ic={ic} onSettings={openSettings} summary={v.srcSummary} />
+      <Footer footnote={dbl.footnote} ic={ic} />
     </>
   );
 }
