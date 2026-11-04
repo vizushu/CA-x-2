@@ -5,6 +5,7 @@ import { iconUrl } from '../icons.js';
 
 const D = {
   breaks: [
+    { id: 'ob', name: 'Ocean Beach', short: 'OB', area: 'San Diego', facing: 268, amp: 1.0, tide: [1.0, 4.5], water: 60, note: 'sandbars either side of the pier pick up W–NW swell', cam: 'Pier cam', cycle: 480 },
     { id: 'lajolla', name: 'La Jolla Shores', short: 'La Jolla', area: 'La Jolla', facing: 280, amp: 0.75, tide: [1.0, 4.0], water: 60, note: 'a sheltered sand-bottom beach break tucked inside the point, so it runs smaller than Blacks', cam: 'Shores cam', cycle: 480 },
     { id: 'blacks', name: 'Blacks', short: 'Blacks', area: 'La Jolla', facing: 265, amp: 1.15, tide: [1.5, 4.6], water: 58, note: 'Scripps Canyon focuses it into A-frame peaks', cam: 'North cliff cam', cycle: 420 },
     { id: 'delmar', name: 'Del Mar', short: 'Del Mar', area: 'Del Mar', facing: 265, amp: 0.9, tide: [1.0, 4.0], water: 60, note: 'a sand-bottom beach break whose peaks shift with the bars', cam: 'Beach cam', cycle: 480 },
@@ -19,6 +20,7 @@ const D = {
   routes: {
     'blacks-summit': { via: 'I-15 · SR-330 · SR-18', mi: 135, h: 2.55 }, 'blacks-bear': { via: 'I-15 · SR-210 · SR-38', mi: 138, h: 2.6 }, 'blacks-mammoth': { via: 'I-15 · US-395', mi: 352, h: 5.9 },
     'swamis-summit': { via: 'I-15 · SR-330 · SR-18', mi: 122, h: 2.35 }, 'swamis-bear': { via: 'I-15 · SR-210 · SR-38', mi: 125, h: 2.4 }, 'swamis-mammoth': { via: 'I-15 · US-395', mi: 338, h: 5.7 },
+    'ob-summit': { via: 'I-15 · SR-330 · SR-18', mi: 138, h: 2.6 }, 'ob-bear': { via: 'I-15 · SR-210 · SR-38', mi: 141, h: 2.65 }, 'ob-mammoth': { via: 'I-15 · US-395', mi: 355, h: 5.95 },
     'delmar-summit': { via: 'I-15 · SR-330 · SR-18', mi: 128, h: 2.45 }, 'delmar-bear': { via: 'I-15 · SR-210 · SR-38', mi: 131, h: 2.5 }, 'delmar-mammoth': { via: 'I-15 · US-395', mi: 344, h: 5.8 },
     'carlsbad-summit': { via: 'SR-78 · I-15 · SR-330', mi: 113, h: 2.2 }, 'carlsbad-bear': { via: 'SR-78 · I-15 · SR-38', mi: 116, h: 2.25 }, 'carlsbad-mammoth': { via: 'SR-78 · I-15 · US-395', mi: 330, h: 5.5 },
     'lajolla-summit': { via: 'I-15 · SR-330 · SR-18', mi: 134, h: 2.55 }, 'lajolla-bear': { via: 'I-15 · SR-210 · SR-38', mi: 137, h: 2.6 }, 'lajolla-mammoth': { via: 'I-15 · US-395', mi: 351, h: 5.9 },

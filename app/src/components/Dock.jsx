@@ -103,7 +103,7 @@ export default function Dock({ v, ic, bump, h }) {
         {pills.items.map(pl => (
           <button key={pl.label} className="btn" onClick={pl.onClick} aria-pressed={pl.fw === 650} style={{ padding: pl.pad, minWidth: 0, height: '100%', borderRadius: 16, display: 'flex', flexDirection: pl.dir, alignItems: 'center', justifyContent: 'center', gap: pl.gap, background: pl.bg, color: pl.fg, fontSize: pl.fs, lineHeight: '17px', fontWeight: pl.fw, transition: 'background .2s, color .2s' }}>
             {pl.hasIcon && <Icon src={pl.icon} size={14} />}
-            {pl.hasDot && <Dot color={pl.dot} style={{ transition: 'background .3s' }} />}
+            {pl.hasDot && <Dot size={pl.dotSize} color={pl.dot} style={{ transition: 'background .3s' }} />}
             <span className="ell">{pl.label}</span>
             {pl.hasScore && <span className="tnum" style={{ flex: 'none', fontSize: 13, fontWeight: 700, color: pl.scoreFg }}>{pl.score}</span>}
           </button>

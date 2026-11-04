@@ -7,10 +7,33 @@ const GLASS_S = { background: 'rgba(8,12,18,0.45)', backdropFilter: 'blur(10px)'
 const SHADOW_TXT = { textShadow: '0 1px 8px rgba(0,0,0,0.6)' };
 const DIAL_CAP = { fontFamily: MONO, fontSize: 10, letterSpacing: '.06em', textTransform: 'uppercase', color: 'rgba(238,243,246,0.75)' };
 
+/** HLS live stream: native playback on Safari/iOS, hls.js (lazy-loaded) elsewhere. Muted autoplay, inline. */
+function HlsVideo({ src, label, onError }) {
+  const ref = React.useRef(null);
+  React.useEffect(() => {
+    const v = ref.current; if (!v) return undefined;
+    let hls = null, dead = false;
+    const play = () => { const p = v.play(); if (p && p.catch) p.catch(() => {}); };
+    if (v.canPlayType('application/vnd.apple.mpegurl')) { v.src = src; play(); }
+    else {
+      import('hls.js').then(({ default: Hls }) => {
+        if (dead) return;
+        if (!Hls.isSupported()) { onError(); return; }
+        hls = new Hls({ liveSyncDurationCount: 3, lowLatencyMode: false });
+        hls.on(Hls.Events.ERROR, (_, d) => { if (d.fatal) { hls.destroy(); hls = null; onError(); } });
+        hls.loadSource(src); hls.attachMedia(v); play();
+      }).catch(onError);
+    }
+    return () => { dead = true; if (hls) hls.destroy(); v.removeAttribute('src'); v.load(); };
+  }, [src]);
+  return <video ref={ref} muted autoPlay playsInline loop aria-label={label} onError={onError} style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', display: 'block', background: '#070B10' }} />;
+}
+
 function Feed({ f }) {
   return (
     <div style={{ position: 'absolute', inset: 0 }}>
       {f.isImg && <img src={f.src} alt={f.label} onError={f.onError} style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />}
+      {f.isHls && <HlsVideo src={f.src} label={f.label} onError={f.onError} />}
       {f.isFrame && <iframe src={f.src} title={f.label} allow="autoplay; encrypted-media; picture-in-picture; fullscreen" referrerPolicy="strict-origin-when-cross-origin" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', border: 0, display: 'block' }} />}
       {f.isNone && (
         <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 6, padding: '0 28px', textAlign: 'center' }}>
