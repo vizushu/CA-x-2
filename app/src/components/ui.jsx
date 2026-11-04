@@ -86,18 +86,11 @@ export function LoadoutTeaser({ label = 'Loadout', text, onClick, ic, mt = 10 })
   );
 }
 
-export function Footer({ footnote, ic, onSettings, summary }) {
+export function Footer({ footnote, ic }) {
   return (
-    <>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 24, fontSize: 12, lineHeight: '16px', color: T3 }}>
-        <Icon src={ic.db} size={14} /><span>{footnote}</span>
-      </div>
-      <button className="btn" onClick={onSettings} style={{ margin: '12px 0 0', width: '100%', minHeight: 52, display: 'flex', alignItems: 'center', gap: 10, padding: '0 14px', borderRadius: 16, background: FILL, textAlign: 'left' }}>
-        <Icon src={ic.settings} size={18} />
-        <span style={{ flex: 1, fontSize: 14, fontWeight: 600 }}>Sources &amp; settings</span>
-        <span style={{ fontSize: 12, color: T3 }}>{summary}</span>
-      </button>
-    </>
+    <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 24, fontSize: 12, lineHeight: '16px', color: T3 }}>
+      <Icon src={ic.db} size={14} /><span>{footnote}</span>
+    </div>
   );
 }
 

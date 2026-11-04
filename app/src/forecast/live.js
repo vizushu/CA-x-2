@@ -5,13 +5,10 @@ import E from './engine.js';
 
 const D = E.D, TZ = 'America/Los_Angeles';
 const SPOT = {
-  ob: { lat: 32.7495, lon: -117.2550, mlat: 32.75, mlon: -117.27, station: '9410230', stationName: 'La Jolla' },
   lajolla: { lat: 32.8575, lon: -117.2570, mlat: 32.86, mlon: -117.27, station: '9410230', stationName: 'La Jolla' },
   blacks: { lat: 32.8899, lon: -117.2513, mlat: 32.88, mlon: -117.27, station: '9410230', stationName: 'La Jolla' },
-  delmar: { lat: 32.9595, lon: -117.2685, mlat: 32.96, mlon: -117.28, station: '9410230', stationName: 'La Jolla' },
   swamis: { lat: 33.0346, lon: -117.2924, mlat: 33.034, mlon: -117.305, station: '9410230', stationName: 'La Jolla' },
   carlsbad: { lat: 33.1505, lon: -117.3480, mlat: 33.15, mlon: -117.36, station: '9410230', stationName: 'La Jolla' },
-  oceanside: { lat: 33.1932, lon: -117.3863, mlat: 33.19, mlon: -117.40, station: '9410230', stationName: 'La Jolla' },
 };
 const MTN = {
   summit: { lat: 34.2364, lon: -116.8892, topM: 2499, baseM: 2134, plev: 750, d: 'd8', routes: ['18', '330'], site: 'https://www.bigbearmountainresort.com/webcams/snow-summit' },
@@ -20,13 +17,10 @@ const MTN = {
 };
 const CT = 'https://cwwp2.dot.ca.gov/data/';
 const CAM = {
-  ob: { kind: 'hls', src: 'https://oceanbeachpier.cdn.coastalcameranetwork.com/sunba/oceanbeachpier/index.m3u8', label: 'Ocean Beach Pier · Coastal Camera Network', link: 'https://oceanbeachpier.cdn.coastalcameranetwork.com/sunba/oceanbeachpier/index.m3u8', linkLabel: 'Open the Ocean Beach Pier stream' },
-  blacks: { kind: 'none', label: 'No embeddable public cam', note: 'The Scripps Pier cam is run by Surfline and can’t be embedded. Add your own cam in Settings.', link: 'https://scripps.ucsd.edu/piercam', linkLabel: 'Scripps Pier cam' },
+  blacks: { kind: 'none', label: 'No embeddable public cam', note: 'The Scripps Pier cam is run by Surfline and can’t be embedded.', link: 'https://scripps.ucsd.edu/piercam', linkLabel: 'Scripps Pier cam' },
   swamis: { kind: 'img', src: 'https://embed.skylinewebcams.com/img/3461.jpg', every: 300, label: 'Encinitas · SkylineWebcams', live: 'https://www.skylinewebcams.com/webcam/united-states/california/encinitas/encinitas-california.html?w=3461', link: 'https://www.skylinewebcams.com/en/webcam/united-states/california/encinitas/encinitas-california.html', linkLabel: 'Watch live on SkylineWebcams' },
   lajolla: { kind: 'iframe', src: 'https://g1.ipcamlive.com/player/player.php?alias=603d26c2977cf', label: 'La Jolla Shores · beach / pier', provider: 'La Jolla Shores Hotel · IPCamLive', link: 'https://www.ljshoreshotel.com/beach-cam/', linkLabel: 'La Jolla Shores Hotel beach cam' },
-  delmar: { kind: 'iframe', status: 'pending', src: 'https://portal.hdontap.com/s/embed?stream=hdontap_delmar-17th_Street_4K_PTZ-HDOT', label: 'Del Mar Beach — South Roaming', title: 'Del Mar Beach south-roaming live camera', provider: 'HDOnTap', link: 'https://hdontap.com/stream/399483/del-mar-beach-south-roaming-live-webcam/', linkLabel: 'Del Mar Beach — South Roaming on HDOnTap', pendingNote: 'HDOnTap’s player only runs on sites it has authorized. Waiting for this site to be added.' },
   carlsbad: { kind: 'iframe', src: 'https://www.youtube.com/embed/dyX57HKeckg?autoplay=1&mute=1&playsinline=1', label: 'Carlsbad Beach', title: 'Carlsbad Beach live camera', provider: 'YouTube', link: 'https://www.youtube.com/watch?v=dyX57HKeckg', linkLabel: 'Carlsbad Beach live cam on YouTube' },
-  oceanside: { kind: 'iframe', src: 'https://www.youtube.com/embed/cvP_F-c2Upw?autoplay=1&mute=1&playsinline=1', label: 'Oceanside · The Rooftop Bar', title: 'Oceanside rooftop live camera', provider: 'YouTube', link: 'https://www.youtube.com/watch?v=cvP_F-c2Upw', linkLabel: 'Oceanside live cam on YouTube' },
   summit: { kind: 'iframe', src: 'https://camstreamer.com/embed/6voUqxnwy6czzHMjNExPov1rHCMR2cKvz8Hk5OlO', label: 'Snow Summit · Miracle Mile', provider: 'Big Bear Mountain Resort', link: 'https://www.bigbearmountainresort.com/webcams/snow-summit', linkLabel: 'Snow Summit resort cams' },
   bear: { kind: 'iframe', src: 'https://camstreamer.com/embed/CGe2VBFnva0Xtz4cUkELesjftjTPM4nEJIByGTj7', label: 'Bear Mountain · Peak', provider: 'Big Bear Mountain Resort', link: 'https://www.bigbearmountainresort.com/webcams/bear-mountain', linkLabel: 'Bear Mountain resort cams' },
   mammoth: { kind: 'img', src: CT + 'd9/cctv/image/sr203mammothmountain/sr203mammothmountain.jpg', every: 60, label: 'SR-203 Mammoth Mtn · Caltrans', link: MTN.mammoth.site, linkLabel: 'Mammoth Mountain' },
@@ -40,7 +34,7 @@ S.settings = S.settings || Object.assign({ prov: 'none', key: '', swamisLive: fa
 // those pages can't be framed, so point just those overrides at the current default player. Other settings stay.
 (function migrateCams() {
   const cams = Object.assign({}, S.settings.cams || {}); let changed = false;
-  ['lajolla', 'delmar', 'carlsbad'].forEach(id => {
+  ['lajolla', 'carlsbad'].forEach(id => {
     const ov = cams[id], url = ov && (typeof ov === 'string' ? ov : ov.url), def = CAM[id];
     if (url && def && def.src && /hdontap\.com\/stream\//i.test(url)) { cams[id] = { type: def.kind, url: def.src }; changed = true; }
   });
@@ -167,7 +161,7 @@ async function refresh() {
 async function fetchQuiet(url, key) { try { const r = await fetch(url); if (!r.ok) throw 0; const j = await r.json(); save(key, j); return j; } catch (e) { return load(key); } }
 
 // ---------- routing ----------
-const ORIG = { oceanside: [33.1932, -117.3863], ob: [32.7495, -117.2550], blacks: [32.8899, -117.2513], swamis: [33.0346, -117.2924], lajolla: [32.8575, -117.2570], delmar: [32.9595, -117.2685], carlsbad: [33.1505, -117.3480] };
+const ORIG = { blacks: [32.8899, -117.2513], swamis: [33.0346, -117.2924], lajolla: [32.8575, -117.2570], carlsbad: [33.1505, -117.3480] };
 const provNow = () => S.settings.prov !== 'none' && S.settings.key ? S.settings.prov : 'osrm';
 const provLabel = () => ({ tomtom: 'TomTom live traffic', mapbox: 'Mapbox live traffic', osrm: 'OSRM, no traffic' })[provNow()];
 if (!S.routesLoaded) { S.routesLoaded = true; S.routes = (load('lineup.routes') || {}).day === ymd(new Date()) ? load('lineup.routes').r : {}; }
@@ -270,6 +264,7 @@ E.chainAt = function (mi) { const cc = S.cc[D.mtns[mi].id]; return cc ? Math.min
 // ---------- helpers for the view ----------
 const ago = id => { const s = S.src[id]; return s && s.t ? clockOf(s.t) + (s.cached ? ' (cached)' : '') : 'unavailable'; };
 E.nowT = () => hrs(new Date()) - 24 * S.off;
+E.clockSec = () => { const p = parts(new Date()); return ((+p.hour % 12) || 12) + ':' + p.minute + ':' + p.second; };
 E.clockLabel = () => { const p = parts(new Date()); return ((+p.hour % 12) || 12) + ':' + p.minute; };
 E.updated = id => { const s = S.src[id]; return s && s.t ? clockOf(s.t) : '—'; };
 E.dayWord = () => S.off ? 'tomorrow' : 'today';

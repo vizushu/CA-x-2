@@ -1,7 +1,7 @@
 import React from 'react';
 import { Arrow, Cap, FILL, Footer, HAIR, LoadoutTeaser, OfflineBanner, RatingPill, T2, T3, WindowCard } from './ui.jsx';
 
-export default function SnowView({ v, sn, ic, openDrawer, openSettings }) {
+export default function SnowView({ v, sn, ic, openDrawer }) {
   return (
     <>
       <OfflineBanner show={v.offline} text={v.offlineTxt} icon={ic.cloudOff} />
@@ -74,7 +74,7 @@ export default function SnowView({ v, sn, ic, openDrawer, openSettings }) {
 
       <WindowCard win={sn.win} chevron={ic.chevRight} />
       <LoadoutTeaser text={sn.teaser} onClick={openDrawer} ic={ic} />
-      <Footer footnote={sn.footnote} ic={ic} onSettings={openSettings} summary={v.srcSummary} />
+      <Footer footnote={sn.footnote} ic={ic} />
     </>
   );
 }

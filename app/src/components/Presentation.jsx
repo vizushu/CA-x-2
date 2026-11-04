@@ -22,7 +22,7 @@ export function SourcesPanel({ order, rows }) {
       <section style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
         <h2 style={H2}>Cams</h2>
         <p className="pretty" style={P}><strong style={B}>Swami’s:</strong> SkylineWebcams’ Encinitas photo, refreshed every 5 minutes. Their terms allow the photo on any site; the live player is reserved for the webcam’s host.</p>
-        <p className="pretty" style={P}><strong style={B}>La Jolla Shores:</strong> the La Jolla Shores Hotel’s IPCamLive player, tap to play. <strong style={B}>Ocean Beach:</strong> the Coastal Camera Network pier stream. <strong style={B}>Del Mar and Carlsbad:</strong> HDOnTap, linked out. Blacks has no public cam.</p>
+        <p className="pretty" style={P}><strong style={B}>La Jolla Shores, Carlsbad:</strong> live players from the La Jolla Shores Hotel (IPCamLive) and YouTube. Blacks has no public cam.</p>
         <p className="pretty" style={P}><strong style={B}>Mountains:</strong> Big Bear Mountain Resort’s Snow Summit (Miracle Mile) and Bear Mountain (Peak) players, tap to play; a Caltrans road cam for Mammoth.</p>
       </section>
       <section style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
@@ -37,7 +37,6 @@ const STEPS = [
   ['01', 'Host this folder', ' on any HTTPS static host: Netlify, Vercel, Cloudflare Pages or GitHub Pages.'],
   ['02', 'Open it on your phone.', ' Below 600 px wide it drops this frame and runs full-screen.'],
   ['03', 'Install.', ' iPhone: Share → Add to Home Screen. Android: ⋮ → Install app.'],
-  ['04', 'Live traffic:', ' open Sources & settings and paste a TomTom or Mapbox key.'],
 ];
 
 export function InstallPanel() {

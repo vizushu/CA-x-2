@@ -9,7 +9,7 @@ import DoubleView from './components/DoubleView.jsx';
 import SnowView from './components/SnowView.jsx';
 import Cam from './components/Cam.jsx';
 import Dock from './components/Dock.jsx';
-import { Loading, Settings } from './components/Sheets.jsx';
+import { Loading } from './components/Sheets.jsx';
 import { DeviceFrame, InstallPanel, SourcesPanel } from './components/Presentation.jsx';
 
 const UI_KEY = 'lineup.ui';
@@ -39,7 +39,7 @@ export default class App extends React.Component {
   state = Object.assign(
     { mode: 'surf', breakId: 'swamis', mtnId: 'bear', order: 'surf', camView: 'split' },
     loadUI(),
-    { t: 6.5, follow: true, dragging: false, bump: 0, connecting: '', docked: false, sheetLevel: 0, pinned: false, sec: 0, vw: window.innerWidth, vh: window.innerHeight, data: 0, offline: false, settingsOpen: false, draft: null },
+    { t: 6.5, follow: true, dragging: false, bump: 0, connecting: '', docked: false, sheetLevel: 0, pinned: false, sec: 0, vw: window.innerWidth, vh: window.innerHeight, data: 0, offline: false, },
   );
 
   appRef = React.createRef();
@@ -68,28 +68,6 @@ export default class App extends React.Component {
     return { s, ah: 932, pw: Math.round(448 * s), ph: Math.round(950 * s), bw: 448, bh: 950, bpad: 9, brad: 57, bbg: '#13181F', bsh: 'inset 0 0 0 1px rgba(238,243,246,0.09), 0 0 0 1px #000000, 0 50px 120px -30px rgba(0,0,0,0.95)', framed: true, pos: wide ? 'sticky' : 'relative', top: 24, left: 'auto', z: 'auto', o1: wide ? 1 : 2, o2: wide ? 2 : 1, rootPad: '40px 32px 72px' };
   }
 
-  // ---------- settings ----------
-  draftFrom() {
-    const cfg = Live.settings(), D = E.D, b = D.breaks.find(x => x.id === this.state.breakId) || D.breaks[0], m = D.mtns.find(x => x.id === this.state.mtnId) || D.mtns[0];
-    const u = o => (typeof o === 'string' ? o : o && o.url) || '';
-    return { prov: cfg.prov, key: cfg.key, beach: u(cfg.cams[b.id]), mtn: u(cfg.cams[m.id]) };
-  }
-  setDraft(p) { this.setState(s => ({ draft: Object.assign({}, s.draft || this.draftFrom(), p) })); }
-  settingsVals(D, bi, mi) {
-    const cfg = Live.settings(), b = D.breaks[bi], m = D.mtns[mi], d = this.state.draft || this.draftFrom();
-    const seg = on => ({ bg: on ? 'rgba(238,244,246,0.16)' : 'transparent', fg: on ? '#EEF4F6' : '#A5B3BD' });
-    return {
-      provs: [['tomtom', 'TomTom'], ['mapbox', 'Mapbox'], ['none', 'Off']].map(([id, label]) => Object.assign({ label, onClick: () => this.setDraft({ prov: id }) }, seg(d.prov === id))),
-      key: d.key, keyDis: d.prov === 'none', keyPh: d.prov === 'mapbox' ? 'Mapbox access token' : d.prov === 'tomtom' ? 'TomTom API key' : 'Pick TomTom or Mapbox first',
-      trafficLine: Live.trafficLine(), onKey: e => this.setDraft({ key: e.target.value }), saveTraffic: () => Live.setTraffic(d.prov, d.key),
-      swPhoto: seg(!cfg.swamisLive), swLive: seg(!!cfg.swamisLive), setPhoto: () => Live.setSwamisLive(false), setLive: () => Live.setSwamisLive(true),
-      beach: d.beach, mtn: d.mtn, beachName: b.name, mtnName: m.name,
-      onBeach: e => this.setDraft({ beach: e.target.value }), onMtn: e => this.setDraft({ mtn: e.target.value }),
-      saveCams: () => { Live.setCam(b.id, d.beach); Live.setCam(m.id, d.mtn); },
-    };
-  }
-  openSettings = () => this.setState({ settingsOpen: true, draft: this.draftFrom() });
-  closeSettings = () => this.setState({ settingsOpen: false, draft: null });
   refreshNow = () => Live.refresh();
 
   // ---------- gestures ----------
@@ -252,8 +230,6 @@ export default class App extends React.Component {
     this.onNet();
     window.addEventListener('online', this.onNet);
     window.addEventListener('offline', this.onNet);
-    this.onKey = e => { if (e.key === 'Escape' && this.state.settingsOpen) this.closeSettings(); };
-    window.addEventListener('keydown', this.onKey);
     const mq = window.matchMedia ? window.matchMedia('(prefers-reduced-motion: reduce)') : null;
     this.reduced = !!(mq && mq.matches);
     this._t0 = Date.now();
@@ -271,7 +247,6 @@ export default class App extends React.Component {
     window.removeEventListener('resize', this.onResize);
     window.removeEventListener('online', this.onNet);
     window.removeEventListener('offline', this.onNet);
-    window.removeEventListener('keydown', this.onKey);
     clearInterval(this.timer); clearTimeout(this._ct);
     if (this._raf) cancelAnimationFrame(this._raf);
     Live.stop();
@@ -293,7 +268,7 @@ export default class App extends React.Component {
     const vk = st.mode === 'surf' ? 'beach' : st.mode === 'snow' ? 'mountain' : st.camView;
     const off = !!this.props.offline || st.offline, liveCam = !off && E.camLive(vk, bi, mi) === 'Live';
     Object.assign(v, { srcSummary: Live.summary(), dayWord: E.dayWord(), sheetLevel: st.sheetLevel, t: st.t });
-    const ic = v.ic, common = { v, ic, openDrawer: this.openDrawer, openSettings: this.openSettings };
+    const ic = v.ic, common = { v, ic, openDrawer: this.openDrawer };
     return (
       <>
         <div aria-hidden="true" style={{ position: 'absolute', inset: 0, pointerEvents: 'none', opacity: v.glowOp, transition: 'opacity .6s', background: 'radial-gradient(90% 34% at 50% 31%, rgba(96,205,200,0.14), rgba(96,205,200,0) 70%), linear-gradient(180deg, rgba(220,232,245,0.07) 0%, rgba(9,20,26,0) 42%, rgba(40,150,150,0.09) 100%)' }} />
@@ -302,7 +277,6 @@ export default class App extends React.Component {
         <ModeScroller label="Snow" ref={this.snowRef} onScroll={this.onScroll} tv={v.tv.snow} padB={v.dk.padB}><SnowView {...common} sn={v.sn} /></ModeScroller>
         <Cam v={v} ic={ic} liveCam={liveCam} connecting={st.connecting} miniTap={this.miniTap} />
         <Dock v={v} ic={ic} bump={st.bump} h={this} />
-        {st.settingsOpen && <Settings set={this.settingsVals(D, bi, mi)} srcRows={srcRows} ic={ic} onClose={this.closeSettings} onRefresh={this.refreshNow} />}
       </>
     );
   }
