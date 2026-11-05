@@ -323,8 +323,6 @@ const Live = {
   stop() { S.cb = null; if (S.timers) { S.timers.forEach(clearInterval); S.timers = false; } },
   refresh() { S.camDown = {}; return refresh(); },
   isReady: () => S.ready, isSettled: () => S.settled,
-  /** '' while the swell/wind forecast is fresh; otherwise the clock time of the data on screen ('' time → 'earlier'). Drives the stale-data banner. */
-  staleAt() { let stale = false, t = Infinity; ['marine', 'coast'].forEach(id => { const x = S.src[id]; if (!x || x.ok === null) return; if (x.ok === false || x.cached || Date.now() - x.t > 40 * 60e3) { stale = true; if (x.t) t = Math.min(t, x.t); } }); return stale ? (isFinite(t) ? clockOf(t) : 'earlier') : ''; },
   setCurrent(bi, mi) { S.cur = [bi, mi]; },
   settings: () => S.settings,
   setTraffic(prov, key) { S.settings.prov = prov; S.settings.key = (key || '').trim(); save('lineup.settings', S.settings); Object.keys(S.routes).forEach(k => { if (k.indexOf('osrm|') !== 0) delete S.routes[k]; }); S.src.route = null; bump(); },

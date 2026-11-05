@@ -151,7 +151,6 @@ export default class App extends React.Component {
     else if (e.key === 'ArrowDown') { e.preventDefault(); this.setSheet(Math.max(0, this.state.sheetLevel - 1)); }
   };
   openDrawer = () => this.setSheet(2);
-  openTimeline = () => this.setSheet(1);
 
   // Spring integrator (k = 320, c = 30). Reduced motion snaps.
   kick() { if (this._raf) return; this._last = performance.now(); this._raf = requestAnimationFrame(this.step); }
@@ -280,19 +279,15 @@ export default class App extends React.Component {
     this._exp = v.exp; this._ctrl = v.ctrl; this._theme = v.theme; this._nowT = v.nowT;
     const vk = st.mode === 'surf' ? 'beach' : st.mode === 'snow' ? 'mountain' : 'split';
     const off = !!this.props.offline || st.offline, liveCam = !off && E.camLive(vk, bi, mi) === 'Live';
-    const staleAt = Live.staleAt();
-    v.staleTxt = staleAt ? 'Showing the ' + (staleAt === 'earlier' ? 'last saved' : staleAt) + ' forecast. The latest update didn’t come through; 2CA tries again every 10 minutes.' : '';
-    // No embeddable stream for this break: collapse the cam box; the header shows an external link instead.
-    const camOut = st.mode === 'surf' && v.S.camOut;
     Object.assign(v, { srcSummary: Live.summary(), dayWord: E.dayWord(), sheetLevel: st.sheetLevel, t: st.t });
     const ic = v.ic, common = { v, ic, openDrawer: this.openDrawer };
     return (
       <>
         <div aria-hidden="true" style={{ position: 'absolute', inset: 0, pointerEvents: 'none', opacity: v.glowOp, transition: 'opacity .6s', background: 'radial-gradient(110% 40% at 50% 30%, rgba(214,224,240,0.18), rgba(214,224,240,0) 70%), radial-gradient(70% 30% at 15% 85%, rgba(80,200,215,0.07), rgba(80,200,215,0) 70%), linear-gradient(180deg, rgba(232,238,246,0.10) 0%, rgba(28,34,44,0) 45%, rgba(190,200,216,0.10) 100%)' }} />
-        <ModeScroller label="Surf" ref={this.surfRef} padT={camOut ? 'calc(max(20px, env(safe-area-inset-top, 0px)) + 16px)' : '258px'} onScroll={this.onScroll} onSwipe={this.swipeBreak} swipeKey={st.breakId} swipeDir={st.swipeDir} tv={v.tv.surf} padB={v.dk.padB}><SurfView {...common} S={v.S} /></ModeScroller>
+        <ModeScroller label="Surf" ref={this.surfRef} onScroll={this.onScroll} onSwipe={this.swipeBreak} swipeKey={st.breakId} swipeDir={st.swipeDir} tv={v.tv.surf} padB={v.dk.padB}><SurfView {...common} S={v.S} /></ModeScroller>
         <ModeScroller label="CA Double" ref={this.dblRef} onScroll={this.onScroll} tv={v.tv.double} padB={v.dk.padB}><DoubleView {...common} dbl={v.dbl} setOrder={this.setOrder} /></ModeScroller>
         <ModeScroller label="Snow" ref={this.snowRef} onScroll={this.onScroll} onSwipe={this.swipeMtn} swipeKey={st.mtnId} swipeDir={st.swipeDir} tv={v.tv.snow} padB={v.dk.padB}><SnowView {...common} sn={v.sn} /></ModeScroller>
-        {!camOut && <Cam v={v} ic={ic} liveCam={liveCam} connecting={st.connecting} miniTap={this.miniTap} />}
+        <Cam v={v} ic={ic} liveCam={liveCam} connecting={st.connecting} miniTap={this.miniTap} />
         <Dock v={v} ic={ic} bump={st.bump} h={this} />
         {lay.app && !standalone() && <InstallBanner ready={st.splash === 'gone'} hidden={st.sheetLevel > 0} bottom={`calc(${v.dk.tab + v.dk.grab + 10}px + max(20px, env(safe-area-inset-bottom, 0px)))`} />}
       </>
