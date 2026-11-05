@@ -1,104 +1,121 @@
+// Surf screen, top to bottom:
+//   1. Spot header: name + rating, area · facing · water temp, and an external cam link when the spot has no
+//      embeddable stream (the cam box collapses in that case; see App).
+//   2. Hero: wave range + feel, swell energy.
+//   3. Forward-looking window: today's best window if it's still ahead, otherwise tomorrow's, with today's closed
+//      window demoted to one line.
+//   4. Current conditions: one row each for swell, wind, tide (reading · direction/next · local takeaway).
+// No "now" timestamps: the data is live unless the stale-data banner says otherwise.
 import React from 'react';
-import { Arrow, Cap, Dot, FILL, Footer, HAIR, LoadoutTeaser, OfflineBanner, RatingPill, T1, T2, T3, WindowCard, MONO } from './ui.jsx';
+import { Cap, Dot, FILL, Footer, HAIR, Icon, LoadoutTeaser, OfflineBanner, T1, T2, T3 } from './ui.jsx';
+
+function CamLink({ link, icon }) {
+  if (!link) return null;
+  return (
+    <a href={link.url} target="_blank" rel="noopener noreferrer" aria-label={'Open ' + link.label + ' (external site)'}
+      style={{ flex: 'none', minHeight: 50, display: 'inline-flex', alignItems: 'center', gap: 4, padding: '0 12px', borderRadius: 12, background: FILL, boxShadow: `inset 0 0 0 0.5px ${HAIR}`, color: T2, fontSize: 13, fontWeight: 600, textDecoration: 'none' }}>
+      <span className="nw">{link.label}</span><Icon src={icon} size={14} color={T3} />
+    </a>
+  );
+}
+
+function NextWindow({ next, chev }) {
+  const m = next.main;
+  return (
+    <section style={{ marginTop: 22, padding: 16, borderRadius: 18, background: m.bg, boxShadow: `inset 0 0 0 1px ${m.line}` }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <Cap size={11} color={m.fg} style={{ lineHeight: '14px' }}>{m.caption}</Cap>
+            {m.status && <span className="nw" style={{ fontSize: 11, lineHeight: '14px', fontWeight: 650, color: m.fg }}>· {m.status}</span>}
+          </div>
+          <div className="tnum pretty" style={{ fontSize: 19, lineHeight: '25px', fontWeight: 700, marginTop: 3 }}>{m.range}</div>
+          <div className="pretty" style={{ fontSize: 13, lineHeight: '18px', color: T2, marginTop: 1 }}>{m.detail}</div>
+        </div>
+        {m.cta && (
+          <button type="button" className="btn" onClick={m.onClick} style={{ flex: 'none', minHeight: 50, padding: '0 8px 0 14px', borderRadius: 14, display: 'flex', alignItems: 'center', gap: 2, background: 'var(--chip, rgba(238,243,246,0.12))', color: m.fg, fontSize: 13, fontWeight: 650 }}>
+            {m.cta}<Icon src={chev} size={16} />
+          </button>
+        )}
+      </div>
+      {next.past && (
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10, marginTop: 12, paddingTop: 4, boxShadow: `inset 0 0.5px 0 ${HAIR}` }}>
+          <span className="pretty" style={{ fontSize: 12.5, lineHeight: '17px', color: T2 }}>{next.past.text}</span>
+          <button type="button" className="btn" onClick={next.past.onClick} style={{ flex: 'none', minHeight: 50, padding: '0 4px', fontSize: 12.5, fontWeight: 600, color: T1, textDecoration: 'underline', textUnderlineOffset: 4 }}>Review morning</button>
+        </div>
+      )}
+    </section>
+  );
+}
+
+function Conditions({ cond }) {
+  return (
+    <section style={{ marginTop: 26 }}>
+      <h2 style={{ margin: '0 4px', fontFamily: 'inherit' }}>
+        <Cap size={11} color={T3} ls=".08em">{cond.title}<span style={{ color: cond.color }}>{cond.word}</span></Cap>
+      </h2>
+      <div style={{ marginTop: 10, borderRadius: 18, background: FILL, boxShadow: `inset 0 0 0 0.5px ${HAIR}` }}>
+        {cond.rows.map((r, i) => (
+          <div key={r.label} style={{ display: 'flex', alignItems: 'flex-start', gap: 14, padding: 14, boxShadow: i ? `inset 0 0.5px 0 ${HAIR}` : 'none' }}>
+            <span aria-hidden="true" style={{ flex: 'none', width: 32, height: 32, marginTop: 1, borderRadius: 10, display: 'flex', alignItems: 'center', justifyContent: 'center', background: r.bg, color: r.fg }}><Icon src={r.icon} size={16} /></span>
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', gap: 8 }}>
+                <span className="tnum nw" style={{ fontSize: 15, lineHeight: '20px', fontWeight: 650, color: r.pfg || T1 }}><span className="sr-only">{r.label}: </span>{r.primary}</span>
+                <span className="tnum ell" style={{ fontSize: 12, lineHeight: '16px', fontWeight: 500, color: T2, textAlign: 'right' }}>{r.meta}</span>
+              </div>
+              <div className="pretty" style={{ fontSize: 12.5, lineHeight: '18px', color: T2, marginTop: 2 }}>{r.take}</div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+}
 
 export default function SurfView({ v, S, ic, openDrawer }) {
   return (
     <>
-      <OfflineBanner show={v.offline} text={v.offlineTxt} icon={ic.cloudOff} />
-      <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 12 }}>
+      <OfflineBanner show={v.offline || !!v.staleTxt} text={v.offline ? v.offlineTxt : v.staleTxt} icon={ic.cloudOff} />
+
+      {/* 1 · Spot header */}
+      <header style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 12 }}>
         <div style={{ minWidth: 0 }}>
-          <Cap size={11} color={T2} style={{ display: 'block', lineHeight: '14px' }}><span className="ell" style={{ display: 'block' }}>{S.eyebrow}</span></Cap>
-          <div style={{ fontSize: 28, lineHeight: '34px', fontWeight: 650, letterSpacing: '-0.02em', marginTop: 4 }}>{S.name}</div>
-          <div style={{ fontSize: 13, lineHeight: '18px', color: T3 }}>{S.area}</div>
-        </div>
-        <RatingPill label={S.pill} bg={S.pillBg} fg={S.pillFg} />
-      </div>
-
-      <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginTop: 10 }}>
-        <div style={{ display: 'flex', alignItems: 'baseline', gap: 6 }}>
-          <span className="tnum" style={{ fontSize: 72, lineHeight: '76px', fontWeight: 600, letterSpacing: '-0.045em' }}>{S.range}</span>
-          <span style={{ fontSize: 24, fontWeight: 500, color: T2 }}>ft</span>
-        </div>
-        <div style={{ textAlign: 'right', paddingBottom: 10 }}>
-          <div className="tnum" style={{ fontSize: 22, lineHeight: '26px', fontWeight: 600 }}>{S.kj}<span style={{ fontSize: 13, fontWeight: 500, color: T2, marginLeft: 3 }}>kJ</span></div>
-          <Cap style={{ display: 'block', color: T3, marginTop: 2 }}>Swell energy</Cap>
-        </div>
-      </div>
-      <div style={{ fontSize: 15, lineHeight: '20px', color: T2 }}>{S.words}</div>
-
-      <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0,1fr) minmax(0,1fr)', gap: 12, marginTop: 20 }}>
-        <div style={{ display: 'flex', gap: 12, alignItems: 'center', minWidth: 0 }}>
-          <div style={{ position: 'relative', flex: 'none', width: 44, height: 44, borderRadius: 14, background: FILL, overflow: 'hidden' }}>
-            <div style={{ position: 'absolute', left: 0, right: 0, bottom: 0, height: 11, background: FILL, borderTop: `1px dashed ${T3}` }} />
-            <Arrow rot={S.windRot} color={S.windColor} style={{ left: 10, top: 7, transition: 'transform .35s cubic-bezier(.2,.8,.2,1)' }} />
+          {S.eyebrow && <Cap size={11} color={T2} style={{ display: 'block', lineHeight: '14px', marginBottom: 4 }}><span className="ell" style={{ display: 'block' }}>{S.eyebrow}</span></Cap>}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
+            <h1 style={{ margin: 0, fontSize: 30, lineHeight: '36px', fontWeight: 700, letterSpacing: '-0.02em' }}>{S.name}</h1>
+            <span className="nw" style={{ height: 24, padding: '0 10px 0 8px', borderRadius: 12, display: 'inline-flex', alignItems: 'center', gap: 6, background: S.pillBg, color: S.pillFg, boxShadow: `inset 0 0 0 1px ${S.pillBg}`, fontSize: 11.5, fontWeight: 700, letterSpacing: '.07em', textTransform: 'uppercase' }}>
+              <Dot size={6} color={S.pillFg} />{S.pill}
+            </span>
           </div>
-          <div style={{ minWidth: 0 }}>
-            <div className="ell" style={{ fontSize: 16, lineHeight: '21px', fontWeight: 600, color: S.windColor }}>{S.windCat}</div>
-            <div className="ell" style={{ fontSize: 12, lineHeight: '16px', color: T2 }}>{S.windDetail}</div>
+          <div style={{ fontSize: 13.5, lineHeight: '19px', color: T2, marginTop: 3 }}>
+            {S.sub}<span style={{ color: T3 }}> · </span><span style={{ color: T1 }}>{S.water}</span>
           </div>
         </div>
-        <div style={{ display: 'flex', gap: 10, alignItems: 'center', minWidth: 0 }}>
-          <div style={{ flex: 'none', width: 56, height: 44, borderRadius: 14, background: FILL }}>
-            <svg width="56" height="44" style={{ display: 'block' }} aria-hidden="true">
-              <path d={S.sArea} style={{ fill: FILL }} />
-              <path d={S.sLine} style={{ fill: 'none', stroke: T2, strokeWidth: 1.25 }} />
-              <circle cx={S.sdx} cy={S.sdy} r="3" style={{ fill: T1 }} />
-            </svg>
+        <CamLink link={S.camLink} icon={ic.out} />
+      </header>
+
+      {/* 2 · Hero */}
+      <section style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', gap: 12, marginTop: 14 }}>
+        <div style={{ minWidth: 0 }}>
+          <div style={{ display: 'flex', alignItems: 'baseline', gap: 6 }}>
+            <span className="tnum" style={{ fontSize: 64, lineHeight: '68px', fontWeight: 700, letterSpacing: '-0.045em' }}>{S.range}</span>
+            <span style={{ fontSize: 24, fontWeight: 500, color: T2 }}>ft</span>
           </div>
-          <div style={{ minWidth: 0 }}>
-            <div className="nw" style={{ fontSize: 16, lineHeight: '21px', fontWeight: 600 }}>{S.tideH} <span style={{ color: S.tideCol }}>{S.tideTrend}</span></div>
-            <div className="ell" style={{ fontSize: 12, lineHeight: '16px', color: T2 }}>{S.tideDetail}</div>
-          </div>
+          <div className="pretty" style={{ fontSize: 14, lineHeight: '19px', color: T2, marginTop: 2 }}>{S.words}</div>
         </div>
-      </div>
+        <div style={{ flex: 'none', textAlign: 'right', paddingBottom: 2 }}>
+          <div className="tnum" style={{ fontSize: 24, lineHeight: '28px', fontWeight: 650 }}>{S.kj}<span style={{ fontSize: 13, fontWeight: 500, color: T2, marginLeft: 4 }}>kJ</span></div>
+          <Cap size={10.5} style={{ display: 'block', marginTop: 2 }}>Swell energy</Cap>
+        </div>
+      </section>
 
-      <WindowCard win={S.win} chevron={ic.chevRight} />
+      {/* 3 · Forward-looking window */}
+      <NextWindow next={S.next} chev={ic.chevRight} />
 
-      <div style={{ marginTop: 34 }}>
-        <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', gap: 12 }}>
-          <div style={{ fontSize: 20, lineHeight: '26px', fontWeight: 650 }}>{S.why.lead} <span style={{ color: S.why.color }}>{S.why.word}</span></div>
-          <div className="nw" style={{ fontSize: 12, color: T3 }}>{S.why.at}</div>
-        </div>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 16, marginTop: 14 }}>
-          {S.why.rows.map(w => (
-            <div key={w.label} style={{ display: 'grid', gridTemplateColumns: '64px minmax(0,1fr)', gap: 12, alignItems: 'start' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8, paddingTop: 4 }}><Dot color={w.dot} /><Cap size={11}>{w.label}</Cap></div>
-              <div style={{ minWidth: 0 }}>
-                <div style={{ fontSize: 15, lineHeight: '20px', fontWeight: 600 }}>{w.head}</div>
-                <div className="pretty" style={{ fontSize: 13, lineHeight: '18px', color: T2, marginTop: 2 }}>{w.detail}</div>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
+      {/* 4 · Current conditions: metric + meaning */}
+      <Conditions cond={S.cond} />
 
-      <div style={{ marginTop: 34 }}>
-        <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', gap: 12 }}>
-          <div style={{ fontSize: 20, lineHeight: '26px', fontWeight: 650 }}>Tide</div>
-          <div className="nw" style={{ fontSize: 12, color: T2 }}>{S.tide.readout}</div>
-        </div>
-        <div style={{ position: 'relative', height: 132, marginTop: 12 }}>
-          <div style={{ position: 'absolute', left: 0, top: 0, height: 104, width: +S.tide.darkW, background: `repeating-linear-gradient(135deg, ${HAIR} 0 1px, transparent 1px 6px)` }} />
-          <svg width="390" height="104" style={{ position: 'absolute', left: 0, top: 0, overflow: 'visible' }} aria-hidden="true">
-            <path d={S.tide.area} style={{ fill: FILL }} />
-            <path d={S.tide.line} style={{ fill: 'none', stroke: T2, strokeWidth: 1.5 }} />
-          </svg>
-          <div style={{ position: 'absolute', top: 0, height: 104, width: 0, left: +S.tide.nowX, borderLeft: `1px dashed ${T3}` }} />
-          <div style={{ position: 'absolute', top: 0, height: 104, width: 1.5, left: +S.tide.selX, background: T1, transition: 'left .3s cubic-bezier(.2,.8,.2,1)' }} />
-          <div style={{ position: 'absolute', width: 10, height: 10, margin: '-5px 0 0 -5px', borderRadius: 5, background: T1, boxShadow: '0 0 0 3px var(--bg, #080D14)', left: +S.tide.sx, top: +S.tide.sy, transition: 'left .3s cubic-bezier(.2,.8,.2,1), top .3s cubic-bezier(.2,.8,.2,1)' }} />
-          {S.tide.ex.map(e => (
-            <div key={e.time + e.kind} style={{ position: 'absolute', width: 64, textAlign: 'center', lineHeight: '12px', left: +e.x, top: +e.y }}>
-              <div style={{ fontSize: 11, fontWeight: 600 }}>{e.kind} {e.h}</div>
-              <div style={{ fontFamily: MONO, fontSize: 10, color: T3, marginTop: 1 }}>{e.time}</div>
-            </div>
-          ))}
-          {S.tide.hours.map(h => (
-            <div key={h.label} style={{ position: 'absolute', top: 116, width: 32, textAlign: 'center', fontFamily: MONO, fontSize: 10, color: T3, left: +h.x }}>{h.label}</div>
-          ))}
-        </div>
-      </div>
-
-      <LoadoutTeaser text={S.teaser} onClick={openDrawer} ic={ic} mt={16} />
+      <LoadoutTeaser text={S.teaser} onClick={openDrawer} ic={ic} mt={18} />
       <Footer footnote={S.footnote} ic={ic} />
     </>
   );

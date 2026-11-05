@@ -4,11 +4,11 @@ import { Arrow, Cap, FILL, Footer, HAIR, LoadoutTeaser, OfflineBanner, RatingPil
 export default function SnowView({ v, sn, ic, openDrawer }) {
   return (
     <>
-      <OfflineBanner show={v.offline} text={v.offlineTxt} icon={ic.cloudOff} />
+      <OfflineBanner show={v.offline || !!v.staleTxt} text={v.offline ? v.offlineTxt : v.staleTxt} icon={ic.cloudOff} />
       <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 12 }}>
         <div style={{ minWidth: 0 }}>
-          <Cap size={11} color={T2} style={{ display: 'block', lineHeight: '14px' }}><span className="ell" style={{ display: 'block' }}>{sn.eyebrow}</span></Cap>
-          <div style={{ fontSize: 28, lineHeight: '34px', fontWeight: 650, letterSpacing: '-0.02em', marginTop: 4 }}>{sn.name}</div>
+          {sn.eyebrow && <Cap size={11} color={T2} style={{ display: 'block', lineHeight: '14px', marginBottom: 4 }}><span className="ell" style={{ display: 'block' }}>{sn.eyebrow}</span></Cap>}
+          <div style={{ fontSize: 28, lineHeight: '34px', fontWeight: 650, letterSpacing: '-0.02em' }}>{sn.name}</div>
           <div style={{ fontSize: 13, lineHeight: '18px', color: T3 }}>{sn.area}</div>
         </div>
         <RatingPill label={sn.pill} bg={sn.pillBg} fg={sn.pillFg} />
@@ -33,7 +33,6 @@ export default function SnowView({ v, sn, ic, openDrawer }) {
       <div style={{ marginTop: 22 }}>
         <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between' }}>
           <div style={{ fontSize: 17, lineHeight: '22px', fontWeight: 650 }}>By elevation</div>
-          <div style={{ fontSize: 12, color: T3 }}>{sn.at}</div>
         </div>
         <div style={{ display: 'flex', flexDirection: 'column', marginTop: 6 }}>
           {sn.ladder.map(lv => (

@@ -12,16 +12,15 @@ export default function Dock({ v, ic, bump, h }) {
     {/* Pull-up panel: collapsed handle (0) → timeline controls (1) → loadout (2) */}
     <div style={{ position: 'absolute', left: 0, right: 0, bottom: `calc(${dk.tab}px + max(20px, env(safe-area-inset-bottom, 0px)))`, height: `calc(${dk.grab}px + ${dk.ctrl}px * var(--ctrl, 0) + ${dk.exp}px * var(--load, 0))`, zIndex: 20, overflow: 'hidden', borderRadius: '24px 24px 0 0', background: 'var(--glass, rgba(12,24,30,0.78))', backdropFilter: 'blur(30px) saturate(170%)', WebkitBackdropFilter: 'blur(30px) saturate(170%)', boxShadow: `inset 0 0.5px 0 rgba(255,255,255,0.18), 0 -12px 40px rgba(0,0,0,0.25)`, color: T1, transition: 'background-color .45s, color .45s' }}>
       {/* Handle row */}
-      <div onPointerDown={h.sheetDown} onPointerMove={h.sheetMove} onPointerUp={h.sheetUp} onPointerCancel={h.sheetUp} onKeyDown={h.sheetKey} tabIndex={0} role="button" aria-label={v.sheetLevel === 0 ? 'Show timeline' : v.sheetLevel === 1 ? 'Hide timeline' : 'Close loadout'} aria-expanded={v.sheetLevel > 0} style={{ position: 'relative', zIndex: 2, height: dk.grab, display: 'flex', alignItems: 'center', gap: 10, padding: '0 20px', boxSizing: 'border-box', touchAction: 'none', cursor: 'grab', background: 'var(--glass, rgba(12,24,30,0.78))' }}>
-        <div style={{ position: 'absolute', left: '50%', top: 6, width: 36, height: 5, marginLeft: -18, borderRadius: 3, background: 'var(--grab, rgba(238,244,246,0.3))' }} />
-        <div style={{ flex: 1, minWidth: 0, display: 'flex', alignItems: 'baseline', gap: 8, paddingTop: 6, opacity: 'calc(1 - var(--ctrl, 0) * 1.5)' }}>
-          <span className="tnum nw" style={{ fontSize: 15, fontWeight: 700 }}>{strip.time}</span>
-          <Cap color={strip.subFg}>{strip.sub}</Cap>
-          {dk.glove && <span style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 11, fontWeight: 600, color: T2, alignSelf: 'center' }}><Icon src={ic.hand} size={13} />Glove</span>}
-        </div>
-        <div className="ell" style={{ flex: 'none', maxWidth: 150, paddingTop: 6, fontSize: 13, fontWeight: 600, color: strip.cells[0].color, opacity: 'calc(1 - var(--ctrl, 0) * 1.5)' }}>{strip.cells[0].value}</div>
-        <div style={{ flex: 'none', display: 'flex', alignItems: 'center', gap: 4, paddingTop: 6, fontSize: 12, fontWeight: 600, color: T2 }}>
-          {v.sheetLevel >= 1 ? 'Loadout' : 'Timeline'}<Icon src={ic.chevUp} size={15} style={{ transform: v.sheetLevel === 2 ? 'rotate(180deg)' : 'none', transition: 'transform .25s' }} />
+      <div onPointerDown={h.sheetDown} onPointerMove={h.sheetMove} onPointerUp={h.sheetUp} onPointerCancel={h.sheetUp} onKeyDown={h.sheetKey} tabIndex={0} role="button" aria-label={v.sheetLevel === 0 ? 'Show timeline' : v.sheetLevel === 1 ? 'Hide timeline' : 'Close loadout'} aria-expanded={v.sheetLevel > 0} style={{ position: 'relative', zIndex: 2, height: dk.grab, display: 'flex', alignItems: 'center', gap: 10, padding: '0 16px', boxSizing: 'border-box', touchAction: 'none', cursor: 'pointer', background: 'var(--glass, rgba(12,24,30,0.78))' }}>
+        {/* Labeled timeline trigger (drag or tap); replaces the old clock + value readout */}
+        <div style={{ flex: 1, minWidth: 0, height: 42, marginTop: 2, padding: '0 10px 0 14px', borderRadius: 12, display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10, background: FILL, boxShadow: `inset 0 0 0 0.5px ${HAIR}` }}>
+          <span className="ell" style={{ fontSize: 13, fontWeight: 550, color: v.handle.scrubbed ? 'var(--acc, oklch(0.82 0.1 190))' : T2, opacity: 'calc(1 - var(--ctrl, 0) * 1.5)' }}>
+            {dk.glove && <Icon src={ic.hand} size={13} style={{ display: 'inline-block', verticalAlign: '-2px', marginRight: 5 }} />}{v.handle.text}
+          </span>
+          <span className="nw" style={{ flex: 'none', display: 'flex', alignItems: 'center', gap: 3, fontSize: 13, fontWeight: 650, color: 'var(--acc, oklch(0.82 0.1 190))' }}>
+            {v.sheetLevel >= 1 ? 'Loadout' : 'Timeline'}<Icon src={ic.chevUp} size={16} style={{ transform: v.sheetLevel === 2 ? 'rotate(180deg)' : 'none', transition: 'transform .25s' }} />
+          </span>
         </div>
       </div>
       <div style={{ position: 'absolute', left: 12, right: 12, top: dk.grab, bottom: 0 }}>
@@ -114,21 +113,19 @@ export default function Dock({ v, ic, bump, h }) {
       </div>
     </div>
 
-    {/* Bottom tab bar */}
-    <nav aria-label="Mode" style={{ position: 'absolute', left: 0, right: 0, bottom: 0, zIndex: 21, boxSizing: 'border-box', height: `calc(${dk.tab}px + max(20px, env(safe-area-inset-bottom, 0px)))`, paddingBottom: 'max(20px, env(safe-area-inset-bottom, 0px))', display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0,1fr))', background: 'var(--glass, rgba(12,24,30,0.78))', backdropFilter: 'blur(30px) saturate(170%)', WebkitBackdropFilter: 'blur(30px) saturate(170%)', boxShadow: `inset 0 0.5px 0 ${HAIR}`, transition: 'background-color .45s' }}>
-      {modes.items.map((md, i) => {
-        const on = i === modes.idx;
-        return (
-          <button key={md.label} className="btn" onClick={md.onClick} aria-label={md.label} aria-current={on ? 'page' : undefined} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 3, color: on ? 'var(--acc, oklch(0.82 0.1 190))' : T3, transition: 'color .25s' }}>
-            {i === 1
-              ? <BoardsX mode={['surf', 'double', 'snow'][modes.idx]} size={40} />
-              : <>
-                  <Icon src={md.icon} size={24} />
-                  <span style={{ fontSize: 11, lineHeight: '13px', fontWeight: on ? 700 : 600 }}>{md.label}</span>
-                </>}
-          </button>
-        );
-      })}
+    {/* Bottom mode switch: labeled segmented control (Surf | CA² Dual | Snow). 50 design px = ≥44 real px on 390-px+ phones */}
+    <nav aria-label="Mode" style={{ position: 'absolute', left: 0, right: 0, bottom: 0, zIndex: 21, boxSizing: 'border-box', height: `calc(${dk.tab}px + max(20px, env(safe-area-inset-bottom, 0px)))`, padding: '4px 16px max(20px, env(safe-area-inset-bottom, 0px))', background: 'var(--glass, rgba(12,24,30,0.78))', backdropFilter: 'blur(30px) saturate(170%)', WebkitBackdropFilter: 'blur(30px) saturate(170%)', boxShadow: `inset 0 0.5px 0 ${HAIR}`, transition: 'background-color .45s' }}>
+      <div style={{ height: '100%', boxSizing: 'border-box', display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0,1fr))', gap: 4, padding: 4, borderRadius: 14, background: FILL, boxShadow: `inset 0 0 0 0.5px ${HAIR}` }}>
+        {modes.items.map((md, i) => {
+          const on = i === modes.idx;
+          return (
+            <button key={md.label} type="button" className="btn" onClick={md.onClick} aria-current={on ? 'page' : undefined}
+              style={{ minHeight: 50, borderRadius: 10, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, background: on ? md.onBg : 'transparent', color: on ? md.onFg : T2, boxShadow: on ? `inset 0 0 0 1px ${md.onLine}` : 'none', fontSize: 13, fontWeight: on ? 700 : 600, transition: 'background .25s, color .25s' }}>
+              {i === 1 && <BoardsX mode={['surf', 'double', 'snow'][modes.idx]} size={20} />}{md.label}
+            </button>
+          );
+        })}
+      </div>
     </nav>
     </>
   );
