@@ -1,7 +1,6 @@
 // Cam viewport: 430×242 feed area that docks into a 92×52 thumbnail as --cam goes 0 → 1.
 import React from 'react';
 import { Arrow, Icon, MONO } from './ui.jsx';
-import { iconUrl } from '../icons.js';
 
 const HUD_OP = 'calc(1 - var(--cam, 0) * 2.2)';
 const GLASS_S = { background: 'rgba(8,12,18,0.45)', backdropFilter: 'blur(10px)', WebkitBackdropFilter: 'blur(10px)', boxShadow: 'inset 0 0 0 0.5px rgba(238,243,246,0.2)' };
@@ -126,7 +125,7 @@ export default function Cam({ v, ic, liveCam, connecting, miniTap }) {
         <div style={{ position: 'absolute', left: 12, top: 'max(12px, calc(var(--sat, env(safe-area-inset-top, 0px)) + 6px))', height: 22, padding: '0 8px 0 7px', borderRadius: 11, display: 'flex', alignItems: 'center', gap: 6, background: 'rgba(8,12,18,0.5)', backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)', boxShadow: 'inset 0 0 0 0.5px rgba(238,243,246,0.16)', fontSize: 10.5, lineHeight: '14px', color: '#EEF3F6' }}>
           <span style={{ display: 'block', width: 5, height: 5, borderRadius: 3, background: liveCam ? '#EEF3F6' : '#A3AEBA', animation: liveCam ? 'livepulse 2s ease-out infinite' : 'none' }} />
           <span style={{ fontWeight: 700, letterSpacing: '.06em', textTransform: 'uppercase' }}>{hud.live}</span>
-          <span className="tnum" style={{ fontFamily: MONO, fontSize: 10, color: '#C9D2DA' }}>{hud.stamp}</span>
+          {hud.stamp && <span className="tnum" style={{ fontFamily: MONO, fontSize: 10, color: '#C9D2DA' }}>{hud.stamp}</span>}
         </div>
 
         {hud.showTimer && (
@@ -165,11 +164,7 @@ export default function Cam({ v, ic, liveCam, connecting, miniTap }) {
               <div style={SHADOW_TXT}><div style={DIAL_CAP}>Swell</div><div style={{ fontSize: 13, lineHeight: '17px', fontWeight: 600 }}>{hud.swellTxt}</div></div>
             </div>
             </>)}
-            {/* Water stays on every surf spot, even while a provider's live player is running */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginLeft: 'auto' }}>
-              <Dial plain><Icon src={iconUrl('thermometer')} size={20} color="#EEF3F6" style={{ position: 'absolute', left: 10, top: 10 }} /></Dial>
-              <div style={SHADOW_TXT}><div style={DIAL_CAP}>Water</div><div className="tnum" style={{ fontSize: 13, lineHeight: '17px', fontWeight: 600 }}>{hud.waterTxt}</div></div>
-            </div>
+            {/* Water temp lives in the spot header now (merged with area · facing), so it isn't repeated here */}
           </div>
         )}
         {hud.showSnowDials && !providerUi && (

@@ -35,11 +35,34 @@ export default function viewModel(st, props, ctx) {
     const x = E.firstAfter(y => E.surfAt(bi, y).wind.score < 0.5, t + 0.25); return x < 17 ? 'Light texture; onshore builds ~' + E.fmt(x) : 'Light texture';
   })();
   const tc = E.path(x => E.tideAt(x, bi), 5.5, 0, 390, 22, 76, 104), XC = x => (x - 5) / 12 * 390, tsy = 22 + (1 - E.clamp(r.tide.h / 5.5, 0, 1)) * 76;
+  const cap = x => x.charAt(0).toUpperCase() + x.slice(1), swK = r.H >= 3 && p.T >= 11 ? 'good' : r.H >= 2 ? 'fair' : 'poor';
+  // Cam fallback: no embeddable stream → the cam box collapses and the header shows an external link (if the spot has one).
+  const bFeed = E.camFeed('break', bi), camOut = bFeed.isNone || bFeed.isPending, camLink = camOut ? E.camLinkFor('break', bi) : null;
+  // Forward-looking window: today's if it's still ahead, otherwise tomorrow's best (forecast covers 48 h), with today's closed window demoted.
+  const descAt = q => (q.tide.rising ? 'Rising tide' : 'Dropping tide') + ' · ' + Math.round(q.wind.k) + ' kt ' + lc(E.catLabel(q.wind.cat)) + ' · ' + E.rangeStr(q.H).str + ' ft';
+  const surfNext = (() => {
+    const jumpTo = a => () => { ctx.jump(a); ctx.openTimeline && ctx.openTimeline(); };
+    const card = (w, caption, status, onClick) => ({ caption, range: E.range(w.a, w.b), detail: descAt(E.surfAt(bi, (w.a + w.b) / 2)), status, fg: col(w.rating), bg: col(w.rating, 0.08), line: col(w.rating, 0.22), cta: onClick ? 'Timeline' : '', onClick });
+    if (sw && nowT <= sw.b) return { main: card(sw, 'Best window · ' + E.dayWord(), nowT < sw.a ? 'In ' + E.dur(sw.a - nowT) : 'On now · ' + E.dur(sw.b - nowT) + ' left', jumpTo(sw.a)) };
+    const rows = []; for (let x = 24 + 5; x <= 24 + 17 + 1e-6; x += 0.25) rows.push(E.surfAt(bi, x));
+    const tw = E.windowOf(rows, 24 + L.first, 24 + 17), past = sw ? { text: 'Today’s window closed at ' + E.fmt(sw.b) + ' (' + E.rangeStr(E.surfAt(bi, (sw.a + sw.b) / 2).H).str.replace('–', '–\u2060') + '\u00a0ft)', onClick: jumpTo(sw.a) } : null;
+    return { main: tw ? card(tw, 'Next best window · Tomorrow', '', null) : { caption: 'No clean window', range: 'Nothing worth it today or tomorrow', detail: 'Stay dry and plan the mountain', fg: col('flat'), bg: col('flat', 0.08), line: col('flat', 0.22), cta: '' }, past };
+  })();
   const wet = B.water >= 72 ? 'Boardshorts' : B.water >= 68 ? 'Springsuit' : B.water >= 62 ? '3/2 full suit' : B.water >= 56 ? '4/3 full suit' : '5/4 hooded';
   const sBoard = h => h < 2 ? '9′2″ log' : h < 3.5 ? '5′10″ fish' : h < 5.5 ? '6′0″ shortboard' : '6′6″ step-up';
   const S = {
-    eyebrow: darkS ? 'Before first light · ' + tl : isNow ? 'Live now · ' + tl : 'Forecast · ' + E.dayWord() + ' ' + tl,
+    eyebrow: darkS ? 'Before first light · ' + tl : isNow ? '' : 'Forecast · ' + E.dayWord() + ' ' + tl,
     name: B.name, area: B.area + ' · faces ' + E.compass(B.facing) + ' ' + B.facing + '°',
+    sub: B.area + ' · ' + E.compass(B.facing) + ' ' + B.facing + '°', water: B.water + '°F water',
+    camOut, camLink, next: surfNext,
+    cond: {
+      title: darkS ? 'Current conditions & why it would be ' : 'Current conditions & why it’s ', word: D.labels[r.rating], color: col(r.rating),
+      rows: [
+        { label: 'Swell', icon: ic('waves'), fg: col(swK), bg: col(swK, 0.12), primary: p.h.toFixed(1) + ' ft @ ' + Math.round(p.T) + 's', meta: E.compass(p.d) + ' ' + Math.round(p.d) + '° · ' + (p.T >= 13 ? 'Long-period' : p.T >= 9 ? 'Mid-period' : 'Short-period'), take: cap(B.note) + '.' },
+        { label: 'Wind', icon: ic('wind'), fg: col(wK), bg: col(wK, 0.12), pfg: col(wK), primary: r.wind.cat === 'glassy' ? 'Glassy' : Math.round(r.wind.k) + ' kt ' + E.catLabel(r.wind.cat), meta: 'Gusts ' + Math.round(r.wind.g) + ' kt · ' + E.compass(r.wind.d) + ' ' + Math.round(r.wind.d) + '°', take: wNext + '.' },
+        { label: 'Tide', icon: ic(r.tide.rising ? 'trending-up' : 'trending-down'), fg: col(tK), bg: col(tK, 0.12), primary: r.tide.h.toFixed(1) + ' ft ' + (r.tide.rising ? 'Rising' : 'Dropping'), meta: nx ? (nx.type === 'H' ? 'High ' : 'Low ') + nx.h.toFixed(1) + ' ft @ ' + E.fmt(nx.t) : '', take: zone + ' the ' + E.num(ta) + '–' + E.num(tb) + ' ft sweet spot here.' },
+      ],
+    },
     pill: darkS ? 'Dark' : D.labels[r.rating], pillBg: col(pkS, 0.16), pillFg: col(pkS), range: rg.str, kj: Math.round(r.kj),
     words: E.sizeWords(rg.lo, rg.hi) + ' · ' + E.feel(r) + (darkS ? ' · first light ' + E.fmt(L.first) : ''),
     windRot: E.norm(r.wind.d + 180 - B.facing).toFixed(0), windColor: col(wK), windCat: E.catLabel(r.wind.cat),
@@ -73,7 +96,7 @@ export default function viewModel(st, props, ctx) {
   const snBoard = M.fresh24 >= 12 ? 'Powder swallowtail' : M.fresh24 >= 6 ? 'All-mountain twin' : 'Freestyle twin';
   const nWinS = nw ? E.snowAt(mi, nw.a) : null;
   const sn = {
-    eyebrow: s.season === 'pre' ? 'Pre-season · model, not a snow report' : s.pre ? (isNow ? 'Lifts usually open 8:30 AM · in ' + E.dur(8.5 - nowT) : 'Before the lifts · ' + tl) : s.post ? 'Lifts closed · ' + tl : (isNow ? 'Live now · ' + tl : 'Forecast · ' + E.dayWord() + ' ' + tl),
+    eyebrow: s.season === 'pre' ? 'Pre-season · model, not a snow report' : s.pre ? (isNow ? 'Lifts usually open 8:30 AM · in ' + E.dur(8.5 - nowT) : 'Before the lifts · ' + tl) : s.post ? 'Lifts closed · ' + tl : (isNow ? '' : 'Forecast · ' + E.dayWord() + ' ' + tl),
     name: M.name, area: M.area + ' · ' + M.base.toLocaleString('en-US') + '–' + M.top.toLocaleString('en-US') + ' ft',
     pill: s.season === 'pre' ? 'Pre-season' : s.pre ? 'Opens 8:30' : s.post ? 'Closed' : D.labels[s.rating], pillBg: col(pkN, 0.16), pillFg: col(pkN),
     fresh: M.fresh24, fresh48: M.fresh48 + '″', depth: M.depth + '″',
@@ -143,7 +166,7 @@ export default function viewModel(st, props, ctx) {
   const dk = { strip: glove ? 58 : 52, viz: glove ? 92 : 80, pills: glove ? 56 : 48, modes: glove ? 64 : 56, val: glove ? 17 : 15, modeFs: glove ? 15 : 14, glove };
   // Bottom tab bar (docked edge-to-edge) + a pull-up panel above it with three detents:
   // 0 = collapsed handle row, 1 = time strip + scrubber + spot pills, 2 = loadout drawer.
-  dk.tab = 56; /* same height in every mode; glove mode only enlarges the timeline controls */ dk.safe = 34; dk.grab = 48; dk.ctrl = dk.strip + dk.viz + 12 + dk.pills + 12;
+  dk.tab = 62; /* same height in every mode; glove mode only enlarges the timeline controls */ dk.safe = 34; dk.grab = 50; dk.ctrl = dk.strip + dk.viz + 12 + dk.pills + 12;
   dk.exp = Math.max(160, (props.appH || 932) - 126 - dk.tab - dk.safe - dk.grab - dk.ctrl - 8); dk.padB = dk.tab + dk.safe + dk.grab + 20;
   const dNow = E.drive(bi, mi, t, st.order === 'surf');
   const cells = mode === 'surf' ? [['Surf', rg.str + ' ft', col(pkS)], ['Energy', Math.round(r.kj) + ' kJ'], ['Tide', r.tide.h.toFixed(1) + ' ft'], ['Wind', Math.round(r.wind.k) + ' kt ' + E.catShort(r.wind.cat), col(wK)]]
@@ -178,7 +201,9 @@ export default function viewModel(st, props, ctx) {
     : mode === 'snow' ? D.mtns.map((m, i) => { const q = E.snowAt(i, t), on = i === mi; return pill({ label: m.short, hasDot: true, dot: col(q.closed ? 'flat' : q.rating), bg: on ? CHIP : 'transparent', fg: on ? T1 : T2, fw: on ? 650 : 500, onClick: () => ctx.selectMtn(m.id) }); })
     : [pill({ label: B.short, hasIcon: true, icon: ic('repeat'), bg: FILL, fg: T1, fw: 650, onClick: () => ctx.cycleBreak() })].concat(D.mtns.map((m, i) => { const v = E.plan(bi, i, st.order).total, on = i === mi; return pill({ label: m.short, hasScore: true, score: v, scoreFg: col(E.scoreKey(v)), bg: on ? CHIP : 'transparent', fg: on ? T1 : T2, fw: on ? 650 : 500, dir: 'column', gap: 0, fs: 13, onClick: () => ctx.selectMtn(m.id) }); }));
   const pills = { cols: mode === 'surf' && items.length > 4 ? 'repeat(' + items.length + ', auto)' : 'repeat(' + items.length + ', minmax(0,1fr))', items };
-  const modes = { idx: ['surf', 'double', 'snow'].indexOf(mode), items: [['surf', 'Surf', 'waves'], ['double', 'CA Double', 'route'], ['snow', 'Snow', 'mountain-snow']].map(([id, label, n]) => ({ label, icon: ic(n), fg: id === mode ? 'var(--accfg, #06161B)' : T2, onClick: () => ctx.setMode(id) })) };
+  // Active segment colors per mode (each mode has its own theme: surf dark, double midnight silver, snow light).
+  const SEG = { surf: { onBg: 'oklch(0.82 0.1 200 / 0.16)', onFg: 'oklch(0.86 0.1 200)', onLine: 'oklch(0.82 0.1 200 / 0.32)' }, double: { onBg: 'rgba(238,244,246,0.10)', onFg: T1, onLine: 'rgba(238,244,246,0.2)' }, snow: { onBg: 'oklch(0.55 0.15 275 / 0.13)', onFg: 'oklch(0.45 0.16 275)', onLine: 'oklch(0.55 0.15 275 / 0.3)' } };
+  const modes = { idx: ['surf', 'double', 'snow'].indexOf(mode), items: [['surf', 'Surf', 'waves'], ['double', 'CA² Dual', 'route'], ['snow', 'Snow', 'mountain-snow']].map(([id, label, n]) => ({ label, icon: ic(n), fg: id === mode ? 'var(--accfg, #06161B)' : T2, onClick: () => ctx.setMode(id), ...SEG[id] })) };
 
   // ---------- CAM + HUD ----------
   const view = mode === 'surf' ? 'beach' : mode === 'snow' ? 'mountain' : 'split'; // CA Double always shows both cams
@@ -190,7 +215,7 @@ export default function viewModel(st, props, ctx) {
     mtn: [E.camFeed('mtn', mi)] };
   const hud = {
     filter: offline ? 'grayscale(1)' : 'none', dim: offline ? 0.45 : 0, catcherPE: st.docked ? 'auto' : 'none', pipPE: st.docked ? 'none' : 'auto',
-    live: offline ? 'Cached' : E.camLive(view, bi, mi), stamp: offline ? upd : E.clockSec(),
+    live: offline ? 'Cached' : E.camLive(view, bi, mi), stamp: offline ? upd : '',
     showTimer: false, waterTxt: B.water + '°F', setTxt, setSub, setBg: isSet ? 'rgba(238,243,246,0.94)' : 'rgba(8,12,18,0.5)', setFg: isSet ? '#0A1016' : '#EEF3F6', setSubFg: isSet ? 'rgba(10,16,22,0.7)' : '#A3AEBA',
     showVis: mode === 'snow', visTxt: 'Summit vis ' + E.num1(sN.vis) + ' mi', visSub: sN.vis >= 3 ? 'Model visibility' : 'Clearing ~' + E.fmt(E.firstAfter(x => E.snowAt(mi, x).vis >= 3, nowT)),
     showToggle: false, views: [['split', 'Split view', 'columns-2'], ['beach', 'Beach cam', 'waves'], ['mountain', 'Mountain cam', 'mountain-snow']].map(([id, title, n]) => ({ title, icon: ic(n), bg: st.camView === id ? 'rgba(238,243,246,0.92)' : 'transparent', fg: st.camView === id ? '#0A1016' : '#EEF3F6', onClick: () => ctx.setCamView(id) })),
@@ -209,7 +234,8 @@ export default function viewModel(st, props, ctx) {
     statusTime: C.label, offline, offlineTxt: 'Offline · showing the ' + upd + ' cache. Scrubbing still works.', glowOp: mode === 'double' ? 1 : 0,
     tv: { surf: { op: mode === 'surf' ? 1 : 0, vis: mode === 'surf' ? 'visible' : 'hidden' }, double: { op: mode === 'double' ? 1 : 0, vis: mode === 'double' ? 'visible' : 'hidden' }, snow: { op: mode === 'snow' ? 1 : 0, vis: mode === 'snow' ? 'visible' : 'hidden' } },
     dk, S, sn, dbl, drawer, strip, sc, pills, modes, cam, hud, mini,
-    ic: { cloudOff: ic('cloud-off'), backpack: ic('backpack'), chevUp: ic('chevron-up'), chevDown: ic('chevron-down'), chevRight: ic('chevron-right'), pip: ic('picture-in-picture-2'), hand: ic('hand'), waves: ic('waves'), snow: ic('mountain-snow'), db: ic('database'), settings: ic('settings-2'), ext: ic('external-link'), x: ic('x'), refresh: ic('refresh-cw') },
+    handle: { text: isNow ? (mode === 'surf' ? 'Hourly forecast & tide graph' : mode === 'snow' ? 'Hourly wind & surface' : 'Plan timeline') : 'Viewing ' + tl, scrubbed: !isNow },
+    ic: { cloudOff: ic('cloud-off'), backpack: ic('backpack'), chevUp: ic('chevron-up'), chevDown: ic('chevron-down'), chevRight: ic('chevron-right'), pip: ic('picture-in-picture-2'), hand: ic('hand'), waves: ic('waves'), snow: ic('mountain-snow'), db: ic('database'), settings: ic('settings-2'), ext: ic('external-link'), x: ic('x'), refresh: ic('refresh-cw'), out: ic('arrow-up-right') },
     theme: D.themes[mode], exp: dk.exp, ctrl: dk.ctrl, nowT,
   };
 }

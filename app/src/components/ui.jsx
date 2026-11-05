@@ -110,7 +110,7 @@ export function SourceRows({ rows, gap = 10, fs = 13, lh = 18, labelColor, state
 }
 
 /** Scrolling content column for one mode. */
-export const ModeScroller = React.forwardRef(function ModeScroller({ label, tv, padB, onScroll, onSwipe, swipeKey, swipeDir, children }, ref) {
+export const ModeScroller = React.forwardRef(function ModeScroller({ label, tv, padB, padT = '258px', onScroll, onSwipe, swipeKey, swipeDir, children }, ref) {
   // Horizontal swipe (Surf/Snow): a quick, mostly-sideways flick changes the location. Vertical scrolling is untouched.
   const t = React.useRef(null);
   const start = e => { const p = e.touches[0]; t.current = e.touches.length === 1 ? { x: p.clientX, y: p.clientY, at: Date.now() } : null; };
@@ -120,7 +120,7 @@ export const ModeScroller = React.forwardRef(function ModeScroller({ label, tv, 
     if (Math.abs(dx) > 56 && Math.abs(dx) > Math.abs(dy) * 1.6 && Date.now() - s.at < 700) onSwipe(dx < 0 ? 1 : -1);
   };
   return (
-    <div data-screen-label={label} ref={ref} onScroll={onScroll} onTouchStart={onSwipe ? start : undefined} onTouchEnd={onSwipe ? end : undefined} className="noscroll" style={{ position: 'absolute', inset: 0, overflowY: 'auto', overflowX: 'hidden', overscrollBehavior: 'contain', touchAction: onSwipe ? 'pan-y' : undefined, boxSizing: 'border-box', padding: `258px 20px ${padB}px`, opacity: tv.op, visibility: tv.vis, transition: 'opacity .3s ease, visibility .3s' }}>
+    <div data-screen-label={label} ref={ref} onScroll={onScroll} onTouchStart={onSwipe ? start : undefined} onTouchEnd={onSwipe ? end : undefined} className="noscroll" style={{ position: 'absolute', inset: 0, overflowY: 'auto', overflowX: 'hidden', overscrollBehavior: 'contain', touchAction: onSwipe ? 'pan-y' : undefined, boxSizing: 'border-box', padding: `${padT} 20px ${padB}px`, opacity: tv.op, visibility: tv.vis, transition: 'opacity .3s ease, visibility .3s' }}>
       <div key={swipeKey} style={{ animation: swipeDir ? `spotIn${swipeDir > 0 ? 'R' : 'L'} .32s cubic-bezier(.2,.8,.2,1) both` : undefined }}>{children}</div>
     </div>
   );

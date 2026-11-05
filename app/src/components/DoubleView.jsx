@@ -4,7 +4,7 @@ import { Cap, Footer, HAIR, Icon, LoadoutTeaser, OfflineBanner, T1, T2, T3, FILL
 export default function DoubleView({ v, dbl, ic, openDrawer, setOrder }) {
   return (
     <>
-      <OfflineBanner show={v.offline} text={v.offlineTxt} icon={ic.cloudOff} />
+      <OfflineBanner show={v.offline || !!v.staleTxt} text={v.offline ? v.offlineTxt : v.staleTxt} icon={ic.cloudOff} />
       <Cap size={11} color={T2} style={{ display: 'block', lineHeight: '14px' }}>California Double · {v.dayWord}</Cap>
       <div className="pretty" style={{ fontSize: 24, lineHeight: '30px', fontWeight: 650, letterSpacing: '-0.02em', marginTop: 4 }}>{dbl.route}</div>
 
