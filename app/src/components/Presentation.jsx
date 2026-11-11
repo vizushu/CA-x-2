@@ -1,32 +1,33 @@
 // Desktop presentation mode (wider than 600 px, not installed, no ?app): phone bezel plus two side panels.
 import React from 'react';
-import { MONO, SourceRows } from './ui.jsx';
+import { SourceRows, T1, T2, T3 } from './ui.jsx';
 
-const EYEBROW = { fontFamily: MONO, fontSize: 11, letterSpacing: '.08em', textTransform: 'uppercase', color: '#778692' };
-const H2 = { margin: 0, fontSize: 18, lineHeight: '24px', fontWeight: 600 };
-const P = { margin: 0, fontSize: 14, lineHeight: '21px', color: '#A5B3BD' };
-const B = { color: '#EEF4F6', fontWeight: 600 };
+const EYEBROW = { fontSize: 11, lineHeight: '14px', fontWeight: 600, letterSpacing: '.08em', textTransform: 'uppercase', color: T3 };
+const H1 = { margin: 0, fontSize: 38, lineHeight: '38px', fontWeight: 700, letterSpacing: '.04em', textTransform: 'uppercase' };
+const H2 = { margin: 0, fontSize: 18, lineHeight: '22px', fontWeight: 600, letterSpacing: '.05em', textTransform: 'uppercase' };
+const P = { margin: 0, fontSize: 14, lineHeight: '21px', color: T2 };
+const B = { color: T1, fontWeight: 600 };
 
 export function SourcesPanel({ order, rows }) {
   return (
     <aside data-screen-label="Live sources" style={{ order, flex: '1 1 340px', minWidth: 290, maxWidth: 400, display: 'flex', flexDirection: 'column', gap: 28 }}>
       <header style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
         <div style={EYEBROW}>2CA · real data</div>
-        <h1 style={{ margin: 0, fontSize: 32, lineHeight: '36px', fontWeight: 650, letterSpacing: '-0.025em' }}>Every number is live</h1>
+        <h1 className="disp" style={H1}>Every number is live</h1>
         <p className="pretty" style={{ ...P, fontSize: 15, lineHeight: '22px' }}>Your browser pulls public feeds directly. Nothing on the phone is simulated, and when a feed can’t answer, the app says so.</p>
       </header>
       <section style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-        <h2 style={H2}>Sources right now</h2>
-        <SourceRows rows={rows} />
+        <h2 className="disp" style={H2}>Sources right now</h2>
+        <SourceRows rows={rows} labelColor={T2} />
       </section>
       <section style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-        <h2 style={H2}>Cams</h2>
+        <h2 className="disp" style={H2}>Cams</h2>
         <p className="pretty" style={P}><strong style={B}>Swami’s:</strong> the Pannikin Coffee &amp; Tea cam, pending access.</p>
         <p className="pretty" style={P}><strong style={B}>La Jolla Shores, Carlsbad:</strong> live players from the La Jolla Shores Hotel (IPCamLive) and YouTube. Blacks has no public cam.</p>
         <p className="pretty" style={P}><strong style={B}>Mountains:</strong> Big Bear Mountain Resort’s Snow Summit (Miracle Mile) and Bear Mountain (Peak) players, tap to play; Mammoth Mountain’s The Summit cam (11,053 ft).</p>
       </section>
       <section style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-        <h2 style={H2}>Not in any open feed</h2>
+        <h2 className="disp" style={H2}>Not in any open feed</h2>
         <p className="pretty" style={P}>Lift status and resort snow reports, Surfline ratings, and NDBC or CDIP buoys, which block browser requests and need a small server proxy. The app shows wind-hold risk and model snow instead, labeled as such.</p>
       </section>
     </aside>
@@ -37,6 +38,7 @@ const STEPS = [
   ['01', 'Host this folder', ' on any HTTPS static host: Netlify, Vercel, Cloudflare Pages or GitHub Pages.'],
   ['02', 'Open it on your phone.', ' Below 600 px wide it drops this frame and runs full-screen.'],
   ['03', 'Install.', ' iPhone: Share → Add to Home Screen. Android: ⋮ → Install app.'],
+  ['04', 'Optional:', ' paste a TomTom or Mapbox key in Sources & settings for live traffic. It stays on your phone.'],
 ];
 
 export function InstallPanel() {
@@ -44,23 +46,23 @@ export function InstallPanel() {
     <aside data-screen-label="Install" style={{ order: 3, flex: '1 1 280px', minWidth: 260, maxWidth: 320, display: 'flex', flexDirection: 'column', gap: 26 }}>
       <header style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
         <div style={EYEBROW}>Installable PWA</div>
-        <h2 style={{ margin: 0, fontSize: 24, lineHeight: '30px', fontWeight: 650, letterSpacing: '-0.02em' }}>Put it on your phone</h2>
+        <h2 className="disp" style={{ ...H2, fontSize: 26, lineHeight: '30px' }}>Put it on your phone</h2>
       </header>
       <ol style={{ margin: 0, padding: 0, listStyle: 'none', display: 'flex', flexDirection: 'column', gap: 14 }}>
         {STEPS.map(([n, b, rest]) => (
-          <li key={n} style={{ display: 'grid', gridTemplateColumns: '22px minmax(0,1fr)', gap: 10, fontSize: 14, lineHeight: '21px', color: '#A5B3BD' }}>
-            <span style={{ fontFamily: MONO, fontSize: 11, color: '#778692', paddingTop: 2 }}>{n}</span>
+          <li key={n} style={{ display: 'grid', gridTemplateColumns: '22px minmax(0,1fr)', gap: 10, fontSize: 14, lineHeight: '21px', color: T2 }}>
+            <span className="tnum" style={{ fontSize: 12, fontWeight: 600, color: T3, paddingTop: 2 }}>{n}</span>
             <span><strong style={B}>{b}</strong>{rest}</span>
           </li>
         ))}
       </ol>
-      <p className="pretty" style={{ ...P, fontSize: 13, lineHeight: '19px' }}>Offline, the shell and the last forecast load from cache with their timestamps. Cams need a signal.</p>
+      <p className="pretty" style={{ ...P, fontSize: 13, lineHeight: '19px', color: T3 }}>Offline, the shell and the last forecast load from cache with their timestamps. Cams need a signal.</p>
     </aside>
   );
 }
 
-function StatusBar({ time }) {
-  const c = '#fff';
+function StatusBar({ time, dark }) {
+  const c = dark ? '#fff' : '#0F171F';
   return (
     <div style={{ display: 'flex', gap: 154, alignItems: 'center', justifyContent: 'center', padding: '21px 24px 19px', boxSizing: 'border-box', position: 'relative', zIndex: 20, width: '100%' }}>
       <div style={{ flex: 1, height: 22, display: 'flex', alignItems: 'center', justifyContent: 'center', paddingTop: 1.5 }}>
@@ -87,14 +89,14 @@ function StatusBar({ time }) {
 }
 
 /** Dark iPhone-style frame (dynamic island, status bar, home indicator). Presentation mode only. */
-export function DeviceFrame({ width, height, time, children }) {
+export function DeviceFrame({ width, height, time, dark, children }) {
   return (
-    <div style={{ width, height, borderRadius: 48, overflow: 'hidden', position: 'relative', background: '#000', boxShadow: '0 40px 80px rgba(0,0,0,0.18), 0 0 0 1px rgba(0,0,0,0.12)' }}>
+    <div style={{ width, height, borderRadius: 48, overflow: 'hidden', position: 'relative', background: 'var(--bg, #FBFAF7)', boxShadow: '0 40px 80px rgba(0,0,0,0.18), 0 0 0 1px rgba(0,0,0,0.12)' }}>
       <div style={{ position: 'absolute', top: 11, left: '50%', transform: 'translateX(-50%)', width: 126, height: 37, borderRadius: 24, background: '#000', zIndex: 50 }} />
-      <div style={{ position: 'absolute', top: 0, left: 0, right: 0, zIndex: 10, pointerEvents: 'none' }}><StatusBar time={time} /></div>
+      <div style={{ position: 'absolute', top: 0, left: 0, right: 0, zIndex: 10, pointerEvents: 'none' }}><StatusBar time={time} dark={dark} /></div>
       <div style={{ height: '100%', '--sat': '56px' }}>{children}</div>
       <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, zIndex: 60, height: 34, display: 'flex', justifyContent: 'center', alignItems: 'flex-end', paddingBottom: 8, pointerEvents: 'none' }}>
-        <div style={{ width: 139, height: 5, borderRadius: 100, background: 'rgba(255,255,255,0.7)' }} />
+        <div style={{ width: 139, height: 5, borderRadius: 100, background: dark ? 'rgba(255,255,255,0.7)' : 'rgba(15,23,31,0.7)' }} />
       </div>
     </div>
   );
