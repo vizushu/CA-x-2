@@ -22,6 +22,8 @@ import i_square_plus from 'lucide-static/icons/square-plus.svg?url';
 import i_ellipsis_vertical from 'lucide-static/icons/ellipsis-vertical.svg?url';
 import i_route from 'lucide-static/icons/route.svg?url';
 import i_columns_2 from 'lucide-static/icons/columns-2.svg?url';
+import i_check from 'lucide-static/icons/check.svg?url';
+import i_rotate_ccw from 'lucide-static/icons/rotate-ccw.svg?url';
 
 const ICONS = {
   'backpack': i_backpack,
@@ -47,6 +49,8 @@ const ICONS = {
   'ellipsis-vertical': i_ellipsis_vertical,
   'route': i_route,
   'columns-2': i_columns_2,
+  'check': i_check,
+  'rotate-ccw': i_rotate_ccw,
 };
 
 export const iconUrl = n => ICONS[n] || '';

@@ -1,15 +1,16 @@
-// Lineup app shell: UI state, gestures (scrubber, spring-driven drawer, cam docking), layout and data wiring.
+// Lineup app shell (v3 "Lifeguard board"): UI state, the scrubber gesture, layout/theme and data wiring.
+// One scrolling column (header · verdict · cam · sections), a dock with the time scrubber and mode tabs, and two bottom sheets.
 import React from 'react';
 import E from './forecast/engine.js';
 import Live from './forecast/live.js';
-import viewModel from './forecast/view.js';
-import { SANS, ModeScroller } from './components/ui.jsx';
+import viewModel, { pal, srcRows, srcSummary } from './forecast/view.js';
+import { SANS, Scroller, Header, OfflineBanner, Hero, Stats, WindowCard, Gear, Footer, CollapsedBar } from './components/ui.jsx';
 import SurfView from './components/SurfView.jsx';
-import DoubleView from './components/DoubleView.jsx';
 import SnowView from './components/SnowView.jsx';
-import Cam from './components/Cam.jsx';
+import { DoubleTop, DoublePlan } from './components/DoubleView.jsx';
+import CamSlot from './components/Cam.jsx';
 import Dock from './components/Dock.jsx';
-import { Splash } from './components/Sheets.jsx';
+import { Splash, PickerSheet, SettingsSheet } from './components/Sheets.jsx';
 import InstallBanner from './components/InstallBanner.jsx';
 import { DeviceFrame, InstallPanel, SourcesPanel } from './components/Presentation.jsx';
 
@@ -25,7 +26,7 @@ function loadUI() {
     if (E.D.breaks.some(b => b.id === u.breakId)) out.breakId = u.breakId;
     if (E.D.mtns.some(m => m.id === u.mtnId)) out.mtnId = u.mtnId;
     if (['surf', 'snow'].includes(u.order)) out.order = u.order;
-    if (['split', 'beach', 'mountain'].includes(u.camView)) out.camView = u.camView;
+    if (['auto', 'day', 'night'].includes(u.uiTheme)) out.uiTheme = u.uiTheme;
     return out;
   } catch (e) { return {}; }
 }
@@ -38,43 +39,35 @@ export default class App extends React.Component {
   static defaultProps = { offline: false, glove: 'auto', showBlueprint: true };
 
   state = Object.assign(
-    { mode: 'surf', breakId: 'swamis', mtnId: 'bear', order: 'surf', camView: 'split' },
+    { mode: 'surf', breakId: 'swamis', mtnId: 'bear', order: 'surf', uiTheme: 'auto' },
     loadUI(),
-    { t: 6.5, follow: true, dragging: false, bump: 0, connecting: '', docked: false, sheetLevel: 0, splash: 'in', splashMin: false, pinned: false, sec: 0, vw: window.innerWidth, vh: window.innerHeight, data: 0, offline: false, },
+    { t: 6.5, follow: true, dragging: false, bump: 0, connecting: '', collapsed: false, pickerOpen: false, settingsOpen: false, draft: null, splash: 'in', splashMin: false, sec: 0, vw: window.innerWidth, vh: window.innerHeight, data: 0, offline: false, sysDark: false, swipeDir: 0 },
   );
 
-  appRef = React.createRef();
-  surfRef = React.createRef();
-  dblRef = React.createRef();
-  snowRef = React.createRef();
-  anim = { sheet: { v: 0, vel: 0, to: 0 }, pin: { v: 0, vel: 0, to: 0 } };
-  scrollP = 0;
-  _exp = 508;
-  _ctrl = 216;
+  rootRef = React.createRef();
+  scrollRef = React.createRef();
 
   saveUI() {
     const s = this.state;
-    try { localStorage.setItem(UI_KEY, JSON.stringify({ mode: s.mode, breakId: s.breakId, mtnId: s.mtnId, order: s.order, camView: s.camView })); } catch (e) { /* storage unavailable */ }
+    try { localStorage.setItem(UI_KEY, JSON.stringify({ mode: s.mode, breakId: s.breakId, mtnId: s.mtnId, order: s.order, uiTheme: s.uiTheme })); } catch (e) { /* storage unavailable */ }
   }
 
   isApp() { return this.state.vw < 600 || standalone() || /[?&]app\b/.test(location.search); }
+  theme() { const u = this.state.uiTheme; return u === 'day' || u === 'night' ? u : this.state.sysDark ? 'night' : 'day'; }
 
   layout(app, showBp) {
     const st = this.state;
     if (app) {
       const s = st.vw / 430, ah = Math.round(st.vh / s);
-      return { app: true, s, ah, pw: st.vw, ph: st.vh, bw: 430, bh: ah, bpad: 0, brad: 0, bbg: '#09141A', bsh: 'none', framed: false, pos: 'fixed', top: 0, left: 0, z: 50, o1: 2, o2: 1, rootPad: '0px' };
+      return { app: true, s, ah, pw: st.vw, ph: st.vh, bw: 430, bh: ah, bpad: 0, brad: 0, bbg: 'transparent', bsh: 'none', framed: false, pos: 'fixed', top: 0, left: 0, z: 50, o1: 2, o2: 1, rootPad: '0px', topPad: 'calc(env(safe-area-inset-top, 0px) + 10px)', padB: 'calc(8px + env(safe-area-inset-bottom, 0px))' };
     }
     const wide = showBp && st.vw >= 1280, side = st.vw >= 900, s = clamp(side ? (st.vh - 48) / 950 : (st.vw - 24) / 448, 0.5, 1);
-    return { s, ah: 932, pw: Math.round(448 * s), ph: Math.round(950 * s), bw: 448, bh: 950, bpad: 9, brad: 57, bbg: '#13181F', bsh: 'inset 0 0 0 1px rgba(238,243,246,0.09), 0 0 0 1px #000000, 0 50px 120px -30px rgba(0,0,0,0.95)', framed: true, pos: wide ? 'sticky' : 'relative', top: 24, left: 'auto', z: 'auto', o1: wide ? 1 : 2, o2: wide ? 2 : 1, rootPad: '40px 32px 72px' };
+    return { s, ah: 932, pw: Math.round(448 * s), ph: Math.round(950 * s), bw: 448, bh: 950, bpad: 9, brad: 57, bbg: '#13181F', bsh: 'inset 0 0 0 1px rgba(243,242,238,0.1), 0 0 0 1px #000000, 0 40px 100px -30px rgba(0,0,0,0.6)', framed: true, pos: wide ? 'sticky' : 'relative', top: 24, left: 'auto', z: 'auto', o1: wide ? 1 : 2, o2: wide ? 2 : 1, rootPad: '40px 32px 72px', topPad: '54px', padB: '42px' };
   }
 
   refreshNow = () => Live.refresh();
 
-  // ---------- gestures ----------
-  activeRef() { const m = this.state.mode; return m === 'surf' ? this.surfRef : m === 'snow' ? this.snowRef : this.dblRef; }
-  onScroll = e => { const el = e.currentTarget; if (el !== this.activeRef().current) return; this.scrollP = clamp(el.scrollTop / 124, 0, 1); this.apply(); };
-
+  // ---------- scrubber ----------
   scrubDown = e => {
     const el = e.currentTarget;
     try { el.setPointerCapture(e.pointerId); } catch (_) { /* not supported */ }
@@ -98,7 +91,7 @@ export default class App extends React.Component {
     if (cross && navigator.vibrate) { try { navigator.vibrate(6); } catch (_) { /* ignore */ } }
   }
   scrubKey = e => {
-    const step = { ArrowLeft: -0.25, ArrowRight: 0.25, PageDown: -1, PageUp: 1 }[e.key];
+    const step = { ArrowLeft: -0.25, ArrowRight: 0.25, ArrowDown: -0.25, ArrowUp: 0.25, PageDown: -1, PageUp: 1 }[e.key];
     if (e.key === 'Home') { e.preventDefault(); this.setT(5); return; }
     if (e.key === 'End') { e.preventDefault(); this.setT(17); return; }
     if (!step) return;
@@ -106,87 +99,13 @@ export default class App extends React.Component {
     this.setT(clamp(Math.round((this.state.t + step) * 4) / 4, 5, 17));
   };
 
-  // Pull-up panel position. The spring runs on a 0–2 level (0 handle, 1 timeline, 2 loadout);
-  // drags are tracked in pixels because the two segments have different heights.
-  toPx(v) { return this._ctrl * Math.min(v, 1) + this._exp * Math.max(v - 1, 0); }
-  fromPx(p) { return p <= this._ctrl ? p / this._ctrl : 1 + (p - this._ctrl) / this._exp; }
-  setSheet(level) { this.anim.sheet.to = level; this.setState({ sheetLevel: level }); this.kick(); }
-  sheetDown = e => {
-    const el = e.currentTarget;
-    try { el.setPointerCapture(e.pointerId); } catch (_) { /* not supported */ }
-    const a = this.anim.sheet; a.drag = true; a.vel = 0;
-    this._sd = { y: e.clientY, p: this.toPx(clamp(a.v, 0, 2)), lastY: e.clientY, lastT: performance.now(), vel: 0, moved: false };
-  };
-  sheetMove = e => {
-    const d = this._sd; if (!d) return;
-    const now = performance.now(), dy = e.clientY - d.y, s = this._scale || 1, max = this._ctrl + this._exp;
-    if (Math.abs(dy) > 4) d.moved = true;
-    let p = d.p - dy / s;
-    if (p < 0) p *= 0.3;
-    if (p > max) p = max + (p - max) * 0.3;
-    this.anim.sheet.v = p < 0 ? p / this._ctrl : p > max ? 2 + (p - max) / this._exp : this.fromPx(p);
-    const dt = now - d.lastT;
-    if (dt > 0) d.vel = 0.75 * ((e.clientY - d.lastY) / dt) + 0.25 * d.vel;
-    d.lastY = e.clientY; d.lastT = now;
-    this.apply();
-  };
-  sheetUp = () => {
-    const d = this._sd; if (!d) return;
-    this._sd = null;
-    const a = this.anim.sheet, s = this._scale || 1;
-    a.drag = false;
-    let level;
-    if (!d.moved) level = this.state.sheetLevel === 0 ? 1 : 0;
-    else {
-      const vpx = -(d.vel / s) * 1000, cur = this.toPx(clamp(a.v, 0, 2)), proj = cur + vpx * 0.16;
-      const stops = [0, this._ctrl, this._ctrl + this._exp];
-      level = stops.reduce((best, x, i) => Math.abs(x - proj) < Math.abs(stops[best] - proj) ? i : best, 0);
-      a.vel = clamp(vpx / (a.v > 1 ? this._exp : this._ctrl), -8, 8);
-    }
-    this.setSheet(level);
-  };
-  sheetKey = e => {
-    if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); this.setSheet(this.state.sheetLevel === 0 ? 1 : 0); }
-    else if (e.key === 'ArrowUp') { e.preventDefault(); this.setSheet(Math.min(2, this.state.sheetLevel + 1)); }
-    else if (e.key === 'ArrowDown') { e.preventDefault(); this.setSheet(Math.max(0, this.state.sheetLevel - 1)); }
-  };
-  openDrawer = () => this.setSheet(2);
-
-  // Spring integrator (k = 320, c = 30). Reduced motion snaps.
-  kick() { if (this._raf) return; this._last = performance.now(); this._raf = requestAnimationFrame(this.step); }
-  step = now => {
-    const dt = Math.min(0.032, Math.max(0.001, (now - this._last) / 1000));
-    this._last = now;
-    let active = false;
-    for (const key in this.anim) {
-      const a = this.anim[key];
-      if (a.drag) continue;
-      if (this.reduced) { a.v = a.to; a.vel = 0; continue; }
-      a.vel += (-320 * (a.v - a.to) - 30 * a.vel) * dt;
-      a.v += a.vel * dt;
-      if (Math.abs(a.v - a.to) > 0.0008 || Math.abs(a.vel) > 0.004) active = true; else { a.v = a.to; a.vel = 0; }
-    }
-    this.apply();
-    this._raf = active ? requestAnimationFrame(this.step) : null;
-  };
-  /** Writes --cam, --ctrl, --load and the theme tokens straight onto the app element (no re-render per frame). */
-  apply() {
-    const el = this.appRef.current; if (!el) return;
-    const a = this.anim, sheet = a.sheet.v, cam = clamp(Math.max(this.scrollP, sheet - 1, a.pin.v), 0, 1);
-    el.style.setProperty('--cam', cam.toFixed(4));
-    el.style.setProperty('--ctrl', clamp(sheet, -0.06, 1).toFixed(4));
-    el.style.setProperty('--load', clamp(sheet - 1, 0, 1.06).toFixed(4));
-    const th = this._theme;
-    if (th && (this._thMode !== this.state.mode || !el.style.getPropertyValue('--bg'))) {
-      this._thMode = this.state.mode;
-      for (const k in th) el.style.setProperty('--' + k, th[k]);
-      if (this.isApp()) { document.documentElement.style.background = th.bg; document.body.style.background = th.bg; } // any gap matches the theme
-      const meta = document.querySelector('meta[name="theme-color"]');
-      if (meta) meta.setAttribute('content', th.bg);
-    }
-    const docked = cam > 0.5;
-    if (docked !== this.state.docked) this.setState({ docked });
-  }
+  // ---------- sheets + scrolling ----------
+  openPicker = () => this.setState({ pickerOpen: true });
+  closePicker = () => this.setState({ pickerOpen: false });
+  openSettings = () => this.setState({ settingsOpen: true, draft: this.draftFrom() });
+  closeSettings = () => this.setState({ settingsOpen: false, draft: null });
+  scrollTop = () => { const el = this.scrollRef.current; if (el) el.scrollTo({ top: 0, behavior: this.reduced ? 'auto' : 'smooth' }); };
+  onScroll = e => { const c = e.currentTarget.scrollTop > 170; if (c !== this.state.collapsed) this.setState({ collapsed: c }); };
 
   // ---------- selection ----------
   connect(label) {
@@ -195,24 +114,41 @@ export default class App extends React.Component {
     clearTimeout(this._ct);
     if (conn) this._ct = setTimeout(() => this.setState({ connecting: '' }), 900);
   }
-  setMode(m) { if (m !== this.state.mode) this.setState({ mode: m }); }
-  selectBreak(id, dir = 0) { if (id === this.state.breakId) return; const i = E.D.breaks.findIndex(b => b.id === id); this.setState({ breakId: id, swipeDir: dir }); this.connect(E.camLabel('break', i)); }
-  selectMtn(id, dir = 0) { if (id === this.state.mtnId) return; const i = E.D.mtns.findIndex(m => m.id === id); this.setState({ mtnId: id, swipeDir: dir }); this.connect(E.camLabel('mtn', i)); }
+  setMode(m) {
+    if (m === this.state.mode) return;
+    this.setState({ mode: m, collapsed: false, pickerOpen: false, swipeDir: 0 });
+    const el = this.scrollRef.current; if (el) el.scrollTo({ top: 0 });
+  }
+  // In CA Double the picker stays open so both the beach and the mountain can be chosen.
+  selectBreak(id, dir = 0) { const i = E.D.breaks.findIndex(b => b.id === id), same = id === this.state.breakId; this.setState(s => ({ breakId: id, swipeDir: dir, pickerOpen: s.pickerOpen && s.mode === 'double' })); if (!same) this.connect(E.camLabel('break', i)); }
+  selectMtn(id, dir = 0) { const i = E.D.mtns.findIndex(m => m.id === id), same = id === this.state.mtnId; this.setState(s => ({ mtnId: id, swipeDir: dir, pickerOpen: s.pickerOpen && s.mode === 'double' })); if (!same) this.connect(E.camLabel('mtn', i)); }
   // Swipe left = next location, right = previous (stops at the ends). swipeDir drives the slide-in.
   swipeBreak = d => { const B = E.D.breaks, i = B.findIndex(b => b.id === this.state.breakId), j = i + d; if (j < 0 || j >= B.length) return; this.selectBreak(B[j].id, d); };
   swipeMtn = d => { const M = E.D.mtns, i = M.findIndex(m => m.id === this.state.mtnId), j = i + d; if (j < 0 || j >= M.length) return; this.selectMtn(M[j].id, d); };
-  cycleBreak() { const B = E.D.breaks, i = B.findIndex(b => b.id === this.state.breakId); this.selectBreak(B[(i + 1) % B.length].id); }
-  setCamView(v) { this.setState({ camView: v }); }
-  setOrder = o => this.setState({ order: o });
+  setOrder = o => { if (o !== this.state.order) this.setState({ order: o }); };
   jump(t, follow) { this._lastT = t; this.setState({ t, follow: !!follow }); }
   resetNow = () => this.jump(E.defaultT(), true);
-  miniTap = () => {
-    if (!this.state.docked) return;
-    const a = this.anim; a.pin.to = 0; a.sheet.to = Math.min(a.sheet.to, 1);
-    this.setState(s => ({ pinned: false, sheetLevel: Math.min(s.sheetLevel, 1) }));
-    const el = this.activeRef().current; if (el) el.scrollTo({ top: 0, behavior: this.reduced ? 'auto' : 'smooth' });
-    this.kick();
-  };
+
+  // ---------- settings sheet values ----------
+  draftFrom() {
+    const cfg = Live.settings(), D = E.D, b = D.breaks.find(x => x.id === this.state.breakId) || D.breaks[0], m = D.mtns.find(x => x.id === this.state.mtnId) || D.mtns[0], cams = cfg.cams || {};
+    const own = id => { const c = cams[id]; return typeof c === 'string' ? c : c && c.url ? c.url : ''; };
+    return { prov: cfg.prov, key: cfg.key, beach: own(b.id), mtn: own(m.id) };
+  }
+  setDraft(p) { this.setState(s => ({ draft: Object.assign({}, s.draft || this.draftFrom(), p) })); }
+  settingsVals(P) {
+    const D = E.D, b = D.breaks.find(x => x.id === this.state.breakId) || D.breaks[0], m = D.mtns.find(x => x.id === this.state.mtnId) || D.mtns[0], d = this.state.draft || this.draftFrom();
+    const seg = on => ({ on, bg: on ? P.t1 : 'transparent', fg: on ? P.bg : P.t2 }), look = this.state.uiTheme;
+    return {
+      looks: [['auto', 'Auto'], ['day', 'Day'], ['night', 'Night']].map(([id, label]) => Object.assign({ label, onClick: () => this.setState({ uiTheme: id }) }, seg(look === id))),
+      provs: [['tomtom', 'TomTom'], ['mapbox', 'Mapbox'], ['none', 'Off']].map(([id, label]) => Object.assign({ label, onClick: () => this.setDraft({ prov: id }) }, seg(d.prov === id))),
+      key: d.key || '', keyDis: d.prov === 'none', keyPh: d.prov === 'mapbox' ? 'Mapbox access token' : d.prov === 'tomtom' ? 'TomTom API key' : 'Pick TomTom or Mapbox first',
+      trafficLine: Live.trafficLine(), onKey: e => this.setDraft({ key: e.target.value }), saveTraffic: () => Live.setTraffic(d.prov, d.key),
+      beach: d.beach, mtn: d.mtn, beachName: b.name, mtnName: m.name,
+      onBeach: e => this.setDraft({ beach: e.target.value }), onMtn: e => this.setDraft({ mtn: e.target.value }),
+      saveCams: () => { Live.setCam(b.id, d.beach); Live.setCam(m.id, d.mtn); this.setState({ draft: null }); },
+    };
+  }
 
   // ---------- data + lifecycle ----------
   onData = () => {
@@ -226,6 +162,16 @@ export default class App extends React.Component {
     }
     // First open: if nothing has arrived after 5 s, ask again.
     if (!Live.isReady() && !Live.isSettled() && Date.now() - this._t0 > 5000) { this._t0 = Date.now(); Live.refresh(); }
+  }
+  /** Writes the theme tokens onto the root element (they cascade to the frame, sheets and side panels) and matches the page chrome. */
+  apply() {
+    const el = this.rootRef.current, P = this._P; if (!el || !P) return;
+    ['bg', 't1', 't2', 't3', 'hair', 'fill', 'fill2', 'acc', 'accfg', 'frost', 'scrim'].forEach(k => el.style.setProperty('--' + k, P[k]));
+    el.style.setProperty('--dur', this.reduced ? '0s' : '.35s');
+    try {
+      document.documentElement.style.background = P.bg; document.body.style.background = P.bg; // any gap (overscroll, home bar) matches the theme
+      const meta = document.querySelector('meta[name="theme-color"]'); if (meta) meta.setAttribute('content', P.bg);
+    } catch (e) { /* ignore */ }
   }
   componentDidMount() {
     // iOS home-screen apps can report a short innerHeight at launch (leaving a strip at the bottom), so in
@@ -244,71 +190,83 @@ export default class App extends React.Component {
     this.onNet();
     window.addEventListener('online', this.onNet);
     window.addEventListener('offline', this.onNet);
+    try { this.mq = window.matchMedia('(prefers-color-scheme: dark)'); this.onMq = () => this.setState({ sysDark: !!this.mq.matches }); this.onMq(); if (this.mq.addEventListener) this.mq.addEventListener('change', this.onMq); else this.mq.addListener(this.onMq); } catch (e) { /* no matchMedia */ }
     const mq = window.matchMedia ? window.matchMedia('(prefers-reduced-motion: reduce)') : null;
     this.reduced = !!(mq && mq.matches);
     this._t0 = Date.now();
     this.timer = setInterval(() => this.tick(), 1000);
     this._splashT = setTimeout(() => this.setState({ splashMin: true }), 2400); // 1.4 s fade-in + 1 s hold, then a 0.6 s fade-out (~3 s total)
     Live.init({ onUpdate: this.onData });
+    this.apply();
   }
   componentDidUpdate() {
     if (this.state.splash === 'in' && this.state.splashMin && Live.isReady()) { this.setState({ splash: 'out' }); this._splashOut = setTimeout(() => this.setState({ splash: 'gone' }), 650); }
     const s = this.state, ps = this._ps || {};
-    if (ps.mode !== s.mode) { const el = this.activeRef().current; this.scrollP = el ? clamp(el.scrollTop / 124, 0, 1) : 0; }
-    if (this._ps && (ps.mode !== s.mode || ps.breakId !== s.breakId || ps.mtnId !== s.mtnId || ps.order !== s.order || ps.camView !== s.camView)) this.saveUI();
-    this._ps = { mode: s.mode, breakId: s.breakId, mtnId: s.mtnId, order: s.order, camView: s.camView };
+    if (this._ps && (ps.mode !== s.mode || ps.breakId !== s.breakId || ps.mtnId !== s.mtnId || ps.order !== s.order || ps.uiTheme !== s.uiTheme)) this.saveUI();
+    this._ps = { mode: s.mode, breakId: s.breakId, mtnId: s.mtnId, order: s.order, uiTheme: s.uiTheme };
     this.apply();
   }
   componentWillUnmount() {
     window.removeEventListener('resize', this.onResize);
     window.removeEventListener('online', this.onNet);
     window.removeEventListener('offline', this.onNet);
+    try { if (this.mq) { if (this.mq.removeEventListener) this.mq.removeEventListener('change', this.onMq); else this.mq.removeListener(this.onMq); } } catch (e) { /* ignore */ }
     clearInterval(this.timer); clearTimeout(this._ct); clearTimeout(this._splashT); clearTimeout(this._settleT); clearTimeout(this._splashOut);
-    if (this._raf) cancelAnimationFrame(this._raf);
     Live.stop();
   }
 
   // ---------- render ----------
-  renderApp(lay) {
+  renderApp(lay, theme) {
     const st = this.state;
     if (!Live.isReady()) return <Splash failed={Live.isSettled()} onRetry={this.refreshNow} />;
     const D = E.D, bi = Math.max(0, D.breaks.findIndex(b => b.id === st.breakId)), mi = Math.max(0, D.mtns.findIndex(m => m.id === st.mtnId));
     Live.setCurrent(bi, mi);
     E.allowFetch = !st.dragging;
-    const v = viewModel(st, Object.assign({}, this.props, { appH: lay.ah }), this);
-    this._exp = v.exp; this._ctrl = v.ctrl; this._theme = v.theme; this._nowT = v.nowT;
-    const vk = st.mode === 'surf' ? 'beach' : st.mode === 'snow' ? 'mountain' : 'split';
-    const off = !!this.props.offline || st.offline, liveCam = !off && E.camLive(vk, bi, mi) === 'Live';
-    Object.assign(v, { srcSummary: Live.summary(), dayWord: E.dayWord(), sheetLevel: st.sheetLevel, t: st.t });
-    const ic = v.ic, common = { v, ic, openDrawer: this.openDrawer };
+    const v = viewModel(Object.assign({}, st, { theme }), Object.assign({}, this.props, { appH: lay.ah }), this);
+    this._nowT = v.nowT;
+    const summary = srcSummary(), sc = v.sc, mode = st.mode, ic = v.ic;
+    const swipe = mode === 'surf' ? this.swipeBreak : mode === 'snow' ? this.swipeMtn : undefined;
+    const swipeKey = mode === 'surf' ? st.breakId : mode === 'snow' ? st.mtnId : 'double';
+    const sheetPad = lay.padB;
     return (
       <>
-        <div aria-hidden="true" style={{ position: 'absolute', inset: 0, pointerEvents: 'none', opacity: v.glowOp, transition: 'opacity .6s', background: 'radial-gradient(110% 40% at 50% 30%, rgba(214,224,240,0.18), rgba(214,224,240,0) 70%), radial-gradient(70% 30% at 15% 85%, rgba(80,200,215,0.07), rgba(80,200,215,0) 70%), linear-gradient(180deg, rgba(232,238,246,0.10) 0%, rgba(28,34,44,0) 45%, rgba(190,200,216,0.10) 100%)' }} />
-        <ModeScroller label="Surf" ref={this.surfRef} onScroll={this.onScroll} onSwipe={this.swipeBreak} swipeKey={st.breakId} swipeDir={st.swipeDir} tv={v.tv.surf} padB={v.dk.padB}><SurfView {...common} S={v.S} /></ModeScroller>
-        <ModeScroller label="CA Double" ref={this.dblRef} onScroll={this.onScroll} tv={v.tv.double} padB={v.dk.padB}><DoubleView {...common} dbl={v.dbl} setOrder={this.setOrder} /></ModeScroller>
-        <ModeScroller label="Snow" ref={this.snowRef} onScroll={this.onScroll} onSwipe={this.swipeMtn} swipeKey={st.mtnId} swipeDir={st.swipeDir} tv={v.tv.snow} padB={v.dk.padB}><SnowView {...common} sn={v.sn} /></ModeScroller>
-        <Cam v={v} ic={ic} liveCam={liveCam} connecting={st.connecting} miniTap={this.miniTap} />
-        <Dock v={v} ic={ic} bump={st.bump} h={this} />
-        {lay.app && !standalone() && <InstallBanner ready={st.splash === 'gone'} hidden={st.sheetLevel > 0} bottom={`calc(${v.dk.tab + v.dk.grab + 10}px + max(20px, env(safe-area-inset-bottom, 0px)))`} />}
+        <CollapsedBar bar={v.bar} show={st.collapsed} topPad={lay.topPad} onTop={this.scrollTop} />
+        <Scroller label={mode === 'surf' ? 'Surf' : mode === 'snow' ? 'Snow' : 'CA Double'} ref={this.scrollRef} topPad={lay.topPad} padB={v.dk.padB} onScroll={this.onScroll} onSwipe={swipe} swipeKey={swipeKey} swipeDir={st.swipeDir}>
+          <Header head={v.head} ic={ic} onPicker={this.openPicker} onSettings={this.openSettings} />
+          <OfflineBanner show={v.offline} text={v.offlineTxt} icon={ic.cloudOff} />
+          <Hero hero={v.hero} />
+          {v.isSingle ? <Stats stats={v.stats} /> : <DoubleTop dbl={v.dbl} ic={ic} />}
+          <CamSlot cam={v.cam} ic={ic} connecting={st.connecting} />
+          {v.isSingle && <WindowCard win={v.win} chevron={ic.chevRight} />}
+          {v.isSurf && <SurfView surf={v.surf} />}
+          {v.isSnow && <SnowView snow={v.snow} />}
+          {v.isDouble && <DoublePlan dbl={v.dbl} />}
+          <Gear gear={v.gear} />
+          <Footer foot={v.foot} ic={ic} summary={summary} onSettings={this.openSettings} />
+        </Scroller>
+        <Dock v={v} h={this} bump={st.bump} padB={lay.padB} />
+        {lay.app && !standalone() && <InstallBanner ready={st.splash === 'gone'} hidden={st.pickerOpen || st.settingsOpen} bottom={`calc(${v.dk.h - 42}px + ${lay.padB} + 12px)`} />}
+        {st.pickerOpen && <PickerSheet picker={v.picker} ic={ic} padB={sheetPad} onClose={this.closePicker} />}
+        {st.settingsOpen && <SettingsSheet set={this.settingsVals(v.theme)} rows={srcRows(theme)} ic={ic} padB={sheetPad} onClose={this.closeSettings} onRefresh={this.refreshNow} />}
       </>
     );
   }
 
   render() {
-    const st = this.state, app = this.isApp(), showBp = !app && this.props.showBlueprint !== false, lay = this.layout(app, showBp);
-    this._scale = lay.s;
+    const st = this.state, app = this.isApp(), showBp = !app && this.props.showBlueprint !== false, lay = this.layout(app, showBp), theme = this.theme();
+    this._scale = lay.s; this._P = pal(theme);
     const appEl = (
-      <div ref={this.appRef} style={{ position: 'relative', width: 430, height: lay.ah, overflow: 'hidden', background: 'var(--bg, #09141A)', color: 'var(--t1, #EEF4F6)', zIndex: 0, isolation: 'isolate', fontFamily: SANS, WebkitUserSelect: 'none', userSelect: 'none', transition: 'background-color .5s, color .5s' }}>
-        {this.renderApp(lay)}
+      <div style={{ position: 'relative', width: 430, height: lay.ah, overflow: 'hidden', background: 'var(--bg, #FBFAF7)', color: 'var(--t1, #0F171F)', zIndex: 0, isolation: 'isolate', fontFamily: SANS, WebkitUserSelect: 'none', userSelect: 'none', transition: 'background-color var(--dur, .35s), color var(--dur, .35s)' }}>
+        {this.renderApp(lay, theme)}
         {Live.isReady() && st.splash !== 'gone' && <Splash leaving={st.splash === 'out'} onSkip={() => this.setState({ splashMin: true })} />}
       </div>
     );
     return (
-      <div style={{ minHeight: '100vh', boxSizing: 'border-box', padding: lay.rootPad, background: '#05080B', color: '#EEF3F6', fontFamily: SANS, display: 'flex', flexWrap: 'wrap', justifyContent: 'center', alignItems: 'flex-start', gap: 56 }}>
-        {showBp && <SourcesPanel order={lay.o1} rows={Live.sources()} />}
+      <div ref={this.rootRef} style={{ minHeight: '100vh', boxSizing: 'border-box', padding: lay.rootPad, background: 'var(--bg, #FBFAF7)', color: 'var(--t1, #0F171F)', fontFamily: SANS, display: 'flex', flexWrap: 'wrap', justifyContent: 'center', alignItems: 'flex-start', gap: 56, transition: 'background-color var(--dur, .35s), color var(--dur, .35s)' }}>
+        {showBp && <SourcesPanel order={lay.o1} rows={srcRows(theme)} />}
         <div style={{ order: lay.o2, flex: 'none', position: lay.pos, top: lay.top, left: lay.left, zIndex: lay.z, width: lay.pw, height: lay.ph }}>
           <div style={{ width: lay.bw, height: lay.bh, boxSizing: 'border-box', padding: lay.bpad, borderRadius: lay.brad, background: lay.bbg, boxShadow: lay.bsh, transform: `scale(${lay.s.toFixed(4)})`, transformOrigin: '0 0' }}>
-            {lay.framed ? <DeviceFrame width={430} height={lay.ah} time={E.clockLabel()}>{appEl}</DeviceFrame> : appEl}
+            {lay.framed ? <DeviceFrame width={430} height={lay.ah} time={E.clockLabel()} dark={theme === 'night'}>{appEl}</DeviceFrame> : appEl}
           </div>
         </div>
         {showBp && <InstallPanel />}
